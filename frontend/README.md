@@ -1,7 +1,9 @@
 # parser
 
-> front-end for Konlpy Korean parser framework
+> front-end for KoNLPy Korean parser framework
 
+## *NOTE: this readme is not complete, will add setup, build & driving instructions soon.*
+--
 ## building template
 
 $ npm install -g vue-cli
