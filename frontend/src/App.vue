@@ -1,0 +1,249 @@
+<!-- main KoNLPy parser    -->
+
+<template>
+    <div id="app">
+        <div class="k-flexcol">
+            <div id="input-row" class="k-flexrow ">
+                <div id="input-title" >Korean sentence parser</div>
+                <div id="attribution">v0.0.1 - JBW - based on the <a href="http://konlpy.org/en/latest/">KoNLPy</a> parsing framework</div>
+            </div>
+            <div class="input-row k-flexrow k-table">
+                <div class="k-row">
+                    <textarea id="input-sentence" class="k-cell" placeholder="enter Korean sentence to parse" v-model="sentence"></textarea>
+                    <button class="k-cell" id="parse-button" v-on:click="requestParse" :disabled="sentence == ''">{{ parseButtonText }}</button>
+                </div>
+            </div>
+            <div class="output-row k-flexrow k-table">
+                <div v-if="error" class="error-msg">
+                    {{ error }}
+                </div>
+                <svg v-else id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
+                    <g v-for="node in nodes">
+                        <line v-if="node.parent" :x1="node.xOffset + node.width / 2" :y1="node.yOffset - 15" class="link-line"
+                              :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
+                        <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
+                            <template v-if="node.word">
+                                <tspan class="leaf-word" v-on:click="lookupWord(node)">{{ node.word }}</tspan>
+                                <tspan class="leaf-tag"> ({{ node.tag }})</tspan>
+                            </template>
+                            <tspan v-else class="node-tag">{{ node.tag }}</tspan>
+                        </text>
+                    </g>
+                </svg>
+            </div>
+            <div v-if="wiktionaryUrl" class="k-row">
+                <iframe :src="wiktionaryUrl"  class="wiktionary-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+export default {
+    name: 'App',
+
+	data: function() {
+		return {
+		    parseTree: null,
+		    sentence: "",
+		    error: "",
+		    nodes: [],
+		    answer: "Answer goes here",
+		    wiktionaryUrl: null,
+		    parseButtonText: "Parse",
+		    levelHeight: 50,
+		    nodeWidth: 85,
+		    nodePadding: 10,
+		    parseTreeWidth: 1200,
+		    parseTreeHeight: 600
+		};
+	},
+
+    ready: function () {
+    },
+
+	computed: {
+	},
+
+	methods: {
+
+	    requestParse: function() {
+	        // send sentence to parser API
+	        self = this;
+	        self.parseButtonText = "Parsing...";
+	        self.error = "";
+            $.ajax({
+                method: "POST",
+                url: '/parse/', // 'http://localhost:9000/parse/',
+                crossDomain: true,
+                cache: false,
+                data: { sentence: this.sentence },
+                success: function(response) {
+	                self.parseButtonText = "Parse";
+	                if (response.result == 'OK') {
+                        self.parseTree = response.parseTree;
+                        // console.log(JSON.stringify(self.parseTree));
+                        self.buildDisplay();
+                    }
+                    else {
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+	                self.parseButtonText = "Parse";
+                    self.error = "Parsing failed - " + textStatus + ", " + errorThrown;
+                }
+            });
+	    },
+
+	    buildDisplay: function() {
+	        // recurse parse-tree, build display tree layers
+	        var idCounter = 0, maxY = 0;
+	        var text = [], links = [];
+	        var layers = [], nodes = [];
+	        function subtree(t, level) {
+	            if (layers.length < level+1)
+	                layers[level] = { count:0, width: 0, level: level, entries: [] };  // add new layer level;
+	            var count = 0;
+	            if (t.type == 'tree') {
+	                for (var i = 0; i < t.children.length; i++) {
+	                    var child = t.children[i];
+	                    child.parent = t;
+	                    count += subtree(t.children[i], level + 1);
+	                }
+	            }
+	            else
+	                count = 1;
+	            //
+	            layers[level].count += count;
+	            t.id = nodes.length;
+	            nodes.push(t);
+	            t.yOffset = level * self.levelHeight + 20;
+	            maxY = Math.max(maxY, t.yOffset);
+	            t.width = count * self.nodeWidth;
+	            layers[level].entries.push(t)
+	            return count;
+	        }
+	        //
+	        subtree(self.parseTree, 0);
+	        // compute layout coords
+	        for (var i = 0; i < layers.length; i++) {
+	            var entries = layers[i].entries;
+	            //console.log('layer ' + i);
+	            var nodeOffset = 30;
+	            for (var j = 0; j < entries.length; j++) {
+                     var node = entries[j];
+                     nodeOffset = Math.max(nodeOffset, node.parent && node.parent.xOffset || 0);
+                     node.xOffset = nodeOffset;
+                     nodeOffset += node.width;
+                     //console.log('  tag = ' + node.tag + ' width = ' + node.width + ', xy = ' + [node.xOffset, node.yOffset].toString());
+	            }
+	        }
+	        //console.log(layers);
+	        // trigger graph draw
+	        self.parseTreeHeight = maxY + 20;
+	        self.nodes = nodes;
+	    },
+
+	    lookupWord: function(node) {
+	        // lookup word in wiktionary, open in iframe
+	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + node.word;
+	    }
+	}
+}
+
+</script>
+
+<style>
+
+    #app {
+        font-family: Helvetica, simsun, nanumgothic, '나눔고딕', dotum, sans-serif;
+    }
+
+    #input-row {
+        justify-content: space-between;
+    }
+
+    #input-title {
+        font-weight: bold;
+    }
+
+    #attribution {
+        font-size: 70%;
+        color: gray;
+    }
+
+    #input-sentence {
+        width: 45em;
+        margin: 20px;
+        padding: 10px;
+        font-size: 18px;
+    }
+
+    #parse-button {
+        vertical-align: top;
+        margin-top: 35px;
+        padding: 5px;
+        font-size: 14px;
+        width: 75px;
+    }
+
+    .link-line {
+        stroke: rgb(114, 194, 119);
+        stroke-width: 0.8;
+    }
+
+    .leaf-word {
+        fill: #00a6de;
+    }
+
+    .leaf-tag {
+        fill: #8d8c86;
+        font-size: 12px;
+    }
+
+    .leaf-word {
+        fill: #00a6de;
+        cursor: pointer;
+    }
+
+    .node-tag {
+        fill: #ad47de;
+    }
+
+    .wiktionary-iframe {
+        margin-top: 20px;
+        width: 100%;
+        height: 600px;
+        border-width: thin;
+    }
+
+    /* useful CSS3 layout classes */
+    .k-flexrow {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .k-flexcol {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .k-down-shadow {
+        box-shadow: 0px 4px 7px #d0d0d0;
+        border-width: 0;
+    }
+
+    .k-table {
+        display: table;
+    }
+
+    .k-row {
+        display: table-row;
+    }
+
+    .k-cell {
+        display: table-cell;
+    }
+
+</style>
