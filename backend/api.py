@@ -53,27 +53,27 @@ def parse():
     words = konlpy.tag.Kkma().pos(sentence)
     #konlpy.utils.pprint(words)
 
-    # Define a nltk chunk grammar, or chunking rules, then chunk; again just for Kkma for now
+    # define an nltk chunking grammar (again just for Kkma for now)
     # todo: needs building out, is parser-specific
     grammar = """
     np: {<N.*><J.*>?}   	# Noun phrase
     vp: {<V.*><E.*>?}       # Verb phrase
-    ap: {<A.*>*}            # Adjective phrase
+    ap: {<A.*>*}            # Adjectival phrase
     """
-    # gen chunk tree from POS under above chunking grammar
+    # gen chunk tree from the word-POS list under the above chunking grammar
     parser = nltk.RegexpParser(grammar)
     chunkTree = parser.parse(words)
     # print(chunks.pprint())
 
-    # dict-ify tree
+    # recursively turn the chunk tree into a Python nested dict for the JSON response
     def asDict(chunk):
         if isinstance(chunk, nltk.Tree):
             return dict(type='tree', tag=chunk.label(), children=[asDict(t) for t in chunk])
         else:
             return dict(type='pos', word=chunk[0].strip(), tag=chunk[1])
     #
-    import pprint
-    pprint.pprint(asDict(chunkTree))
+    #import pprint
+    #pprint.pprint(asDict(chunkTree))
 
     return jsonify(result="OK", parseTree=asDict(chunkTree))
 

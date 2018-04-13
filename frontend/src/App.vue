@@ -147,7 +147,9 @@ export default {
 
 	    lookupWord: function(node) {
 	        // lookup word in wiktionary, open in iframe
-	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + node.word;
+	        //  construct dictionary form of verb if needed
+	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
+	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
 	    }
 	}
 }
