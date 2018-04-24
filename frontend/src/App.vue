@@ -7,29 +7,41 @@
                 <div id="input-title" >Korean sentence parser</div>
                 <div id="attribution">v0.0.1 - JBW - based on the <a href="http://konlpy.org/en/latest/">KoNLPy</a> parsing framework</div>
             </div>
-            <div class="input-row k-flexrow k-table">
+            <div class="k-flexrow k-table">
                 <div class="k-row">
                     <textarea id="input-sentence" class="k-cell" placeholder="enter Korean sentence to parse" v-model="sentence"></textarea>
                     <button class="k-cell" id="parse-button" v-on:click="requestParse" :disabled="sentence == ''">{{ parseButtonText }}</button>
                 </div>
             </div>
-            <div class="output-row k-flexrow k-table">
+            <div id="output-row" class="k-flexrow k-table">
                 <div v-if="error" class="error-msg">
                     {{ error }}
                 </div>
-                <svg v-else id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
-                    <g v-for="node in nodes">
-                        <line v-if="node.parent" :x1="node.xOffset + node.width / 2" :y1="node.yOffset - 15" class="link-line"
-                              :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
-                        <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
-                            <template v-if="node.word">
-                                <tspan class="leaf-word" v-on:click="lookupWord(node)">{{ node.word }}</tspan>
-                                <tspan class="leaf-tag"> ({{ node.tag }})</tspan>
-                            </template>
-                            <tspan v-else class="node-tag">{{ node.tag }}</tspan>
-                        </text>
-                    </g>
-                </svg>
+                <template v-else>
+                    <div id="pos-list">
+                        <div v-for="parse in parseList">
+                            <span v-for="word in parse[0]" class="leaf-word" v-on:click="lookupWord(word)">{{ word }} </span>:
+                            <span class="leaf-tag">{{ parse[1] }}</span>
+                        </div>
+                        <br><br>
+                        <div v-for="pos in posList">
+                            <span class="leaf-word">{{pos[0]}}:</span> <span class="leaf-tag">{{pos[1]}}</span>
+                        </div>
+                    </div>
+                    <svg id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
+                        <g v-for="node in nodes">
+                            <line v-if="node.parent" :x1="node.xOffset + node.width / 2" :y1="node.yOffset - 15" class="link-line"
+                                  :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
+                            <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
+                                <template v-if="node.word">
+                                    <tspan class="leaf-word" v-on:click="lookupWord(node)">{{ node.word }}</tspan>
+                                    <tspan class="leaf-tag"> ({{ node.tag }})</tspan>
+                                </template>
+                                <tspan v-else class="node-tag">{{ node.tag }}</tspan>
+                            </text>
+                        </g>
+                    </svg>
+                </template>
             </div>
             <div v-if="wiktionaryUrl" class="k-row">
                 <iframe :src="wiktionaryUrl"  class="wiktionary-iframe"></iframe>
@@ -46,6 +58,8 @@ export default {
 	data: function() {
 		return {
 		    parseTree: null,
+		    posList: null,
+		    parseList: null,
 		    sentence: "",
 		    error: "",
 		    nodes: [],
@@ -75,7 +89,7 @@ export default {
 	        self.error = "";
             $.ajax({
                 method: "POST",
-                url: '/parse/', // 'http://localhost:9000/parse/',
+                url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
                 data: { sentence: this.sentence },
@@ -83,6 +97,8 @@ export default {
 	                self.parseButtonText = "Parse";
 	                if (response.result == 'OK') {
                         self.parseTree = response.parseTree;
+                        self.posList = response.posList;
+                        self.parseList = response.parseList;
                         // console.log(JSON.stringify(self.parseTree));
                         self.buildDisplay();
                     }
@@ -127,6 +143,7 @@ export default {
 	        //
 	        subtree(self.parseTree, 0);
 	        // compute layout coords
+	        var maxX = 0;
 	        for (var i = 0; i < layers.length; i++) {
 	            var entries = layers[i].entries;
 	            //console.log('layer ' + i);
@@ -136,12 +153,14 @@ export default {
                      nodeOffset = Math.max(nodeOffset, node.parent && node.parent.xOffset || 0);
                      node.xOffset = nodeOffset;
                      nodeOffset += node.width;
+                     maxX = Math.max(maxX, nodeOffset);
                      //console.log('  tag = ' + node.tag + ' width = ' + node.width + ', xy = ' + [node.xOffset, node.yOffset].toString());
 	            }
 	        }
 	        //console.log(layers);
 	        // trigger graph draw
 	        self.parseTreeHeight = maxY + 20;
+	        self.parseTreeWidth = maxX + 20;
 	        self.nodes = nodes;
 	    },
 
@@ -190,6 +209,15 @@ export default {
         width: 75px;
     }
 
+    #output-row {
+        width: 1200px;
+        overflow: scroll;
+    }
+
+    #pos-list {
+        padding-left: 50px;
+    }
+
     .link-line {
         stroke: rgb(114, 194, 119);
         stroke-width: 0.8;
@@ -197,10 +225,12 @@ export default {
 
     .leaf-word {
         fill: #00a6de;
+        color: #00a6de;
     }
 
     .leaf-tag {
         fill: #8d8c86;
+        color: #8d8c86;
         font-size: 12px;
     }
 
@@ -211,6 +241,7 @@ export default {
 
     .node-tag {
         fill: #ad47de;
+        font-size: 12px;
     }
 
     .wiktionary-iframe {
