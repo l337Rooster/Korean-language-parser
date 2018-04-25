@@ -13,7 +13,7 @@
                     <button class="k-cell" id="parse-button" v-on:click="requestParse" :disabled="sentence == ''">{{ parseButtonText }}</button>
                 </div>
             </div>
-            <div id="output-row" class="k-flexrow k-table">
+            <div v-if="!parsing" id="output-row" class="k-flexrow k-table">
                 <div v-if="error" class="error-msg">
                     {{ error }}
                 </div>
@@ -35,7 +35,7 @@
                             <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
                                     <tspan class="leaf-word" v-on:click="lookupWord(node)">{{ node.word }}</tspan>
-                                    <tspan class="leaf-tag"> ({{ node.tag }})</tspan>
+                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag">{{ node.tag }}</tspan>
                             </text>
@@ -57,6 +57,7 @@ export default {
 
 	data: function() {
 		return {
+		    parsing: false,
 		    parseTree: null,
 		    posList: null,
 		    parseList: null,
@@ -67,7 +68,7 @@ export default {
 		    wiktionaryUrl: null,
 		    parseButtonText: "Parse",
 		    levelHeight: 50,
-		    nodeWidth: 85,
+		    nodeWidth: 60,
 		    nodePadding: 10,
 		    parseTreeWidth: 1200,
 		    parseTreeHeight: 600
@@ -87,6 +88,7 @@ export default {
 	        self = this;
 	        self.parseButtonText = "Parsing...";
 	        self.error = "";
+	        self.parsing = true;
             $.ajax({
                 method: "POST",
                 url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
@@ -94,6 +96,7 @@ export default {
                 cache: false,
                 data: { sentence: this.sentence },
                 success: function(response) {
+                    self.parsing = false;
 	                self.parseButtonText = "Parse";
 	                if (response.result == 'OK') {
                         self.parseTree = response.parseTree;
@@ -106,6 +109,7 @@ export default {
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                    self.parsing = false;
 	                self.parseButtonText = "Parse";
                     self.error = "Parsing failed - " + textStatus + ", " + errorThrown;
                 }
@@ -231,7 +235,7 @@ export default {
     .leaf-tag {
         fill: #8d8c86;
         color: #8d8c86;
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .leaf-word {

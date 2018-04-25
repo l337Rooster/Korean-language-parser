@@ -73,11 +73,17 @@ def parse():
     """
     # special-case tag mappings
     tagMapping = {
-        r'들:XSN':            r'들:PLU',  # pluralizer
-        r'기:ETN':            r'기:GNOM',  # nominalizer
-        r'때문:NNB;에:JKB':    r'때문에:BEC',  # because
-        r'(은|는|이|가):JX':    r'\1:JKS',    # subject marker
-        r'(았|었):EP':         r'\1:TM',     # tense marker
+        r'들:(TM|XSN)':              r'들:PLU',       # pluralizer
+        r'기:ETN':                   r'기:GNOM',      # nominalizer
+        r'는:ETM;것:NNB':             r'는 것:GNOM',    # nominalizer
+        r'때문:NNB;에:JK(M|B)':        r'때문에:BEC',     # because
+        r'에:JKM;따르:VV;아서:ECD':     r'에 따라서:BYF',   # depending on, by following  KKama
+        r'에:JKM;따르:VV;아:ECS':      r'에 따라:BYF',   #   "  " (alt)
+        r'에:JKB;따라서:MAJ':          r'에 따라서:BYF',  # "  " (alt)  Kormoran
+        r'에:JKB;따르:VV;아:EC':       r'에 따라:BYF',  # "  " (alt)  Kormoran
+        r'(은|는|이|가):JX':           r'\1:JKS',       # subject marker
+        r'(았|었):EPT?':              r'\1:TM',       # tense marker
+        r'ㅁ:ETN;으로써:JKB':          r'ㅁ 으로써:BYI'  # by V-ing
     }
 
     tagString = ';' + posString + ';'
@@ -87,15 +93,18 @@ def parse():
     print(mappedWords)
 
     grammar = r"""
-        Noun: {<N.*>}
-        Verb: {<V.*>}
-        TenseMarker: {<TM>}
+        Noun:           {<N.*>}
+        Verb:           {<V.*>}
+                        {<N.*><XSV>}  # ㅎ다 verb
+        TenseMarker:    {<TM>}
         NominalizedVerb: {<Verb><TenseMarker>?<GNOM>}
-        PluralNoun: {<Noun|NominalizedVerb><PLU>}
-        ObjectNoun: {<Noun|PluralNoun|NominalizedVerb><JKO>}
-        SubjectNoun: {<Noun|PluralNoun|NominalizedVerb><JKS>}
-        NounPhrase: {<Noun|NominalizedVerb|PluralNoun|ObjectNoun|SubjectNoun>}
-        Because: {<NounPhrase><BEC>}
+        PluralNoun:     {<Noun|NominalizedVerb><PLU>}
+        ObjectNoun:     {<Noun|PluralNoun|NominalizedVerb><JKO>}
+        SubjectNoun:    {<Noun|PluralNoun|NominalizedVerb><JKS>}
+        NounPhrase:     {<Noun|NominalizedVerb|PluralNoun|ObjectNoun|SubjectNoun>}
+        Because:        {<NounPhrase><BEC>}
+        ByFollowing:    {<NounPhrase><BYF>}
+        ByDoing:        {<Verb><BYI>}
     """
 
     # [('그', 'NP'), ('가', 'JKS'), ('규칙', 'NNG'), ('을', 'JKO'), ('어기', 'VV'), ('었', 'TM'), ('기', 'NOM'), ('때문에', 'BEC'), ('규칙', 'NNG'), ('에', 'JKB'), ('따라서', 'MAJ'), ('그', 'NP'), ('를', 'JKO'), ('처벌', 'NNG'), ('하', 'XSV'), ('ㅁ', 'ETN'), ('으로써', 'JKB'), ('본보기', 'NNG'), ('를', 'JKO'), ('보이', 'VV'), ('는', 'ETM'), ('것', 'NNB'), ('이', 'VCP'), ('다', 'EF'), ('.', 'SF')]
@@ -103,10 +112,13 @@ def parse():
     # gen chunk tree from the word-POS list under the above chunking grammar
     parser = nltk.RegexpParser(grammar)
     chunkTree = parser.parse(mappedWords)
-    # print(chunks.pprint())
+    print(chunkTree.pprint())
 
     # recursively turn the chunk tree into a Python nested dict for the JSON response
     def asDict(chunk):
+        while isinstance(chunk, nltk.Tree) and len(chunk) == 1:
+            # flatten degenerate tree nodes
+            chunk = chunk[0]
         if isinstance(chunk, nltk.Tree):
             return dict(type='tree', tag=chunk.label(), children=[asDict(t) for t in chunk])
         else:
@@ -173,7 +185,6 @@ def parse():
     # 다: EF
     # .: SF
 
-    #
     #  KKama:
     # 그: NP
     # 가: JKS
@@ -193,6 +204,8 @@ def parse():
     # 처벌: NNG
     # 하: XSV
     # ㅁ: ETN
+
+    #
 
     def noun(w=r'[^:]+'):
         return r'(?P<noun>{0}):(?P<nounTag>N[^;]*);*'.format(w)
