@@ -19,6 +19,9 @@
                 </div>
                 <template v-else>
                     <div id="pos-list">
+                        <div v-for="phrase in phrases">
+                            {{ phrase }}
+                        </div>
                         <div v-for="parse in parseList">
                             <span v-for="word in parse[0]" class="leaf-word" v-on:click="lookupWord(word)">{{ word }} </span>:
                             <span class="leaf-tag">{{ parse[1] }}</span>
@@ -61,6 +64,7 @@ export default {
 		    parseTree: null,
 		    posList: null,
 		    parseList: null,
+		    phrases: null,
 		    sentence: "",
 		    error: "",
 		    nodes: [],
@@ -102,6 +106,7 @@ export default {
                         self.parseTree = response.parseTree;
                         self.posList = response.posList;
                         self.parseList = response.parseList;
+                        self.phrases = response.phrases;
                         // console.log(JSON.stringify(self.parseTree));
                         self.buildDisplay();
                     }

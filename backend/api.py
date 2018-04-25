@@ -124,6 +124,27 @@ def parse():
         else:
             return dict(type='pos', word=chunk[0].strip(), tag=chunk[1])
     #
+    # flatten top-level subtrees
+    def flatten(t, result=''):
+        for i, st in enumerate(t):
+            if i > 0:
+                result += ' + '
+            if isinstance(st, nltk.Tree):
+                result = flatten(st, result)
+                result += ' (' + st.label() + ')'
+            else:
+                result += st[0].strip() # st[1][0] if st[1][0] in ('N', 'V') else st[0].strip()
+        return result
+    #
+    phrases = []
+    for t in chunkTree:
+        if isinstance(t, nltk.Tree):
+            phrases.append(flatten(t) + ' (' + t.label() + ')')
+        else:
+            phrases.append(t[0].strip())
+    print(phrases)
+
+
     #import pprint
     #pprint.pprint(asDict(chunkTree))
 
@@ -345,7 +366,7 @@ def parse():
     # 다: EFN
     # .: SF
 
-    return jsonify(result="OK", posList=words, parseList=parseList, parseTree=asDict(chunkTree))
+    return jsonify(result="OK", posList=words, parseList=parseList, phrases=phrases, parseTree=asDict(chunkTree))
 
 #
 if __name__ == "__main__":
