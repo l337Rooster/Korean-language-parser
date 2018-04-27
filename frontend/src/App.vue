@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.0.1 - JBW - based on the <a href="http://konlpy.org/en/latest/">KoNLPy</a> parsing framework</div>
+                <div id="attribution">v0.0.2 - JBW - based on the <a href="http://konlpy.org/en/latest/">KoNLPy</a> parsing framework</div>
             </div>
             <div class="k-flexrow k-table">
                 <div class="k-row">
@@ -20,16 +20,20 @@
                 <template v-else>
                     <div id="pos-list">
                         <div v-for="phrase in phrases">
-                            {{ phrase }}
+                            <template v-for="element, i in phrase">
+                                <span v-if="element[0] == 'word' && i > 0" class="phrase-plus"> + </span>
+                                <span v-if="element[0] == 'word'" class="leaf-word" v-on:click="lookupWord(element[1])">{{ element[1] }}</span>
+                                <span v-if="element[0] == 'label'" class="leaf-tag">({{ element[1] }})</span>
+                            </template>
                         </div>
-                        <div v-for="parse in parseList">
+                        <!--div v-for="parse in parseList">
                             <span v-for="word in parse[0]" class="leaf-word" v-on:click="lookupWord(word)">{{ word }} </span>:
                             <span class="leaf-tag">{{ parse[1] }}</span>
                         </div>
                         <br><br>
                         <div v-for="pos in posList">
                             <span class="leaf-word">{{pos[0]}}:</span> <span class="leaf-tag">{{pos[1]}}</span>
-                        </div>
+                        </div-->
                     </div>
                     <svg id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
                         <g v-for="node in nodes">
@@ -91,7 +95,7 @@ export default {
 	        // send sentence to parser API
 	        self = this;
 	        self.parseButtonText = "Parsing...";
-	        self.error = "";
+	        self.error = self.wiktionaryUrl = "";
 	        self.parsing = true;
             $.ajax({
                 method: "POST",
@@ -246,6 +250,10 @@ export default {
     .leaf-word {
         fill: #00a6de;
         cursor: pointer;
+    }
+
+    .phrase-plus {
+        color: #8d8c86;
     }
 
     .node-tag {
