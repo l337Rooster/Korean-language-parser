@@ -25,7 +25,7 @@ konlpyApp.config.update(
 def run_dev_server():
     "launch Flask dev server"
     konlpyApp.run(host = '0.0.0.0',
-               port = 9000,
+               port = 9000, #80, # 9000,
                debug = True)
 
 # -------- page request handlers --------
@@ -76,6 +76,7 @@ def parse():
         r'들:(TM|XSN)':              r'들:PLU',       # pluralizer
         r'기:(ETN|NNG)':             r'기:GNOM',      # nominalizer
         # r'(는|ㄹ):ETM;것:NNB;이:VCP;기:ETN': r'\1 것이기:GNOM',    # 갔이다 nominalizer
+        r'로:JKB':                   r'로:WIT',       # with/in/by particle
         r'(는|ㄹ):ETM;것:NNB':         r'\1 것:GNOM',    # nominalizer
         r'때문:NNB;에:JK(M|B)':        r'때문에:BEC',     # because
         r'에:JKM;따르:VV;아서:ECD':     r'에 따라서:BYF',   # depending on, by following  KKama
@@ -88,6 +89,10 @@ def parse():
         r'면:EC':                    r'면:CON',       # conditional
         r'거나:EC':                   r'거나:OR',       # disjunction (either/or)
         r'는:ETM;것:NNB;이:VCP;다:EF': r'는 것이다:THI',   # not sure!!! todo: ask Philjae
+        r'(아|어|고):EC;있:V(V|X);([^:]+):EF': r'\1 있\3:PRO', # progressive
+        r'을:ETM;때:NNG':             r'을 때:WHI',     # while/when/at the time of
+        r'(아|어):EC;보:VV;시:EP;어요:EF': r'\1 보세요:PLT',  # please try to    아:EC;보:VV;시:EP;어요:EF
+        r'(아|어):EC;보:VV;았:EP;어요:EF':   r'\1 보다:TRY',    # try
     }
 
     tagString = ';' + posString + ';'
@@ -98,35 +103,47 @@ def parse():
 
     grammar = r"""
         TenseMarker:    {<TM>}
+        Adjective:      {<VA><ETM>}
         PlainNoun:      {<N.*><XSN>?}
-        Verb:           {<V.*><TenseMarker>?<EF|EC>?}
-                        {<N.*><XSV><EF|EC>?}  # 하다 verb
+        SimpleVerb:     {<V.*><TenseMarker>?<EF|EC>?}
+        HadaVerb:       {<PlainNoun><XSV><EF|EC>?}
+        PlainVerb:      {<SimpleVerb|HadaVerb>}
+        Progressive:    {<PlainVerb><PRO>}
+        Verb:           {<PlainVerb|Progressive>}
         NominalizedVerb: {<Verb><GNOM><EF>?}
         PluralNoun:     {<PlainNoun|NominalizedVerb><PLU>}
         Noun:           {<PlainNoun|PluralNoun|NominalizedVerb>}
         Object:         {<Noun><JKO>}
         Subject:        {<Noun><JKS>}
         Location:       {<Noun><JKB>}
-        NounPhrase:     {<Noun|Object|Subject><Location>}
+        With:           {<Noun><WIT>}
+        Possessive:     {<Noun><JKG>}
+        NounPhrase:     {<Noun|Object|Subject|Location>}
+        AdjectivalPhrase: {<MM><NounPhrase>}
         Conditional:    {<Verb><CON>}
         Or:             {<Verb><OR>}
         Because:        {<NounPhrase><BEC>}
         ByFollowing:    {<NounPhrase><BYF>}
         ByDoing:        {<Verb><BYI>}
         Thinging:       {<Verb><THI>}
+        While:          {<Verb><WHI>}
+        Try:            {<Verb><TRY>}
+        PleaseTry:      {<Verb><PLT>}
         VerbPhrase:     {<MAG>?<Verb>}
     """
     # 그:NP;가:JKS;규칙:NNG;을:JKO;어기:VV;었:EP;기:ETN;때문:NNB;에:JKB;규칙:NNG;에:JKB;따라서:MAJ;그:NP;를:JKO;
     # 처벌:NNG;하:XSV;ㅁ:ETN;으로써:JKB;
     # 본보기:NNG;를:JKO;보이:VV;는:ETM;것:NNB;이:VCP;다:EF;.:SF
+    #   서:VV;어:EC;있:VV;을:ETM;때:NNG
 
     # gen chunk tree from the word-POS list under the above chunking grammar
-    parser = nltk.RegexpParser(grammar)
+    parser = nltk.RegexpParser(grammar, trace=1)
+    print(parser._stages)
     chunkTree = parser.parse(mappedWords)
     print(chunkTree.pprint())
 
     # flatten top-level subtrees into phrase structure descriptions
-    hiddenTags = { 'NounPhrase', 'VerbPhrase', 'PlainNoun', }
+    hiddenTags = { 'NounPhrase', 'VerbPhrase', 'PlainNoun', 'PlainVerb', }
     def flatten(t, phrase):
         for st in t:
             if isinstance(st, nltk.Tree):
