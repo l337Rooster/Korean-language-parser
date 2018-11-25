@@ -3,7 +3,6 @@
 node_modules
 dist/build.js
 static/build.js
-build
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -17,7 +16,7 @@ __pycache__/
 env/
 env3/
 bin/
-build/
+!build/
 develop-eggs/
 dist/
 eggs/
