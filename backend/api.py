@@ -109,6 +109,7 @@ def parse():
     grammar = r"""
         TenseMarker:    {<TM>}
         Adjective:      {<VA><ETM>}
+        Adverb:         {<MAG>}
         PlainNoun:      {<N.*><XSN>?}
         SimpleVerb:     {<V.*><TenseMarker>?<EF|EC>?}
         HadaVerb:       {<PlainNoun><XSV><EF|EC>?}
@@ -117,14 +118,14 @@ def parse():
         Verb:           {<PlainVerb|Progressive>}
         NominalizedVerb: {<Verb><GNOM><EF>?}
         PluralNoun:     {<PlainNoun|NominalizedVerb><PLU>}
-        Noun:           {<PlainNoun|PluralNoun|NominalizedVerb>}
-        Object:         {<Noun><JKO>}
-        Subject:        {<Noun><JKS>}
-        Location:       {<Noun><JKB>}
-        With:           {<Noun><WIT>}
-        Possessive:     {<Noun><JKG>}
-        NounPhrase:     {<Noun|Object|Subject|Location>}
-        AdjectivalPhrase: {<MM><NounPhrase>}
+        SimpleNoun:     {<PlainNoun|PluralNoun|NominalizedVerb>}
+        Object:         {<SimpleNoun><JKO>}
+        Subject:        {<SimpleNoun><JKS>}
+        Location:       {<SimpleNoun><JKB>}
+        With:           {<SimpleNoun><WIT>}
+        Possessive:     {<SimpleNoun><JKG>}
+        Noun:           {<SimpleNoun|Object|Subject|Location>}
+        NounPhrase:     {<MM|Adjective>?<Noun>}
         Conditional:    {<Verb><CON>}
         Or:             {<Verb><OR>}
         Because:        {<NounPhrase><BEC>}
@@ -134,7 +135,7 @@ def parse():
         While:          {<Verb><WHI>}
         Try:            {<Verb><TRY>}
         PleaseTry:      {<Verb><PLT>}
-        VerbPhrase:     {<MAG>?<Verb>}
+        VerbPhrase:     {<Adverb>?<Verb>}
     """
     # 그:NP;가:JKS;규칙:NNG;을:JKO;어기:VV;었:EP;기:ETN;때문:NNB;에:JKB;규칙:NNG;에:JKB;따라서:MAJ;그:NP;를:JKO;
     # 처벌:NNG;하:XSV;ㅁ:ETN;으로써:JKB;
@@ -177,7 +178,7 @@ def parse():
             # flatten degenerate tree nodes
             chunk = chunk[0]
         if isinstance(chunk, nltk.Tree):
-            return dict(type='tree', tag=chunk.label(), children=[asDict(t) for t in chunk])
+            return dict(type='tree', tag='Sentence' if chunk.label() == 'S' else chunk.label(), children=[asDict(t) for t in chunk])
         else:
             return dict(type='pos', word=chunk[0].strip(), tag=chunk[1])
     #
@@ -280,4 +281,4 @@ if __name__ == "__main__":
     run_dev_server()
 
 #  test phrase
-#  제 집에 저랑 같이 친구들 갈 거예요
+#  저는 친구들과 함께 집에 갔어요  via Kormoran yields:

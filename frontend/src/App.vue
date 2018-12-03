@@ -58,7 +58,7 @@
                     </svg>
                 </template>
             </div>
-            <div v-if="debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
+            <div v-if="!parsing && debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
                 <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{debugging.posList}}</pre></div>
                 <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
                 <div class="k-row"><div class="k-cell">Parse list</div><pre class="k-cell">{{debugging.parseList}}</pre></div>
@@ -305,7 +305,7 @@ export default {
     .wiktionary-iframe {
         margin-top: 20px;
         width: 100%;
-        height: 600px;
+        height: 900px;
         border-width: thin;
     }
 
