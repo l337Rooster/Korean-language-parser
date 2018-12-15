@@ -5,12 +5,20 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.0.2 - JBW - based on the <a href="http://konlpy.org/en/latest/">KoNLPy</a> parsing framework</div>
+                <div id="attribution">v0.2.0 - JBW - based on the <a href="http://konlpy.org/en/latest/">KoNLPy</a> parsing framework</div>
             </div>
             <div class="k-flexrow k-table">
                 <div class="k-row">
                     <textarea id="input-sentence" class="k-cell" placeholder="enter Korean sentence to parse" v-model="sentence"></textarea>
                     <button class="k-cell" id="parse-button" v-on:click="requestParse" :disabled="sentence == ''">{{ parseButtonText }}</button>
+                </div>
+                <div class="k-row controls-row">
+                    <label for="debug">Debug output: </label>
+                    <input type="checkbox" id="debug" v-model="debugOutput">
+                    <label id="parser-select-label" for="parser-select">Select parser: </label>
+                    <select id="parser-select" v-model="parserSelect" class="k-cell">
+                        <option v-for="p in parsers" >{{p}}</option>
+                    </select>
                 </div>
             </div>
             <div v-if="!parsing" id="output-row" class="k-flexrow k-table">
@@ -50,6 +58,13 @@
                     </svg>
                 </template>
             </div>
+            <div v-if="!parsing && debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
+                <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{debugging.posList}}</pre></div>
+                <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
+                <div class="k-row"><div class="k-cell">Parse list</div><pre class="k-cell">{{debugging.parseList}}</pre></div>
+                <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>
+                <div class="k-row"><div class="k-cell">Parse tree</div><pre class="k-cell">{{debugging.parseTree}}</pre></div>
+            </div>
             <div v-if="wiktionaryUrl" class="k-row">
                 <iframe :src="wiktionaryUrl"  class="wiktionary-iframe"></iframe>
             </div>
@@ -65,10 +80,12 @@ export default {
 	data: function() {
 		return {
 		    parsing: false,
+            mappedPosList: null,
 		    parseTree: null,
 		    posList: null,
 		    parseList: null,
 		    phrases: null,
+            debugging: null,
 		    sentence: "",
 		    error: "",
 		    nodes: [],
@@ -79,7 +96,11 @@ export default {
 		    nodeWidth: 60,
 		    nodePadding: 10,
 		    parseTreeWidth: 1200,
-		    parseTreeHeight: 600
+		    parseTreeHeight: 600,
+            parsers: ["JHannanum", "Kkma", "KOMORAN", "MeCab-ko", "Open Korean Text"], // supported parsers
+            defaultParser: "KOMORAN",
+            debugOutput: false,
+            parserSelect: "KOMORAN"
 		};
 	},
 
@@ -107,11 +128,13 @@ export default {
                     self.parsing = false;
 	                self.parseButtonText = "Parse";
 	                if (response.result == 'OK') {
+	                    self.mappedPosList = response.mappedPosList;
                         self.parseTree = response.parseTree;
                         self.posList = response.posList;
                         self.parseList = response.parseList;
                         self.phrases = response.phrases;
-                        // console.log(JSON.stringify(self.parseTree));
+                        self.debugging = response.debugging;
+                        //  console.log(JSON.stringify(self.debugging));
                         self.buildDisplay();
                     }
                     else {
@@ -222,6 +245,24 @@ export default {
         width: 75px;
     }
 
+    .controls-row {
+        text-align: right;
+        font-size: 12px;
+    }
+    .controls-row label {
+        padding-left: 10px;
+    }
+
+    #debug-row {
+        padding-top: 10px;
+        font-size: 12px;
+    }
+
+    #debug-row .k-row > .k-cell {
+        font-weight: bold;
+        padding: 4px;
+    }
+
     #output-row {
         width: 1200px;
         overflow: scroll;
@@ -264,7 +305,7 @@ export default {
     .wiktionary-iframe {
         margin-top: 20px;
         width: 100%;
-        height: 600px;
+        height: 900px;
         border-width: thin;
     }
 

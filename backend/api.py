@@ -4,6 +4,8 @@
 __author__ = 'jwainwright'
 
 import re
+from pprint import pprint, pformat
+
 from flask import (Flask, request, abort, render_template, Response, jsonify)
 from flask_cors import CORS
 
@@ -48,7 +50,7 @@ def parse():
     if not sentence:
         return jsonify(result="FAIL", msg="Missing sentence")
 
-    # for now, just use the Kkma parser, todo: make this a parameter
+    # for now, just use the Komoran parser, todo: make this a parameter
     # extract tagged parts of speech
     #words = konlpy.tag.Kkma().pos(sentence)
     #words = konlpy.tag.Kkma().pos(sentence, flatten=False)
@@ -62,16 +64,18 @@ def parse():
 
     konlpy.utils.pprint(words)
     posString = ';'.join((w[0] + ':' + w[1]) for w in words)
-    print(posString)
+    # print(posString)
 
-    # define an nltk chunking grammar (again just for Kkma for now)
+    # define an nltk chunking grammar (again just for Komoran for now)
     # todo: needs building out, is parser-specific
     grammar = """
     np: {<N.*><J.*>?}   	# Noun phrase
     vp: {<V.*><E.*>?}       # Verb phrase
     ap: {<A.*>*}            # Adjectival phrase
     """
-    # special-case tag mappings
+    # synthetic tag patterns -
+    #    patterns of these word:POC strings are preprocessed to define new
+    #    synthetic word:POC tags used in the chunking grammar below
     tagMappings = {
         r'들:(TM|XSN)':              r'들:PLU',       # pluralizer
         r'기:(ETN|NNG)':             r'기:GNOM',      # nominalizer
@@ -95,15 +99,17 @@ def parse():
         r'(아|어):EC;보:VV;았:EP;어요:EF':   r'\1 보다:TRY',    # try
     }
 
+    # generate a version of the parser's original word:POC string including synthetic tag mappings above
     tagString = ';' + posString + ';'
     for old, new in sorted(tagMappings.items(), key=lambda x:len(x[0]), reverse=True):
         tagString = re.sub(';' + old + ';', ';' + new + ';', tagString)
     mappedWords = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
-    print(mappedWords)
+    # print(mappedWords)
 
     grammar = r"""
         TenseMarker:    {<TM>}
         Adjective:      {<VA><ETM>}
+        Adverb:         {<MAG>}
         PlainNoun:      {<N.*><XSN>?}
         SimpleVerb:     {<V.*><TenseMarker>?<EF|EC>?}
         HadaVerb:       {<PlainNoun><XSV><EF|EC>?}
@@ -112,14 +118,14 @@ def parse():
         Verb:           {<PlainVerb|Progressive>}
         NominalizedVerb: {<Verb><GNOM><EF>?}
         PluralNoun:     {<PlainNoun|NominalizedVerb><PLU>}
-        Noun:           {<PlainNoun|PluralNoun|NominalizedVerb>}
-        Object:         {<Noun><JKO>}
-        Subject:        {<Noun><JKS>}
-        Location:       {<Noun><JKB>}
-        With:           {<Noun><WIT>}
-        Possessive:     {<Noun><JKG>}
-        NounPhrase:     {<Noun|Object|Subject|Location>}
-        AdjectivalPhrase: {<MM><NounPhrase>}
+        SimpleNoun:     {<PlainNoun|PluralNoun|NominalizedVerb>}
+        Object:         {<SimpleNoun><JKO>}
+        Subject:        {<SimpleNoun><JKS>}
+        Location:       {<SimpleNoun><JKB>}
+        With:           {<SimpleNoun><WIT>}
+        Possessive:     {<SimpleNoun><JKG>}
+        Noun:           {<SimpleNoun|Object|Subject|Location>}
+        NounPhrase:     {<MM|Adjective>?<Noun>}
         Conditional:    {<Verb><CON>}
         Or:             {<Verb><OR>}
         Because:        {<NounPhrase><BEC>}
@@ -129,7 +135,7 @@ def parse():
         While:          {<Verb><WHI>}
         Try:            {<Verb><TRY>}
         PleaseTry:      {<Verb><PLT>}
-        VerbPhrase:     {<MAG>?<Verb>}
+        VerbPhrase:     {<Adverb>?<Verb>}
     """
     # 그:NP;가:JKS;규칙:NNG;을:JKO;어기:VV;었:EP;기:ETN;때문:NNB;에:JKB;규칙:NNG;에:JKB;따라서:MAJ;그:NP;를:JKO;
     # 처벌:NNG;하:XSV;ㅁ:ETN;으로써:JKB;
@@ -172,93 +178,9 @@ def parse():
             # flatten degenerate tree nodes
             chunk = chunk[0]
         if isinstance(chunk, nltk.Tree):
-            return dict(type='tree', tag=chunk.label(), children=[asDict(t) for t in chunk])
+            return dict(type='tree', tag='Sentence' if chunk.label() == 'S' else chunk.label(), children=[asDict(t) for t in chunk])
         else:
             return dict(type='pos', word=chunk[0].strip(), tag=chunk[1])
-    #
-
-    #import pprint
-    #pprint.pprint(asDict(chunkTree))
-
-    # tree = chunkParser.parse(tagged)
-    #
-    # for subtree in tree.subtrees():
-    #     if subtree.label() == "RELATION":
-    #         print("RELATION: "+str(subtree.leaves()))
-
-    # build phrase patterns
-    # 그거 아직 안 버렸어요
-    # 그거: NP
-    # 아직: MAG
-    # 안: MAG
-    # 버리: VXV
-    # 었: EPT
-    # 어요: EFN
-    #
-    #  그거:  Noun
-    #  아직 안: Adverbs
-    #  버리 었 어요: Verb, past tense, polite
-    #
-    #"그가 규칙을 어겼기 때문에 규칙에 따라서 그를 처벌함으로써 본보기를 보이는 것이다."
-    # "You set an example by punishing him according to the rules because he broke the rules."
-    #
-    # 그가 : N+가
-    # 규칙을 : N+을
-    # "어겼기 때문에" : V+기 때문에
-    # "규칙에 따라서" : N+에 따라(서)
-    # 그를 : N+를
-    # "처벌함으로써 : V+ ㅁ으로써"
-    # 본보기를 : N+를
-    # "보이는 것이다" : V+는 것이다.
-    #
-    #  Kormoran:
-    # 그: NP
-    # 가: JKS
-    # 규칙: NNG
-    # 을: JKO
-    # 어기: VV
-    # 었: EP
-    # 기: ETN
-    # 때문: NNB
-    # 에: JKB
-    # 규칙: NNG
-    # 에: JKB
-    # 따라서: MAJ
-    # 그: NP
-    # 를: JKO
-    # 처벌: NNG
-    # 하: XSV
-    # ㅁ: ETN
-    # 으로써: JKB
-    # 본보기: NNG
-    # 를: JKO
-    # 보이: VV
-    # 는: ETM
-    # 것: NNB
-    # 이: VCP
-    # 다: EF
-    # .: SF
-
-    #  KKama:
-    # 그: NP
-    # 가: JKS
-    # 규칙: NNG
-    # 을: JKO
-    # 어기: VV
-    # 었: EPT
-    # 기: ETN
-    # 때문: NNB
-    # 에: JKM
-    # 규칙: NNG
-    # 에: JKM
-    # 따르: VV
-    # 아서: ECD
-    # 그르: VV
-    # ㄹ: ETD
-    # 처벌: NNG
-    # 하: XSV
-    # ㅁ: ETN
-
     #
 
     def noun(w=r'[^:]+'):
@@ -291,6 +213,8 @@ def parse():
     #     ((noun() + optional(plural()) + optionalOr(subjMrkr(), objMrkr())),
     #         (verb(), optional(tenseMrkr('었|았'), optional(nominalizer()))
 
+#  'JKS' - subject marker
+#  'JKO' - object marker
 
 # noun = '*:N*;'
 # verb = '*:V*;'
@@ -298,40 +222,14 @@ def parse():
 # plural = '들:XSN;'
 #
 # nounPhrase = noun + optional(plural) + optionalOr(subjMrkr, objMrkr),
-#
+# example
 # grammar = r"""
 #   NP: {<DT|JJ|NN.*>+}          # Chunk sequences of DT, JJ, NN
 #   PP: {<IN><NP>}               # Chunk prepositions followed by NP
 #   VP: {<VB.*><NP|PP|CLAUSE>+$} # Chunk verbs and their arguments
 #   CLAUSE: {<NP><VP>}           # Chunk NP, VP
 #   """
-#
-# grammar = """MEDIA: {<DT>?<JJ>*<NN.*>+}
-#                RELATION: {<V.*>}
-#                          {<DT>?<JJ>*<NN.*>+}
-#                ENTITY: {<NN.*>}"""
-#
 
-    # 사람:NNG;들:XSN;은:JX;오:VX;았:EP;어요:EF;.:SF
-
-    # special-case tag mappings
-    tagMapping = {
-        '들:XSN':            '들:PLU',  # pluralizer
-        '기:ETN':            '기:NOM',  # nominalizer
-        '때문:NNB;에:JKM':    '때문에:BEC'  # because
-    }
-
-    grammar = r"""
-        Noun: {<N.*>}
-        Verb: {<V.*>}
-        TenseMarker: {<EPT>}
-        NominalizedVerb: {<Verb><TenseMarker>?<NOM>}
-        PluralNoun: {<Noun|NominalizedVerb><PLU>}
-        ObjectNoun: {<Noun|PluralNoun|NominalizedVerb><JKO>}
-        SubjectNoun: {<Noun|PluralNoun|NominalizedVerb><JKS>}
-        NounPhrase: {<Noun|NominalizedVerb|PluralNoun|ObjectNoun|SubjectNoun>}
-        Because: {<NounPhrase><BEC>}
-    """
 
     phrasePatterns = [
         (noun() + subjMrkr(), ('{noun}','{subjMrkr}'), ('N', '{subjMrkr} (subject)')),
@@ -361,47 +259,26 @@ def parse():
                 posString = posString[m.end():].strip(';')
                 break
     #
-    print(parseList)
 
-    # match.end([group])
+    parseTree = asDict(chunkTree)
+    debugging = dict(posList=pformat(words),
+                     mappedPosList=pformat(mappedWords),
+                     parseList=pformat(parseList),
+                     phrases=pformat(phrases),
+                     parseTree=pformat(parseTree))
 
-    #  'JKS' - subject marker
-    #  'JKO' - object marker
-
-    # 그:NP;가:JKS;규칙:NNG;을:JKO;어기:VV;었:EPT;기:ETN;때문:NNB;에:JKM;규칙:NNG;에:JKM;따르:VV;아서:ECD;그르:VV;ㄹ:ETD;처벌:NNG;하:XSV;ㅁ:ETN;으로써:JKM;본보기:NNG;를:JKO;보이:VV;는:ETD;것:NNB;이:VCP;다:EFN;.:SF
-
-    #
-    # 그: NP
-    # 가: JKS
-    # 규칙: NNG
-    # 을: JKO
-    # 어기: VV
-    # 었: EPT
-    # 기: ETN
-    # 때문: NNB
-    # 에: JKM
-    # 규칙: NNG
-    # 에: JKM
-    # 따르: VV
-    # 아서: ECD
-    # 그르: VV
-    # ㄹ: ETD
-    # 처벌: NNG
-    # 하: XSV
-    # ㅁ: ETN
-    # 으로써: JKM
-    # 본보기: NNG
-    # 를: JKO
-    # 보이: VV
-    # 는: ETD
-    # 것: NNB
-    # 이: VCP
-    # 다: EFN
-    # .: SF
-
-    return jsonify(result="OK", posList=words, parseList=parseList, phrases=phrases, parseTree=asDict(chunkTree))
+    return jsonify(result="OK",
+                   posList=words,
+                   mappedPosList=mappedWords,
+                   parseList=parseList,
+                   phrases=phrases,
+                   parseTree=parseTree,
+                   debugging=debugging)
 
 #
 if __name__ == "__main__":
     #
     run_dev_server()
+
+#  test phrase
+#  저는 친구들과 함께 집에 갔어요  via Kormoran yields:
