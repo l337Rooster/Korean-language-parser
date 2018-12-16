@@ -1,0 +1,746 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fswiss\fcharset0 Helvetica;\f2\fswiss\fcharset0 Arial-BoldMT;
+\f3\fswiss\fcharset0 ArialMT;\f4\fnil\fcharset129 AppleGothic;\f5\fswiss\fcharset0 Helvetica-Bold;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue0;\red0\green0\blue255;
+\red69\green60\blue204;\red53\green134\blue255;\red20\green160\blue194;\red155\green44\blue3;\red29\green184\blue14;
+\red26\green26\blue26;\red255\green255\blue255;\red117\green117\blue117;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0\cname textColor;\cssrgb\c0\c0\c0;\cssrgb\c0\c0\c100000;
+\cssrgb\c34510\c33725\c83922;\cssrgb\c25490\c61176\c100000;\cssrgb\c0\c68627\c80392;\cssrgb\c67843\c24314\c0;\cssrgb\c7059\c75294\c5490;
+\cssrgb\c13333\c13333\c13333;\cssrgb\c100000\c100000\c100000;\cssrgb\c53333\c53333\c53333;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf2 From: "John Wainwright (gmail)" <johnw3d@gmail.com>\
+Subject: Re: Korean language help\
+Date: April 26, 2018 at 9:36:47 AM PDT\
+To: Philjae Kim <philjae@gmail.com>\
+Cc: Song Zheng <song@zheng.club>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1 \cf2 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 Hi Philjae. \'a0 As I mentioned at the meetup, I have been trying to put in some higher-level parsing rules & code to generate the kind of parsing that you provide for that sample sentence, and have a reasonable start at it, I think. \'a0 \'a0 See the image attached, showing both the tree-graph representation at the bottom and the phrase-by-phrase breakdown above the graph, which is similar to the one you provided and is now generated automatically.\
+\
+I still have many phrase patterns to add, and will do that incrementally, but wanted to show you initial results ;=\}\}.\
+\
+One quick question - I could not find any references on the following pattern that occurs at the end of the example sentence in the parsing you provided:\
+\
+	
+\f2\b \cf4 \strokec4 "\uc0\u48372 \u51060 \u45716  \u44163 \u51060 \u45796 " : V+\u45716  \u44163 \u51060 \u45796 .\'a0
+\f1\b0 \cf3 \strokec3 \
+\
+Can you explain the meaning of that form? \'a0 Is it a kind of verb nominalization? \'a0 How does the "
+\f2\b \cf4 \strokec4 \uc0\u51060 \u45796 "\'a0
+\f1\b0 \cf3 \strokec3 contribute to the meaning of that form?\
+\
+Thanks again for all your help!\
+\
+John.\
+\
+{{\NeXTGraphic unknown.png \width23900 \height10720 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 On Apr 16, 2018, at 9:39 AM, John Wainwright (gmail) <{\field{\*\fldinst{HYPERLINK "mailto:johnw3d@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw3d@gmail.com}}> wrote:\
+Oops, it looks like Mail down-scaled that parse-tree screen-cap; attached again full size:\
+\
+<parse-tree.png>\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf7 \strokec7 On Apr 16, 2018, at 7:49 AM, John Wainwright (gmail) <{\field{\*\fldinst{HYPERLINK "mailto:johnw3d@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw3d@gmail.com}}> wrote:\
+Hi Philjae. \'a0 Yes, you are answering my questions, and I realize what you say is consistent with what I've found in Korean grammar references (example\'a0{\field{\*\fldinst{HYPERLINK "https://www.topikguide.com/most-important-basic-korean-language-grammar-patterns/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 here}})\'a0 - they always present Korean grammar as a set of patterns of the kind you listed out for me for that sentence, and not as a set of phrase structures (like noun phrases, or adjectival phrases, and so on.) \'a0\
+\
+It looks as though Korean doesn't really have well-defined phrase structures like that, relying on particles and common patterns to make the syntax and meaning clear. \'a0 It might be interesting to build something that takes the par-of-speech output from the KoNLPy parser and tries to list out the major patterns in the phrase, exactly as you did for that sentence. \'a0 I might try to work on that as I get time.\
+\
+Just as a comparison, I put that sentence in English into an English parser and it generated a deep parse tree. \'a0 The sentence is (I think):\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf8 \strokec8 \'a0 "You set an example by punishing him according to the rules because he broke the rules."\cf7 \strokec7 \
+\
+The\'a0{\field{\*\fldinst{HYPERLINK "http://www.nactem.ac.uk/enju/demo.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 Enju online parser}}\'a0generates the attached parse tree, with lots of nested noun phrases (NP), verb phrases (VP) and prepositional phrases (PP). \'a0Interesting!\
+\
+Thanks again for your help with this. \'a0\
+Regards,\
+John.\
+\
+<PastedGraphic-1.tiff>\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf9 \strokec9 On Apr 15, 2018, at 8:49 PM, Philjae Kim <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}> wrote:\
+PS. Pattern DB could be a rule DB. However there are too many cases.\'a0\
+\'a0 \'a0 \'a0 \'a0It should be a rule + pattern DB.\'a0\'a0\
+\
+\
+2018-04-15 20:45 GMT-07:00 Philjae Kim \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}>\uc0\u8236 :\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f3\fs26 \cf10 \cb11 \strokec10 Hi John.\'a0\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \cb1 I think you are search for\'a0"\uc0\u50577 \u49885 \u50640  \u46384 \u47480  \u50857 \u47168 
+\f1\fs28 \cb11 " in\'a0
+\f3\fs26 \cb1 Korean corpus.\'a0\
+(I don't know what is "\uc0\u50577 \u49885 \u50640  \u46384 \u47480  \u50857 \u47168 " in English)\
+\
+for example)\'a0\
+"\uc0\u44536 \u44032  \u44508 \u52825 \u51012  \u50612 \u44220 \u44592  \u46412 \u47928 \u50640  \u44508 \u52825 \u50640  \u46384 \u46972 \u49436  \u44536 \u47484  \u52376 \u48268 \u54632 \u51004 \u47196 \u50024  \u48376 \u48372 \u44592 \u47484  \u48372 \u51060 \u45716  \u44163 \u51060 \u45796 ."\
+\
+\uc0\u44536 \u44032  : N+\u44032 \'a0\
+\uc0\u44508 \u52825 \u51012  : N+\u51012 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u50612 \u44220 \u44592  \u46412 \u47928 \u50640 " : V+\u44592  \u46412 \u47928 \u50640 
+\f3\b0 \cf9 \strokec9 \
+
+\f2\b \cf4 \strokec4 "\uc0\u44508 \u52825 \u50640  \u46384 \u46972 \u49436 " : N+\u50640  \u46384 \u46972 (\u49436 )
+\f3\b0 \cf9 \strokec9 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \uc0\u44536 \u47484  : N+\u47484 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u52376 \u48268 \u54632 \u51004 \u47196 \u50024  : V+ \u12609 \u51004 \u47196 \u50024 "
+\f3\b0 \cf9 \strokec9 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \uc0\u48376 \u48372 \u44592 \u47484  : N+\u47484 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u48372 \u51060 \u45716  \u44163 \u51060 \u45796 " : V+\u45716  \u44163 \u51060 \u45796 .\'a0
+\f3\b0 \cf9 \strokec9 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \
+reference url : {\field{\*\fldinst{HYPERLINK "http://kkma.snu.ac.kr/concordancer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://kkma.snu.ac.kr/concordancer}}\
+As far as I know, there are not specific rules in this patterns.\'a0\
+Instead of rules this system use "Sejong Corpus" DB.\'a0\
+\
+This part is what I say we have to memory this patterns.\
+It is not a rule kind of pattern DB.\'a0\
+\
+Is my answer correct what you intended to ask?\'a0\
+\
+Thank you.\
+Philjae.\'a0\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\fs24 \cf12 \strokec12 \
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf9 \strokec9 \
+2018-04-15 10:23 GMT-07:00 John Wainwright \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:johnw3d@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw3d@gmail.com}}>\uc0\u8236 :\
+\
+Hi Philjae.\'a0 Yes, by 'parts of speech', I do mean things like noun (
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf9 \strokec9 ), verb (
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf9 \strokec9 ), and so on, as you say. \'a0 The parser does indeed assign the parts-of-speech labels, like NN for\'a0
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf9 \strokec9 , and VV for\'a0
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf9 \strokec9 , and so on.\'a0 All the parts that the Kkma parser can assign are listed in columns K, L and M in\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 that spreadsheet}}. \'a0 As you can see, it has a nested breakdown of those tags going from columns K to M.\
+\
+What I was particularly interested in was defining patterns of those individual parts of speech that correspond to common phrases in Korean, such as noun phrases, verb phrases, adjectival phrases, and so on, to the extent they are well-defined in Korean.\'a0 These patterns are not provided by the part-of-speech parsing engines, but are used in my app with NLTK to draw the parse tree of the phrases in a sentence.\'a0\
+\
+In the current code, I\'92ve defined a noun phrase as the tag pattern N.*J.*, that is, any tag starting with N followed by any tag starting with J, which I think is any noun-like part-of-speech followed by a particle, though I'm not entirely certain of this. \'a0 I think I'm looking for help understanding the various parts of speech listed K, L & M columns and described in column N, and then to build patterns for common phrase constructs in Korean.\
+\
+One way to do this might be to just parse a range of different sentences, see what parts of speech the parser assigns, and then decide if there are any phrases and make patterns for them, that's more-or-less how I got the N.*J.* pattern.\
+\
+Anyway, although this is an interesting project, it is low priority, and just adds to the many ways I have to study Korean already!!\'a0 Any help or guidance if you find time is much appreciated.\
+\
+Thanks again,\
+John.\
+\
+On Apr 14, 2018, at 11:13 PM, Philjae Kim <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}> wrote:\
+\
+Hi John.\'a0\
+\
+Thank you for sharing the Korean parser. The parser is very interesting and the UI is also neat.\'a0\
+\
+By the way, I don't get the your question exactly.\
+Does the part-of-speech means 9 classification of Korean "
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'b4\'eb\'b8\'ed\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'bc\'f6\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'c1\'b6\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'b5\'bf\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'c7\'fc\'bf\'eb\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'b0\'fc\'c7\'fc\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'ba\'ce\'bb\'e7\cf9 \strokec9 , \'b0\'a8\'c5\'ba\'bb\'e7"?
+\f1\fs24 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf9 (According to Naver dictionary part-of-speech means \'c7\'b0\'bb\'e7 and \'c7\'b0\'bb\'e7 is these 9 classification).
+\f1\fs24 \
+
+\f4\fs26 I think it is already implemented in the parser so I don't get your question.\uc0\u160 
+\f1\fs24 \
+\
+Is the question about\'a0
+\f4 how to listing pattern of these parts of speech?\uc0\u160 
+\f1 \
+
+\f4\fs26 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs24 \cf9 Thank you.\uc0\u160 
+\f1 \
+
+\f4 Philjae.\uc0\u160 
+\f1 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf9 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\fs24 \cf9 \
+2018-04-14 15:20 GMT-07:00 John Wainwright \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:johnw@lyric.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw@lyric.com}}>\uc0\u8236 :\
+Hi Philjae.\'a0 Thanks again for offering to help with Korean learning, you are very kind and your help is much appreciated.\'a0 I had prepared some notes on the Korean language parsing app I showed you and Song, but got very distracted on a week-ling business trip and didn't send it along, sorry. \'a0 Anyway, take a look at the notes below and perhaps we can talk about it at the next meetup. \'a0 I am again going to be off on a business trip this week, but will check for any email in case you have comments or questions before we next meet.\
+\
+Thanks again,\
+John.\
+\
+\
+\
+The small web-app I was showing at the meetup is a front-end to a Korean sentence parsing kit I found called KoNLPy, described here -\'a0{\field{\*\fldinst{HYPERLINK "http://konlpy.org/en/latest/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://konlpy.org/en/latest/}}.\'a0 The kit is Python-based and a little awkward to use, so I built a simple web front-end based on Vue js and Flask and have it running here:\'a0{\field{\*\fldinst{HYPERLINK "http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer}}.\
+\
+I was looking for a parser to help me understand the syntax of Korean sentences, and this parser kit does seem to help, though it isn't fully configured yet, as I'll explain.\'a0 The app I built lets you key in a sentence in Korean and hit the 'parse' button. It should draw a parse tree after a second or so.\'a0 The codes in parentheses after each word are part-of-speech tags generated by the back-end parser, explained below.\'a0 Click on a word to bring up an embedded iframe containing a search for that word on Wiktionary (which has entries for particles and endings and other parts of speech, as well as whole words.)\
+\
+In it's current form, the displayed tree is a *very* crude approximation to phrase structures in Korean; that's one of the things I want to improve, and perhaps Yoo Jin or you can help with that.\'a0 More on that below. \'a0\'a0\
+\
+Song asked to see the source, so I put it on github here - {\field{\*\fldinst{HYPERLINK "https://github.com/johnw3d/Korean-language-parser"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://github.com/johnw3d/Korean-language-parser}}, in case you are interested.\'a0I need to update the README to explain dev setup and build instructions, will do so soon. \'a0\
+\
+The app is pretty simple really, just a UI that wraps the KoNLPy framework.\'a0 Vue is pretty cool for rendering SVG, so it wasn't hard to knock up the graphics.\'a0 The KoNLPy\'a0framework itself wraps a set of 4 or 5 3rd-party parsers, listed in the docs.\'a0 The app I have up on AWS is using the 
+\f5\b Kkma
+\f1\b0  parser, but I plan on making that selectable.\'a0 I've only just started playing with them and not sure which is the best.\
+\
+The parsers themselves only separate the sentence into a list of words tagged with their parts-of-speech, using codes listed in the spreadsheet I showed you -\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0}}.\'a0 These are the codes in parentheses after each word in the graph.\'a0 The parse tree is generated using the chunking parser in NLTK, a popular NLP Python library.\'a0 You give it a set of regular-expressions defining phrase syntax in terms of part-of-speech tag patterns, as described here:\'a0{\field{\*\fldinst{HYPERLINK "http://www.nltk.org/book/ch07.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://www.nltk.org/book/ch07.html}}\'a0- section 2 - chunking grammars. \'a0\
+\
+The phrase grammar I have in place now is very crude, and I don't know if it will be easy to define part-of-speech patterns for Korean phrases\
+\
+\
+\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf7 \strokec7 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \strokec3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc\partightenfactor0
+\cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+{{\NeXTGraphic separator.tiff \width6100 \height20 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 From: "John Wainwright (gmail)" <johnw3d@gmail.com>\
+Subject: Re: Korean language help\
+Date: April 16, 2018 at 9:39:54 AM PDT\
+To: Philjae Kim <philjae@gmail.com>\
+Cc: Song Zheng <song@zheng.club>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1 \cf2 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 Oops, it looks like Mail down-scaled that parse-tree screen-cap; attached again full size:\
+\
+{{\NeXTGraphic 1__#$!@%!#__unknown.png \width11720 \height14180 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 On Apr 16, 2018, at 7:49 AM, John Wainwright (gmail) <{\field{\*\fldinst{HYPERLINK "mailto:johnw3d@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw3d@gmail.com}}> wrote:\
+Hi Philjae. \'a0 Yes, you are answering my questions, and I realize what you say is consistent with what I've found in Korean grammar references (example\'a0{\field{\*\fldinst{HYPERLINK "https://www.topikguide.com/most-important-basic-korean-language-grammar-patterns/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 here}})\'a0 - they always present Korean grammar as a set of patterns of the kind you listed out for me for that sentence, and not as a set of phrase structures (like noun phrases, or adjectival phrases, and so on.) \'a0\
+\
+It looks as though Korean doesn't really have well-defined phrase structures like that, relying on particles and common patterns to make the syntax and meaning clear. \'a0 It might be interesting to build something that takes the par-of-speech output from the KoNLPy parser and tries to list out the major patterns in the phrase, exactly as you did for that sentence. \'a0 I might try to work on that as I get time.\
+\
+Just as a comparison, I put that sentence in English into an English parser and it generated a deep parse tree. \'a0 The sentence is (I think):\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf8 \strokec8 \'a0 "You set an example by punishing him according to the rules because he broke the rules."\cf5 \strokec5 \
+\
+The\'a0{\field{\*\fldinst{HYPERLINK "http://www.nactem.ac.uk/enju/demo.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 Enju online parser}}\'a0generates the attached parse tree, with lots of nested noun phrases (NP), verb phrases (VP) and prepositional phrases (PP). \'a0Interesting!\
+\
+Thanks again for your help with this. \'a0\
+Regards,\
+John.\
+\
+<PastedGraphic-1.tiff>\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf7 \strokec7 On Apr 15, 2018, at 8:49 PM, Philjae Kim <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}> wrote:\
+PS. Pattern DB could be a rule DB. However there are too many cases.\'a0\
+\'a0 \'a0 \'a0 \'a0It should be a rule + pattern DB.\'a0\'a0\
+\
+\
+2018-04-15 20:45 GMT-07:00 Philjae Kim \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}>\uc0\u8236 :\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f3\fs26 \cf10 \cb11 \strokec10 Hi John.\'a0\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \cb1 I think you are search for\'a0"\uc0\u50577 \u49885 \u50640  \u46384 \u47480  \u50857 \u47168 
+\f1\fs28 \cb11 " in\'a0
+\f3\fs26 \cb1 Korean corpus.\'a0\
+(I don't know what is "\uc0\u50577 \u49885 \u50640  \u46384 \u47480  \u50857 \u47168 " in English)\
+\
+for example)\'a0\
+"\uc0\u44536 \u44032  \u44508 \u52825 \u51012  \u50612 \u44220 \u44592  \u46412 \u47928 \u50640  \u44508 \u52825 \u50640  \u46384 \u46972 \u49436  \u44536 \u47484  \u52376 \u48268 \u54632 \u51004 \u47196 \u50024  \u48376 \u48372 \u44592 \u47484  \u48372 \u51060 \u45716  \u44163 \u51060 \u45796 ."\
+\
+\uc0\u44536 \u44032  : N+\u44032 \'a0\
+\uc0\u44508 \u52825 \u51012  : N+\u51012 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u50612 \u44220 \u44592  \u46412 \u47928 \u50640 " : V+\u44592  \u46412 \u47928 \u50640 
+\f3\b0 \cf7 \strokec7 \
+
+\f2\b \cf4 \strokec4 "\uc0\u44508 \u52825 \u50640  \u46384 \u46972 \u49436 " : N+\u50640  \u46384 \u46972 (\u49436 )
+\f3\b0 \cf7 \strokec7 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \uc0\u44536 \u47484  : N+\u47484 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u52376 \u48268 \u54632 \u51004 \u47196 \u50024  : V+ \u12609 \u51004 \u47196 \u50024 "
+\f3\b0 \cf7 \strokec7 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \uc0\u48376 \u48372 \u44592 \u47484  : N+\u47484 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u48372 \u51060 \u45716  \u44163 \u51060 \u45796 " : V+\u45716  \u44163 \u51060 \u45796 .\'a0
+\f3\b0 \cf7 \strokec7 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \
+reference url : {\field{\*\fldinst{HYPERLINK "http://kkma.snu.ac.kr/concordancer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://kkma.snu.ac.kr/concordancer}}\
+As far as I know, there are not specific rules in this patterns.\'a0\
+Instead of rules this system use "Sejong Corpus" DB.\'a0\
+\
+This part is what I say we have to memory this patterns.\
+It is not a rule kind of pattern DB.\'a0\
+\
+Is my answer correct what you intended to ask?\'a0\
+\
+Thank you.\
+Philjae.\'a0\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\fs24 \cf12 \strokec12 \
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf7 \strokec7 \
+2018-04-15 10:23 GMT-07:00 John Wainwright \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:johnw3d@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw3d@gmail.com}}>\uc0\u8236 :\
+\
+Hi Philjae.\'a0 Yes, by 'parts of speech', I do mean things like noun (
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf7 \strokec7 ), verb (
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf7 \strokec7 ), and so on, as you say. \'a0 The parser does indeed assign the parts-of-speech labels, like NN for\'a0
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf7 \strokec7 , and VV for\'a0
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf7 \strokec7 , and so on.\'a0 All the parts that the Kkma parser can assign are listed in columns K, L and M in\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 that spreadsheet}}. \'a0 As you can see, it has a nested breakdown of those tags going from columns K to M.\
+\
+What I was particularly interested in was defining patterns of those individual parts of speech that correspond to common phrases in Korean, such as noun phrases, verb phrases, adjectival phrases, and so on, to the extent they are well-defined in Korean.\'a0 These patterns are not provided by the part-of-speech parsing engines, but are used in my app with NLTK to draw the parse tree of the phrases in a sentence.\'a0\
+\
+In the current code, I\'92ve defined a noun phrase as the tag pattern N.*J.*, that is, any tag starting with N followed by any tag starting with J, which I think is any noun-like part-of-speech followed by a particle, though I'm not entirely certain of this. \'a0 I think I'm looking for help understanding the various parts of speech listed K, L & M columns and described in column N, and then to build patterns for common phrase constructs in Korean.\
+\
+One way to do this might be to just parse a range of different sentences, see what parts of speech the parser assigns, and then decide if there are any phrases and make patterns for them, that's more-or-less how I got the N.*J.* pattern.\
+\
+Anyway, although this is an interesting project, it is low priority, and just adds to the many ways I have to study Korean already!!\'a0 Any help or guidance if you find time is much appreciated.\
+\
+Thanks again,\
+John.\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf9 \strokec9 On Apr 14, 2018, at 11:13 PM, Philjae Kim <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}> wrote:\
+\
+Hi John.\'a0\
+\
+Thank you for sharing the Korean parser. The parser is very interesting and the UI is also neat.\'a0\
+\
+By the way, I don't get the your question exactly.\
+Does the part-of-speech means 9 classification of Korean "
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'b4\'eb\'b8\'ed\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'bc\'f6\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'c1\'b6\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'b5\'bf\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'c7\'fc\'bf\'eb\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'b0\'fc\'c7\'fc\'bb\'e7\cf9 \strokec9 ,\uc0\u160 \cf6 \strokec6 \'ba\'ce\'bb\'e7\cf9 \strokec9 , \'b0\'a8\'c5\'ba\'bb\'e7"?
+\f1\fs24 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf9 (According to Naver dictionary part-of-speech means \'c7\'b0\'bb\'e7 and \'c7\'b0\'bb\'e7 is these 9 classification).
+\f1\fs24 \
+
+\f4\fs26 I think it is already implemented in the parser so I don't get your question.\uc0\u160 
+\f1\fs24 \
+\
+Is the question about\'a0
+\f4 how to listing pattern of these parts of speech?\uc0\u160 
+\f1 \
+
+\f4\fs26 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs24 \cf9 Thank you.\uc0\u160 
+\f1 \
+
+\f4 Philjae.\uc0\u160 
+\f1 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf9 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\fs24 \cf9 \
+2018-04-14 15:20 GMT-07:00 John Wainwright \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:johnw@lyric.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw@lyric.com}}>\uc0\u8236 :\
+Hi Philjae.\'a0 Thanks again for offering to help with Korean learning, you are very kind and your help is much appreciated.\'a0 I had prepared some notes on the Korean language parsing app I showed you and Song, but got very distracted on a week-ling business trip and didn't send it along, sorry. \'a0 Anyway, take a look at the notes below and perhaps we can talk about it at the next meetup. \'a0 I am again going to be off on a business trip this week, but will check for any email in case you have comments or questions before we next meet.\
+\
+Thanks again,\
+John.\
+\
+\
+\
+The small web-app I was showing at the meetup is a front-end to a Korean sentence parsing kit I found called KoNLPy, described here -\'a0{\field{\*\fldinst{HYPERLINK "http://konlpy.org/en/latest/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://konlpy.org/en/latest/}}.\'a0 The kit is Python-based and a little awkward to use, so I built a simple web front-end based on Vue js and Flask and have it running here:\'a0{\field{\*\fldinst{HYPERLINK "http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer}}.\
+\
+I was looking for a parser to help me understand the syntax of Korean sentences, and this parser kit does seem to help, though it isn't fully configured yet, as I'll explain.\'a0 The app I built lets you key in a sentence in Korean and hit the 'parse' button. It should draw a parse tree after a second or so.\'a0 The codes in parentheses after each word are part-of-speech tags generated by the back-end parser, explained below.\'a0 Click on a word to bring up an embedded iframe containing a search for that word on Wiktionary (which has entries for particles and endings and other parts of speech, as well as whole words.)\
+\
+In it's current form, the displayed tree is a *very* crude approximation to phrase structures in Korean; that's one of the things I want to improve, and perhaps Yoo Jin or you can help with that.\'a0 More on that below. \'a0\'a0\
+\
+Song asked to see the source, so I put it on github here - {\field{\*\fldinst{HYPERLINK "https://github.com/johnw3d/Korean-language-parser"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://github.com/johnw3d/Korean-language-parser}}, in case you are interested.\'a0I need to update the README to explain dev setup and build instructions, will do so soon. \'a0\
+\
+The app is pretty simple really, just a UI that wraps the KoNLPy framework.\'a0 Vue is pretty cool for rendering SVG, so it wasn't hard to knock up the graphics.\'a0 The KoNLPy\'a0framework itself wraps a set of 4 or 5 3rd-party parsers, listed in the docs.\'a0 The app I have up on AWS is using the 
+\f5\b Kkma
+\f1\b0  parser, but I plan on making that selectable.\'a0 I've only just started playing with them and not sure which is the best.\
+\
+The parsers themselves only separate the sentence into a list of words tagged with their parts-of-speech, using codes listed in the spreadsheet I showed you -\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0}}.\'a0 These are the codes in parentheses after each word in the graph.\'a0 The parse tree is generated using the chunking parser in NLTK, a popular NLP Python library.\'a0 You give it a set of regular-expressions defining phrase syntax in terms of part-of-speech tag patterns, as described here:\'a0{\field{\*\fldinst{HYPERLINK "http://www.nltk.org/book/ch07.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://www.nltk.org/book/ch07.html}}\'a0- section 2 - chunking grammars. \'a0\
+\
+The phrase grammar I have in place now is very crude, and I don't know if it will be easy to define part-of-speech patterns for Korean phrases\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf7 \strokec7 \
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \strokec3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc\partightenfactor0
+\cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+{{\NeXTGraphic separator.tiff \width6100 \height20 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 From: "John Wainwright (gmail)" <johnw3d@gmail.com>\
+Subject: Re: Korean language help\
+Date: April 16, 2018 at 7:49:51 AM PDT\
+To: Philjae Kim <philjae@gmail.com>\
+Cc: Song Zheng <song@zheng.club>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1 \cf2 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 Hi Philjae. \'a0 Yes, you are answering my questions, and I realize what you say is consistent with what I've found in Korean grammar references (example\'a0{\field{\*\fldinst{HYPERLINK "https://www.topikguide.com/most-important-basic-korean-language-grammar-patterns/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 here}})\'a0 - they always present Korean grammar as a set of patterns of the kind you listed out for me for that sentence, and not as a set of phrase structures (like noun phrases, or adjectival phrases, and so on.) \'a0\
+\
+It looks as though Korean doesn't really have well-defined phrase structures like that, relying on particles and common patterns to make the syntax and meaning clear. \'a0 It might be interesting to build something that takes the par-of-speech output from the KoNLPy parser and tries to list out the major patterns in the phrase, exactly as you did for that sentence. \'a0 I might try to work on that as I get time.\
+\
+Just as a comparison, I put that sentence in English into an English parser and it generated a deep parse tree. \'a0 The sentence is (I think):\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf8 \strokec8 \'a0 "You set an example by punishing him according to the rules because he broke the rules."\cf3 \strokec3 \
+\
+The\'a0{\field{\*\fldinst{HYPERLINK "http://www.nactem.ac.uk/enju/demo.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 Enju online parser}}\'a0generates the attached parse tree, with lots of nested noun phrases (NP), verb phrases (VP) and prepositional phrases (PP). \'a0Interesting!\
+\
+Thanks again for your help with this. \'a0\
+Regards,\
+John.\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 {{\NeXTGraphic unknown.tiff \width4820 \height6140 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 On Apr 15, 2018, at 8:49 PM, Philjae Kim <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}> wrote:\
+PS. Pattern DB could be a rule DB. However there are too many cases.\'a0\
+\'a0 \'a0 \'a0 \'a0It should be a rule + pattern DB.\'a0\'a0\
+\
+\
+2018-04-15 20:45 GMT-07:00 Philjae Kim \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}>\uc0\u8236 :\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f3\fs26 \cf10 \cb11 \strokec10 Hi John.\'a0\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \cb1 I think you are search for\'a0"\uc0\u50577 \u49885 \u50640  \u46384 \u47480  \u50857 \u47168 
+\f1\fs28 \cb11 " in\'a0
+\f3\fs26 \cb1 Korean corpus.\'a0\
+(I don't know what is "\uc0\u50577 \u49885 \u50640  \u46384 \u47480  \u50857 \u47168 " in English)\
+\
+for example)\'a0\
+"\uc0\u44536 \u44032  \u44508 \u52825 \u51012  \u50612 \u44220 \u44592  \u46412 \u47928 \u50640  \u44508 \u52825 \u50640  \u46384 \u46972 \u49436  \u44536 \u47484  \u52376 \u48268 \u54632 \u51004 \u47196 \u50024  \u48376 \u48372 \u44592 \u47484  \u48372 \u51060 \u45716  \u44163 \u51060 \u45796 ."\
+\
+\uc0\u44536 \u44032  : N+\u44032 \'a0\
+\uc0\u44508 \u52825 \u51012  : N+\u51012 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u50612 \u44220 \u44592  \u46412 \u47928 \u50640 " : V+\u44592  \u46412 \u47928 \u50640 
+\f3\b0 \cf5 \strokec5 \
+
+\f2\b \cf4 \strokec4 "\uc0\u44508 \u52825 \u50640  \u46384 \u46972 \u49436 " : N+\u50640  \u46384 \u46972 (\u49436 )
+\f3\b0 \cf5 \strokec5 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \uc0\u44536 \u47484  : N+\u47484 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u52376 \u48268 \u54632 \u51004 \u47196 \u50024  : V+ \u12609 \u51004 \u47196 \u50024 "
+\f3\b0 \cf5 \strokec5 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \uc0\u48376 \u48372 \u44592 \u47484  : N+\u47484 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f2\b \cf4 \strokec4 "\uc0\u48372 \u51060 \u45716  \u44163 \u51060 \u45796 " : V+\u45716  \u44163 \u51060 \u45796 .\'a0
+\f3\b0 \cf5 \strokec5 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf10 \strokec10 \
+reference url : {\field{\*\fldinst{HYPERLINK "http://kkma.snu.ac.kr/concordancer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://kkma.snu.ac.kr/concordancer}}\
+As far as I know, there are not specific rules in this patterns.\'a0\
+Instead of rules this system use "Sejong Corpus" DB.\'a0\
+\
+This part is what I say we have to memory this patterns.\
+It is not a rule kind of pattern DB.\'a0\
+\
+Is my answer correct what you intended to ask?\'a0\
+\
+Thank you.\
+Philjae.\'a0\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\fs24 \cf12 \strokec12 \
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 \
+2018-04-15 10:23 GMT-07:00 John Wainwright \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:johnw3d@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw3d@gmail.com}}>\uc0\u8236 :\
+\
+Hi Philjae.\'a0 Yes, by 'parts of speech', I do mean things like noun (
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf5 \strokec5 ), verb (
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf5 \strokec5 ), and so on, as you say. \'a0 The parser does indeed assign the parts-of-speech labels, like NN for\'a0
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf5 \strokec5 , and VV for\'a0
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf5 \strokec5 , and so on.\'a0 All the parts that the Kkma parser can assign are listed in columns K, L and M in\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 that spreadsheet}}. \'a0 As you can see, it has a nested breakdown of those tags going from columns K to M.\
+\
+What I was particularly interested in was defining patterns of those individual parts of speech that correspond to common phrases in Korean, such as noun phrases, verb phrases, adjectival phrases, and so on, to the extent they are well-defined in Korean.\'a0 These patterns are not provided by the part-of-speech parsing engines, but are used in my app with NLTK to draw the parse tree of the phrases in a sentence.\'a0\
+\
+In the current code, I\'92ve defined a noun phrase as the tag pattern N.*J.*, that is, any tag starting with N followed by any tag starting with J, which I think is any noun-like part-of-speech followed by a particle, though I'm not entirely certain of this. \'a0 I think I'm looking for help understanding the various parts of speech listed K, L & M columns and described in column N, and then to build patterns for common phrase constructs in Korean.\
+\
+One way to do this might be to just parse a range of different sentences, see what parts of speech the parser assigns, and then decide if there are any phrases and make patterns for them, that's more-or-less how I got the N.*J.* pattern.\
+\
+Anyway, although this is an interesting project, it is low priority, and just adds to the many ways I have to study Korean already!!\'a0 Any help or guidance if you find time is much appreciated.\
+\
+Thanks again,\
+John.\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf7 \strokec7 On Apr 14, 2018, at 11:13 PM, Philjae Kim <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}> wrote:\
+\
+Hi John.\'a0\
+\
+Thank you for sharing the Korean parser. The parser is very interesting and the UI is also neat.\'a0\
+\
+By the way, I don't get the your question exactly.\
+Does the part-of-speech means 9 classification of Korean "
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7\cf7 \strokec7 ,\uc0\u160 \cf6 \strokec6 \'b4\'eb\'b8\'ed\'bb\'e7\cf7 \strokec7 ,\uc0\u160 \cf6 \strokec6 \'bc\'f6\'bb\'e7\cf7 \strokec7 ,\uc0\u160 \cf6 \strokec6 \'c1\'b6\'bb\'e7\cf7 \strokec7 ,\uc0\u160 \cf6 \strokec6 \'b5\'bf\'bb\'e7\cf7 \strokec7 ,\uc0\u160 \cf6 \strokec6 \'c7\'fc\'bf\'eb\'bb\'e7\cf7 \strokec7 ,\uc0\u160 \cf6 \strokec6 \'b0\'fc\'c7\'fc\'bb\'e7\cf7 \strokec7 ,\uc0\u160 \cf6 \strokec6 \'ba\'ce\'bb\'e7\cf7 \strokec7 , \'b0\'a8\'c5\'ba\'bb\'e7"?
+\f1\fs24 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf7 (According to Naver dictionary part-of-speech means \'c7\'b0\'bb\'e7 and \'c7\'b0\'bb\'e7 is these 9 classification).
+\f1\fs24 \
+
+\f4\fs26 I think it is already implemented in the parser so I don't get your question.\uc0\u160 
+\f1\fs24 \
+\
+Is the question about\'a0
+\f4 how to listing pattern of these parts of speech?\uc0\u160 
+\f1 \
+
+\f4\fs26 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs24 \cf7 Thank you.\uc0\u160 
+\f1 \
+
+\f4 Philjae.\uc0\u160 
+\f1 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf7 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\fs24 \cf7 \
+2018-04-14 15:20 GMT-07:00 John Wainwright \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:johnw@lyric.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw@lyric.com}}>\uc0\u8236 :\
+Hi Philjae.\'a0 Thanks again for offering to help with Korean learning, you are very kind and your help is much appreciated.\'a0 I had prepared some notes on the Korean language parsing app I showed you and Song, but got very distracted on a week-ling business trip and didn't send it along, sorry. \'a0 Anyway, take a look at the notes below and perhaps we can talk about it at the next meetup. \'a0 I am again going to be off on a business trip this week, but will check for any email in case you have comments or questions before we next meet.\
+\
+Thanks again,\
+John.\
+\
+\
+\
+The small web-app I was showing at the meetup is a front-end to a Korean sentence parsing kit I found called KoNLPy, described here -\'a0{\field{\*\fldinst{HYPERLINK "http://konlpy.org/en/latest/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://konlpy.org/en/latest/}}.\'a0 The kit is Python-based and a little awkward to use, so I built a simple web front-end based on Vue js and Flask and have it running here:\'a0{\field{\*\fldinst{HYPERLINK "http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer}}.\
+\
+I was looking for a parser to help me understand the syntax of Korean sentences, and this parser kit does seem to help, though it isn't fully configured yet, as I'll explain.\'a0 The app I built lets you key in a sentence in Korean and hit the 'parse' button. It should draw a parse tree after a second or so.\'a0 The codes in parentheses after each word are part-of-speech tags generated by the back-end parser, explained below.\'a0 Click on a word to bring up an embedded iframe containing a search for that word on Wiktionary (which has entries for particles and endings and other parts of speech, as well as whole words.)\
+\
+In it's current form, the displayed tree is a *very* crude approximation to phrase structures in Korean; that's one of the things I want to improve, and perhaps Yoo Jin or you can help with that.\'a0 More on that below. \'a0\'a0\
+\
+Song asked to see the source, so I put it on github here - {\field{\*\fldinst{HYPERLINK "https://github.com/johnw3d/Korean-language-parser"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://github.com/johnw3d/Korean-language-parser}}, in case you are interested.\'a0I need to update the README to explain dev setup and build instructions, will do so soon. \'a0\
+\
+The app is pretty simple really, just a UI that wraps the KoNLPy framework.\'a0 Vue is pretty cool for rendering SVG, so it wasn't hard to knock up the graphics.\'a0 The KoNLPy\'a0framework itself wraps a set of 4 or 5 3rd-party parsers, listed in the docs.\'a0 The app I have up on AWS is using the 
+\f5\b Kkma
+\f1\b0  parser, but I plan on making that selectable.\'a0 I've only just started playing with them and not sure which is the best.\
+\
+The parsers themselves only separate the sentence into a list of words tagged with their parts-of-speech, using codes listed in the spreadsheet I showed you -\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0}}.\'a0 These are the codes in parentheses after each word in the graph.\'a0 The parse tree is generated using the chunking parser in NLTK, a popular NLP Python library.\'a0 You give it a set of regular-expressions defining phrase syntax in terms of part-of-speech tag patterns, as described here:\'a0{\field{\*\fldinst{HYPERLINK "http://www.nltk.org/book/ch07.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://www.nltk.org/book/ch07.html}}\'a0- section 2 - chunking grammars. \'a0\
+\
+The phrase grammar I have in place now is very crude, and I don't know if it will be easy to define part-of-speech patterns for Korean phrases\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 \
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \strokec3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc\partightenfactor0
+\cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+{{\NeXTGraphic separator.tiff \width6100 \height20 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 From: John Wainwright <johnw3d@gmail.com>\
+Subject: Re: Korean language help\
+Date: April 15, 2018 at 10:23:34 AM PDT\
+To: Philjae Kim <philjae@gmail.com>\
+Cc: Song Zheng <song@zheng.club>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1 \cf2 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 \
+Hi Philjae. \'a0Yes, by 'parts of speech', I do mean things like noun (
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf3 \strokec3 ), verb (
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf3 \strokec3 ), and so on, as you say. \'a0 The parser does indeed assign the parts-of-speech labels, like NN for\'a0
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7
+\f1\fs24 \cf3 \strokec3 , and VV for\'a0
+\f4\fs26 \cf6 \strokec6 \'b5\'bf\'bb\'e7
+\f1\fs24 \cf3 \strokec3 , and so on. \'a0All the parts that the Kkma parser can assign are listed in columns K, L and M in\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 that spreadsheet}}. \'a0 As you can see, it has a nested breakdown of those tags going from columns K to M.\
+\
+What I was particularly interested in was defining patterns of those individual parts of speech that correspond to common phrases in Korean, such as noun phrases, verb phrases, adjectival phrases, and so on, to the extent they are well-defined in Korean. \'a0These patterns are not provided by the part-of-speech parsing engines, but are used in my app with NLTK to draw the parse tree of the phrases in a sentence.\'a0\
+\
+In the current code, I\'92ve defined a noun phrase as the tag pattern N.*J.*, that is, any tag starting with N followed by any tag starting with J, which I think is any noun-like part-of-speech followed by a particle, though I'm not entirely certain of this. \'a0 I think I'm looking for help understanding the various parts of speech listed K, L & M columns and described in column N, and then to build patterns for common phrase constructs in Korean.\
+\
+One way to do this might be to just parse a range of different sentences, see what parts of speech the parser assigns, and then decide if there are any phrases and make patterns for them, that's more-or-less how I got the N.*J.* pattern.\
+\
+Anyway, although this is an interesting project, it is low priority, and just adds to the many ways I have to study Korean already!! \'a0Any help or guidance if you find time is much appreciated.\
+\
+Thanks again,\
+John.\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \strokec5 On Apr 14, 2018, at 11:13 PM, Philjae Kim <{\field{\*\fldinst{HYPERLINK "mailto:philjae@gmail.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 philjae@gmail.com}}> wrote:\
+Hi John.\'a0\
+\
+Thank you for sharing the Korean parser. The parser is very interesting and the UI is also neat.\'a0\
+\
+By the way, I don't get the your question exactly.\
+Does the part-of-speech means 9 classification of Korean "
+\f4\fs26 \cf6 \strokec6 \'b8\'ed\'bb\'e7\cf5 \strokec5 ,\uc0\u160 \cf6 \strokec6 \'b4\'eb\'b8\'ed\'bb\'e7\cf5 \strokec5 ,\uc0\u160 \cf6 \strokec6 \'bc\'f6\'bb\'e7\cf5 \strokec5 ,\uc0\u160 \cf6 \strokec6 \'c1\'b6\'bb\'e7\cf5 \strokec5 ,\uc0\u160 \cf6 \strokec6 \'b5\'bf\'bb\'e7\cf5 \strokec5 ,\uc0\u160 \cf6 \strokec6 \'c7\'fc\'bf\'eb\'bb\'e7\cf5 \strokec5 ,\uc0\u160 \cf6 \strokec6 \'b0\'fc\'c7\'fc\'bb\'e7\cf5 \strokec5 ,\uc0\u160 \cf6 \strokec6 \'ba\'ce\'bb\'e7\cf5 \strokec5 , \'b0\'a8\'c5\'ba\'bb\'e7"?
+\f1\fs24 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf5 (According to Naver dictionary part-of-speech means \'c7\'b0\'bb\'e7 and \'c7\'b0\'bb\'e7 is these 9 classification).
+\f1\fs24 \
+
+\f4\fs26 I think it is already implemented in the parser so I don't get your question.\uc0\u160 
+\f1\fs24 \
+\
+Is the question about\'a0
+\f4 how to listing pattern of these parts of speech?\uc0\u160 
+\f1 \
+
+\f4\fs26 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs24 \cf5 Thank you.\uc0\u160 
+\f1 \
+
+\f4 Philjae.\uc0\u160 
+\f1 \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f4\fs26 \cf5 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1\fs24 \cf5 \
+2018-04-14 15:20 GMT-07:00 John Wainwright \uc0\u8234 <{\field{\*\fldinst{HYPERLINK "mailto:johnw@lyric.com"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 johnw@lyric.com}}>\uc0\u8236 :\
+Hi Philjae.\'a0 Thanks again for offering to help with Korean learning, you are very kind and your help is much appreciated.\'a0 I had prepared some notes on the Korean language parsing app I showed you and Song, but got very distracted on a week-ling business trip and didn't send it along, sorry. \'a0 Anyway, take a look at the notes below and perhaps we can talk about it at the next meetup. \'a0 I am again going to be off on a business trip this week, but will check for any email in case you have comments or questions before we next meet.\
+\
+Thanks again,\
+John.\
+\
+\
+\
+The small web-app I was showing at the meetup is a front-end to a Korean sentence parsing kit I found called KoNLPy, described here -\'a0{\field{\*\fldinst{HYPERLINK "http://konlpy.org/en/latest/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://konlpy.org/en/latest/}}.\'a0 The kit is Python-based and a little awkward to use, so I built a simple web front-end based on Vue js and Flask and have it running here:\'a0{\field{\*\fldinst{HYPERLINK "http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer}}.\
+\
+I was looking for a parser to help me understand the syntax of Korean sentences, and this parser kit does seem to help, though it isn't fully configured yet, as I'll explain.\'a0 The app I built lets you key in a sentence in Korean and hit the 'parse' button. It should draw a parse tree after a second or so.\'a0 The codes in parentheses after each word are part-of-speech tags generated by the back-end parser, explained below.\'a0 Click on a word to bring up an embedded iframe containing a search for that word on Wiktionary (which has entries for particles and endings and other parts of speech, as well as whole words.)\
+\
+In it's current form, the displayed tree is a *very* crude approximation to phrase structures in Korean; that's one of the things I want to improve, and perhaps Yoo Jin or you can help with that.\'a0 More on that below. \'a0\'a0\
+\
+Song asked to see the source, so I put it on github here - {\field{\*\fldinst{HYPERLINK "https://github.com/johnw3d/Korean-language-parser"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://github.com/johnw3d/Korean-language-parser}}, in case you are interested.\'a0I need to update the README to explain dev setup and build instructions, will do so soon. \'a0\
+\
+The app is pretty simple really, just a UI that wraps the KoNLPy framework.\'a0 Vue is pretty cool for rendering SVG, so it wasn't hard to knock up the graphics.\'a0 The KoNLPy\'a0framework itself wraps a set of 4 or 5 3rd-party parsers, listed in the docs.\'a0 The app I have up on AWS is using the 
+\f5\b Kkma
+\f1\b0  parser, but I plan on making that selectable.\'a0 I've only just started playing with them and not sure which is the best.\
+\
+The parsers themselves only separate the sentence into a list of words tagged with their parts-of-speech, using codes listed in the spreadsheet I showed you -\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0}}.\'a0 These are the codes in parentheses after each word in the graph.\'a0 The parse tree is generated using the chunking parser in NLTK, a popular NLP Python library.\'a0 You give it a set of regular-expressions defining phrase syntax in terms of part-of-speech tag patterns, as described here:\'a0{\field{\*\fldinst{HYPERLINK "http://www.nltk.org/book/ch07.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://www.nltk.org/book/ch07.html}}\'a0- section 2 - chunking grammars. \'a0\
+\
+The phrase grammar I have in place now is very crude, and I don't know if it will be easy to define part-of-speech patterns for Korean phrases\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \strokec3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc\partightenfactor0
+\cf2 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+{{\NeXTGraphic separator.tiff \width6100 \height20 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 From: John Wainwright <johnw@lyric.com>\
+Subject: Korean language help\
+Date: April 14, 2018 at 3:20:56 PM PDT\
+To: Philjae Kim <philjae@gmail.com>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1 \cf2 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 Hi Philjae. \'a0Thanks again for offering to help with Korean learning, you are very kind and your help is much appreciated. \'a0I had prepared some notes on the Korean language parsing app I showed you and Song, but got very distracted on a week-ling business trip and didn't send it along, sorry. \'a0 Anyway, take a look at the notes below and perhaps we can talk about it at the next meetup. \'a0 I am again going to be off on a business trip this week, but will check for any email in case you have comments or questions before we next meet.\
+\
+Thanks again,\
+John.\
+\
+\
+\
+The small web-app I was showing at the meetup is a front-end to a Korean sentence parsing kit I found called KoNLPy, described here -\'a0{\field{\*\fldinst{HYPERLINK "http://konlpy.org/en/latest/"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://konlpy.org/en/latest/}}. \'a0The kit is Python-based and a little awkward to use, so I built a simple web front-end based on Vue js and Flask and have it running here:\'a0{\field{\*\fldinst{HYPERLINK "http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://ec2-52-34-61-205.us-west-2.compute.amazonaws.com/analyzer}}.\
+\
+I was looking for a parser to help me understand the syntax of Korean sentences, and this parser kit does seem to help, though it isn't fully configured yet, as I'll explain. \'a0The app I built lets you key in a sentence in Korean and hit the 'parse' button. It should draw a parse tree after a second or so. \'a0The codes in parentheses after each word are part-of-speech tags generated by the back-end parser, explained below. \'a0Click on a word to bring up an embedded iframe containing a search for that word on Wiktionary (which has entries for particles and endings and other parts of speech, as well as whole words.)\
+\
+In it's current form, the displayed tree is a *very* crude approximation to phrase structures in Korean; that's one of the things I want to improve, and perhaps Yoo Jin or you can help with that. \'a0More on that below. \'a0\'a0\
+\
+Song asked to see the source, so I put it on github here - {\field{\*\fldinst{HYPERLINK "https://github.com/johnw3d/Korean-language-parser"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://github.com/johnw3d/Korean-language-parser}}, in case you are interested.\'a0I need to update the README to explain dev setup and build instructions, will do so soon. \'a0\
+\
+The app is pretty simple really, just a UI that wraps the KoNLPy framework.\'a0 Vue is pretty cool for rendering SVG, so it wasn't hard to knock up the graphics. \'a0The KoNLPy\'a0framework itself wraps a set of 4 or 5 3rd-party parsers, listed in the docs. \'a0The app I have up on AWS is using the 
+\f5\b Kkma
+\f1\b0  parser, but I plan on making that selectable. \'a0I've only just started playing with them and not sure which is the best.\
+\
+The parsers themselves only separate the sentence into a list of words tagged with their parts-of-speech, using codes listed in the spreadsheet I showed you -\'a0{\field{\*\fldinst{HYPERLINK "https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0}}. \'a0These are the codes in parentheses after each word in the graph. \'a0The parse tree is generated using the chunking parser in NLTK, a popular NLP Python library. \'a0You give it a set of regular-expressions defining phrase syntax in terms of part-of-speech tag patterns, as described here:\'a0{\field{\*\fldinst{HYPERLINK "http://www.nltk.org/book/ch07.html"}}{\fldrslt \cf6 \ul \ulc6 \strokec6 http://www.nltk.org/book/ch07.html}}\'a0- section 2 - chunking grammars. \'a0\
+\
+The phrase grammar I have in place now is very crude, and I don't know if it will be easy to define part-of-speech patterns for Korean phrases\
+\
+}
