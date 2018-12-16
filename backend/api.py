@@ -76,6 +76,7 @@ def parse():
     # synthetic tag patterns -
     #    patterns of these word:POC strings are preprocessed to define new
     #    synthetic word:POC tags used in the chunking grammar below
+    #  at presen, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
     tagMappings = {
         r'들:(TM|XSN)':              r'들:PLU',       # pluralizer
         r'기:(ETN|NNG)':             r'기:GNOM',      # nominalizer
@@ -98,13 +99,6 @@ def parse():
         r'(아|어):EC;보:VV;시:EP;어요:EF': r'\1 보세요:PLT',  # please try to    아:EC;보:VV;시:EP;어요:EF
         r'(아|어):EC;보:VV;았:EP;어요:EF':   r'\1 보다:TRY',    # try
     }
-
-    # generate a version of the parser's original word:POC string including synthetic tag mappings above
-    tagString = ';' + posString + ';'
-    for old, new in sorted(tagMappings.items(), key=lambda x:len(x[0]), reverse=True):
-        tagString = re.sub(';' + old + ';', ';' + new + ';', tagString)
-    mappedWords = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
-    # print(mappedWords)
 
     grammar = r"""
         TenseMarker:    {<TM>}
@@ -137,10 +131,71 @@ def parse():
         PleaseTry:      {<Verb><PLT>}
         VerbPhrase:     {<Adverb>?<Verb>}
     """
+
+    tagMappings = {
+        r'들:(TM|XSN)': r'들:PLU',  # pluralizer
+        r'기:(ETN|NNG)': r'기:GNOM',  # nominalizer
+        r'(ㄴ|는|ㄹ):ETM;것:NNB': r'\1 것:GNOM',  # nominalizer
+    }
+
+    grammar = r"""
+
+        HadaVerb:           {<NN.*><XSV>}
+        AuxiliaryVerb:      {<EC><VX>}
+        DescriptiveVerb:    {<VA>}
+        Verb:               {<VV|HadaVerb|DescriptiveVerb>}
+        VerbSuffix:         {<EP>*<EF|EC>}
+        Adverb:             {<MAG>}
+
+        NominalizedVerb:    {<VV><GNOM>}
+
+        Adjective:          {<VA><ETM>}
+        Location:           {<JKB>}
+
+        Noun:               {<NN.*|NR>}       
+        Pronoun:            {<NP>}
+        Substantive:        {<Noun><Noun>*}
+                            {<Pronoun>}
+                            {<NominalizedVerb>}            
+        NounPhrase:         {<XPN>*<Adjective>*<Substantive><Location>*<PLU>*}
+    
+        Object:             {<NounPhrase><JKO>}   #  {<Noun|Pronoun|NounPhrase><JKO>}
+        Subject:            {<NounPhrase><JKS|JX>}   # {<Noun|Pronoun|Numeral|NounPhrase><JKS>}
+        Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
+
+        """
+
+    # Constituent:        {<Subject|Object|Complement>}
+    # Clause:             {<Constituent>*<Predicate>}
+    # Sentence:           {<Clause><Clause>*}
+
+    # generate a version of the parser's original word:POC string including synthetic tag mappings above
+    tagString = ';' + posString + ';'
+    for old, new in sorted(tagMappings.items(), key=lambda x:len(x[0]), reverse=True):
+        tagString = re.sub(';' + old + ';', ';' + new + ';', tagString)
+    mappedWords = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
+    # print(mappedWords)
+
     # 그:NP;가:JKS;규칙:NNG;을:JKO;어기:VV;었:EP;기:ETN;때문:NNB;에:JKB;규칙:NNG;에:JKB;따라서:MAJ;그:NP;를:JKO;
     # 처벌:NNG;하:XSV;ㅁ:ETN;으로써:JKB;
     # 본보기:NNG;를:JKO;보이:VV;는:ETM;것:NNB;이:VCP;다:EF;.:SF
     #   서:VV;어:EC;있:VV;을:ETM;때:NNG
+
+    # test sentences
+    # 제 친구는 아주 예쁜 차를 샀어요
+    # 그분은 선생님이 아닙니다
+    # 이것이 제 책이예요
+    # 여기는 서울역이예요
+    # 빵 하나를 주세요
+    # 빵 네 개를 주세요
+    # 책 두세 권 있어요
+    # 어머니께서 아이에게 밥을 먹이셨습니다
+    # 저는 학교에 안 갔어요
+    # 탐은 공부하기를 싫어한다.
+    # 기차가 떠나가 버렸어요.  or
+    # 인삼은 한국에서만 잘 자랍니다.
+    # 비가 오는 것을 봤어요.   비가 올까 봐 걱정이다.  비가 올 것이라고 걱정된다.  나는 비가 온 것을 보았다.
+
 
     # gen chunk tree from the word-POS list under the above chunking grammar
     parser = nltk.RegexpParser(grammar, trace=1)
@@ -282,3 +337,13 @@ if __name__ == "__main__":
 
 #  test phrase
 #  저는 친구들과 함께 집에 갔어요  via Kormoran yields:
+
+
+# wikitionary API access
+# $ pip install wiktionaryparser
+# #
+# >>> from wiktionaryparser import WiktionaryParser
+# >>> parser = WiktionaryParser()
+# >>> word = parser.fetch('test')
+# >>> another_word = parser.fetch('test', 'french')
+# >>> parser.set_default_language('french')
