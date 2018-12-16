@@ -34,11 +34,17 @@ def run_dev_server():
 
 parser = None
 nodeData = {}
+KONLPY_ENABLED = False
 
 @konlpyApp.route('/analyzer')
 def analyzer():
     "Konlpy analyzer main page"
     return render_template("/index.html")
+
+# set up KHaiii api
+import khaiii
+khaiiiAPI = khaiii.KhaiiiApi()
+khaiiiAPI.open()
 
 # -------- API handlers ----------------
 
@@ -50,21 +56,31 @@ def parse():
     if not sentence:
         return jsonify(result="FAIL", msg="Missing sentence")
 
-    # for now, just use the Komoran parser, todo: make this a parameter
-    # extract tagged parts of speech
-    #words = konlpy.tag.Kkma().pos(sentence)
-    #words = konlpy.tag.Kkma().pos(sentence, flatten=False)
-    #words = konlpy.tag.Hannanum().pos(sentence, ntags=22)
-    # words = konlpy.tag.Hannanum().pos(sentence, ntags=22, flatten=False)
-    words = konlpy.tag.Komoran().pos(sentence)
-    #words = konlpy.tag.Komoran().pos(sentence, flatten=False)
-    #words = konlpy.tag.Mecab().pos(sentence)
-    #words = konlpy.tag.Mecab().pos(sentence, flatten=False)
-    #words = konlpy.tag.Twitter().pos(sentence)
+    if KONLPY_ENABLED:
+        # for now, just use the Komoran parser, todo: make this a parameter
+        # extract tagged parts of speech
+        #words = konlpy.tag.Kkma().pos(sentence)
+        #words = konlpy.tag.Kkma().pos(sentence, flatten=False)
+        #words = konlpy.tag.Hannanum().pos(sentence, ntags=22)
+        # words = konlpy.tag.Hannanum().pos(sentence, ntags=22, flatten=False)
+        words = konlpy.tag.Komoran().pos(sentence)
+        #words = konlpy.tag.Komoran().pos(sentence, flatten=False)
+        #words = konlpy.tag.Mecab().pos(sentence)
+        #words = konlpy.tag.Mecab().pos(sentence, flatten=False)
+        #words = konlpy.tag.Twitter().pos(sentence)
 
-    konlpy.utils.pprint(words)
-    posString = ';'.join((w[0] + ':' + w[1]) for w in words)
-    # print(posString)
+        konlpy.utils.pprint(words)
+        posString = ';'.join((w[0] + ':' + w[1]) for w in words)
+        # print(posString)
+
+    # try the KHaiii parser
+    if sentence[-1] != '.':
+        sentence += '.'
+    words = []
+    for w in khaiiiAPI.analyze(sentence):
+        for m in w.morphs:
+            words.append('{0}:{1}'.format(m.lex.strip(), m.tag))
+    posString = ';'.join(words)
 
     # define an nltk chunking grammar (again just for Komoran for now)
     # todo: needs building out, is parser-specific
@@ -143,11 +159,10 @@ def parse():
         HadaVerb:           {<NN.*><XSV>}
         AuxiliaryVerb:      {<EC><VX>}
         DescriptiveVerb:    {<VA>}
+        NominalizedVerb:    {<VV><GNOM>}
         Verb:               {<VV|HadaVerb|DescriptiveVerb>}
         VerbSuffix:         {<EP>*<EF|EC>}
         Adverb:             {<MAG>}
-
-        NominalizedVerb:    {<VV><GNOM>}
 
         Adjective:          {<VA><ETM>}
         Location:           {<JKB>}
@@ -182,19 +197,21 @@ def parse():
     #   서:VV;어:EC;있:VV;을:ETM;때:NNG
 
     # test sentences
-    # 제 친구는 아주 예쁜 차를 샀어요
-    # 그분은 선생님이 아닙니다
-    # 이것이 제 책이예요
-    # 여기는 서울역이예요
-    # 빵 하나를 주세요
-    # 빵 네 개를 주세요
-    # 책 두세 권 있어요
-    # 어머니께서 아이에게 밥을 먹이셨습니다
-    # 저는 학교에 안 갔어요
+    # 제 친구는 아주 예쁜 차를 샀어요.
+    # 그분은 선생님이 아닙니다.
+    # 이것이 제 책이예요.
+    # 여기는 서울역이예요.
+    # 빵 하나를 주세요.
+    # 빵 네 개를 주세요.
+    # 책 두세 권 있어요.
+    # 어머니께서 아이에게 밥을 먹이셨습니다.
+    # 저는 학교에 안 갔어요.
     # 탐은 공부하기를 싫어한다.
     # 기차가 떠나가 버렸어요.  or
     # 인삼은 한국에서만 잘 자랍니다.
     # 비가 오는 것을 봤어요.   비가 올까 봐 걱정이다.  비가 올 것이라고 걱정된다.  나는 비가 온 것을 보았다.
+    # khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다.
+
 
 
     # gen chunk tree from the word-POS list under the above chunking grammar

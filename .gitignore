@@ -72,3 +72,6 @@ node_modules
 
 # built assets
 static/dist
+
+# Khaiii install (needs to be build on each box)
+khaiii/
