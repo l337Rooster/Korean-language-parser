@@ -1,5 +1,5 @@
 flask>=0.12.2
 flask-cors>=3.0.3
-konlpy>=0.4.4
+# konlpy>=0.4.4
 nltk>=3.2.4
 

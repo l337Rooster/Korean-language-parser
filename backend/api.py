@@ -149,10 +149,11 @@ def parse():
     """
 
     tagMappings = {
-        r'들:(TM|XSN)':            r'들:PLU',  # pluralizer
-        r'기:(ETN|NNG)':           r'기:GNOM',  # nominalizer
-        r'(ㄴ|는|ㄹ):ETM;것:NNB':   r'\1 것:GNOM',  # nominalizer
-        r'(은|는):JX':             r'\1:JKS',  # turn topic-marking partcile into subject-marker (I think this is right??)
+        r'들:(TM|XSN)':               r'들:PLU',  # pluralizer
+        r'기:(ETN|NNG)':              r'기:GNOM',  # nominalizer
+        r'(ㄴ|는|ㄹ):ETM;것:NNB':       r'\1 것:GNOM',  # nominalizer
+        r'(은|는):JX':                 r'\1:JKS',  # turn topic-marking partcile into subject-marker (I think this is right??)
+        r'(ㄹ|을|를):ETM;거:NNB;이:VCP':   r'\1 거 이:FUT',  # ㄹ/를 거 이다 future-tense conjugator (hack!)
     }
 
     grammar = r"""
@@ -164,7 +165,7 @@ def parse():
         Adjective:          {<Adverb>*<VA><ETM>}
         DescriptiveVerb:    {<VA>}
         Verb:               {<VV|VCN|VCP|HadaVerb|DescriptiveVerb>}
-        VerbSuffix:         {<EP>*<EF|EC>}
+        VerbSuffix:         {<EP|FUT>*<EF|EC>}
 
         Location:           {<JKB>}
         Title:              {<XSN>}
