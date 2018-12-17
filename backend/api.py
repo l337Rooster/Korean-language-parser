@@ -158,13 +158,14 @@ def parse():
 
         HadaVerb:           {<NN.*><XSV>}
         AuxiliaryVerb:      {<EC><VX>}
-        DescriptiveVerb:    {<VA>}
         NominalizedVerb:    {<VV><GNOM>}
+        Adjective:          {<VA><ETM>}
+                            {<MAG>}
+        DescriptiveVerb:    {<VA>}
         Verb:               {<VV|HadaVerb|DescriptiveVerb>}
         VerbSuffix:         {<EP>*<EF|EC>}
         Adverb:             {<MAG>}
 
-        Adjective:          {<VA><ETM>}
         Location:           {<JKB>}
 
         Noun:               {<NN.*|NR>}       
@@ -173,9 +174,10 @@ def parse():
                             {<Pronoun>}
                             {<NominalizedVerb>}            
         NounPhrase:         {<XPN>*<Adjective>*<Substantive><Location>*<PLU>*}
+        Possessive:         {<NounPhrase><JKG><NounPhrase>}
     
-        Object:             {<NounPhrase><JKO>}   #  {<Noun|Pronoun|NounPhrase><JKO>}
-        Subject:            {<NounPhrase><JKS|JX>}   # {<Noun|Pronoun|Numeral|NounPhrase><JKS>}
+        Object:             {<NounPhrase|Possessive><JKO>}   #  {<Noun|Pronoun|NounPhrase><JKO>}
+        Subject:            {<NounPhrase|Possessive><JKS|JX>}   # {<Noun|Pronoun|Numeral|NounPhrase><JKS>}
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
         """
