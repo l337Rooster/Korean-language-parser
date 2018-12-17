@@ -170,17 +170,20 @@ def parse():
         Location:           {<JKB>}
         Title:              {<XSN>}
 
-        Noun:               {<NN.*|NR>}       
+        Noun:               {<NN.*|NR|SL>}       
         Pronoun:            {<NP>}
         Substantive:        {<Noun><Noun>*}
                             {<Pronoun>}
                             {<NominalizedVerb>}            
         NounPhrase:         {<XPN>*<MAG>*<Adjective>*<Substantive><Title>*<Location>*<PLU>*<JX>*}
+                            
         Possessive:         {<NounPhrase><JKG><NounPhrase>}
+        Component:          {<NounPhrase><JC>}
+        Conjunction:        {<Component><Component>*<NounPhrase>}
     
-        Complement:         {<NounPhrase|Possessive><JKC>} 
-        Object:             {<NounPhrase|Possessive><JKO>}  
-        Subject:            {<NounPhrase|Possessive><JKS>}   
+        Complement:         {<NounPhrase|Possessive|Conjunction><JKC>} 
+        Object:             {<NounPhrase|Possessive|Conjunction><JKO>}  
+        Subject:            {<NounPhrase|Possessive|Conjunction><JKS>}   
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
         """
@@ -218,6 +221,14 @@ def parse():
     # khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다.
 
     # 내일 일요일인데, 뭐 할 거예요?
+    # 한국어를 배우고 싶지 않아요.
+    # 저는 숙제를 끝내고 나서 집으로 갈 거예요
+    # 나는 저녁으로 빵과 물과 밥을 먹었다.
+
+    # 중국음식을 먹었다. 중국음식을 좋아하기 때문이에요.      중국음식을 먹었다. 왜냐하면 중국음식을 좋아하기 때문이에요.  (written)
+    # 중국음식을 좋아하기 때문에 중국음식을 먹었어요.
+
+
 
 
 

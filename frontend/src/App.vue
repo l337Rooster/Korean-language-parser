@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.2.0 - JBW - based on the <a href="http://konlpy.org/en/latest/">KoNLPy</a> parsing framework</div>
+                <div id="attribution">v0.3.0 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow k-table">
                 <div class="k-row">
