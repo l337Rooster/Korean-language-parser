@@ -74,7 +74,7 @@ def parse():
         # print(posString)
 
     # try the KHaiii parser
-    if sentence[-1] != '.':
+    if sentence[-1] not in ['.', '?', '!']:
         sentence += '.'
     words = []
     for w in khaiiiAPI.analyze(sentence):
@@ -149,9 +149,10 @@ def parse():
     """
 
     tagMappings = {
-        r'들:(TM|XSN)': r'들:PLU',  # pluralizer
-        r'기:(ETN|NNG)': r'기:GNOM',  # nominalizer
-        r'(ㄴ|는|ㄹ):ETM;것:NNB': r'\1 것:GNOM',  # nominalizer
+        r'들:(TM|XSN)':            r'들:PLU',  # pluralizer
+        r'기:(ETN|NNG)':           r'기:GNOM',  # nominalizer
+        r'(ㄴ|는|ㄹ):ETM;것:NNB':   r'\1 것:GNOM',  # nominalizer
+        r'(은|는):JX':             r'\1:JKS',  # turn topic-marking partcile into subject-marker (I think this is right??)
     }
 
     grammar = r"""
@@ -173,12 +174,12 @@ def parse():
         Substantive:        {<Noun><Noun>*}
                             {<Pronoun>}
                             {<NominalizedVerb>}            
-        NounPhrase:         {<XPN>*<MAG>*<Adjective>*<Substantive><Title>*<Location>*<PLU>*}
+        NounPhrase:         {<XPN>*<MAG>*<Adjective>*<Substantive><Title>*<Location>*<PLU>*<JX>*}
         Possessive:         {<NounPhrase><JKG><NounPhrase>}
     
         Complement:         {<NounPhrase|Possessive><JKC>} 
         Object:             {<NounPhrase|Possessive><JKO>}  
-        Subject:            {<NounPhrase|Possessive><JKS|JX>}   
+        Subject:            {<NounPhrase|Possessive><JKS>}   
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
         """
@@ -214,6 +215,8 @@ def parse():
     # 인삼은 한국에서만 잘 자랍니다.
     # 비가 오는 것을 봤어요.   비가 올까 봐 걱정이다.  비가 올 것이라고 걱정된다.  나는 비가 온 것을 보았다.
     # khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다.
+
+    # 내일 일요일인데, 뭐 할 거예요?
 
 
 
