@@ -159,7 +159,7 @@ def parse():
     grammar = r"""
 
         HadaVerb:           {<NN.*><XSV>}
-        AuxiliaryVerb:      {<EC><VX>}
+        AuxiliaryVerb:      {<EC><VX|VV>}
         Adverb:             {<MAG>}
         NominalizedVerb:    {<VV|HadaVerb><GNOM>}
         Adjective:          {<Adverb>*<VA><ETM>}
@@ -224,6 +224,8 @@ def parse():
     # 한국어를 배우고 싶지 않아요.
     # 저는 숙제를 끝내고 나서 집으로 갈 거예요
     # 나는 저녁으로 빵과 물과 밥을 먹었다.
+
+    # 창문 열어도 돼요?
 
     # 중국음식을 먹었다. 중국음식을 좋아하기 때문이에요.      중국음식을 먹었다. 왜냐하면 중국음식을 좋아하기 때문이에요.  (written)
     # 중국음식을 좋아하기 때문에 중국음식을 먹었어요.
