@@ -159,10 +159,10 @@ def parse():
         HadaVerb:           {<NN.*><XSV>}
         AuxiliaryVerb:      {<EC><VX>}
         Adverb:             {<MAG>}
-        NominalizedVerb:    {<VV><GNOM>}
+        NominalizedVerb:    {<VV|HadaVerb><GNOM>}
         Adjective:          {<Adverb>*<VA><ETM>}
         DescriptiveVerb:    {<VA>}
-        Verb:               {<VV|VCN|HadaVerb|DescriptiveVerb>}
+        Verb:               {<VV|VCN|VCP|HadaVerb|DescriptiveVerb>}
         VerbSuffix:         {<EP>*<EF|EC>}
 
         Location:           {<JKB>}
