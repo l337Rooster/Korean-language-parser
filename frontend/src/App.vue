@@ -15,10 +15,10 @@
                 <div class="k-row controls-row">
                     <label for="debug">Debug output: </label>
                     <input type="checkbox" id="debug" v-model="debugOutput">
-                    <label id="parser-select-label" for="parser-select">Select parser: </label>
+                    <!-- label id="parser-select-label" for="parser-select">Select parser: </label>
                     <select id="parser-select" v-model="parserSelect" class="k-cell">
                         <option v-for="p in parsers" >{{p}}</option>
-                    </select>
+                    </select -->
                 </div>
             </div>
             <div v-if="!parsing" id="output-row" class="k-flexrow k-table">

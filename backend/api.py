@@ -9,7 +9,7 @@ from pprint import pprint, pformat
 from flask import (Flask, request, abort, render_template, Response, jsonify)
 from flask_cors import CORS
 
-import konlpy  # see  http://konlpy.org/en/latest/
+# import konlpy  # see  http://konlpy.org/en/latest/  using khaiii for now
 import nltk
 
 # instantiate Flask (global) app
