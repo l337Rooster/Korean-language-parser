@@ -158,26 +158,27 @@ def parse():
 
         HadaVerb:           {<NN.*><XSV>}
         AuxiliaryVerb:      {<EC><VX>}
-        NominalizedVerb:    {<VV><GNOM>}
-        Adjective:          {<VA><ETM>}
-                            {<MAG>}
-        DescriptiveVerb:    {<VA>}
-        Verb:               {<VV|HadaVerb|DescriptiveVerb>}
-        VerbSuffix:         {<EP>*<EF|EC>}
         Adverb:             {<MAG>}
+        NominalizedVerb:    {<VV><GNOM>}
+        Adjective:          {<Adverb>*<VA><ETM>}
+        DescriptiveVerb:    {<VA>}
+        Verb:               {<VV|VCN|HadaVerb|DescriptiveVerb>}
+        VerbSuffix:         {<EP>*<EF|EC>}
 
         Location:           {<JKB>}
+        Title:              {<XSN>}
 
         Noun:               {<NN.*|NR>}       
         Pronoun:            {<NP>}
         Substantive:        {<Noun><Noun>*}
                             {<Pronoun>}
                             {<NominalizedVerb>}            
-        NounPhrase:         {<XPN>*<Adjective>*<Substantive><Location>*<PLU>*}
+        NounPhrase:         {<XPN>*<MAG>*<Adjective>*<Substantive><Title>*<Location>*<PLU>*}
         Possessive:         {<NounPhrase><JKG><NounPhrase>}
     
-        Object:             {<NounPhrase|Possessive><JKO>}   #  {<Noun|Pronoun|NounPhrase><JKO>}
-        Subject:            {<NounPhrase|Possessive><JKS|JX>}   # {<Noun|Pronoun|Numeral|NounPhrase><JKS>}
+        Complement:         {<NounPhrase|Possessive><JKC>} 
+        Object:             {<NounPhrase|Possessive><JKO>}  
+        Subject:            {<NounPhrase|Possessive><JKS|JX>}   
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
         """
