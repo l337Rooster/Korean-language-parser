@@ -11,6 +11,7 @@ from flask_cors import CORS
 
 # import konlpy  # see  http://konlpy.org/en/latest/  using khaiii for now
 import nltk
+from wiktionaryparser import WiktionaryParser
 
 # instantiate Flask (global) app
 konlpyApp = Flask('app',
@@ -93,60 +94,62 @@ def parse():
     #    patterns of these word:POC strings are preprocessed to define new
     #    synthetic word:POC tags used in the chunking grammar below
     #  at presen, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
-    tagMappings = {
-        r'들:(TM|XSN)':              r'들:PLU',       # pluralizer
-        r'기:(ETN|NNG)':             r'기:GNOM',      # nominalizer
-        # r'(는|ㄹ):ETM;것:NNB;이:VCP;기:ETN': r'\1 것이기:GNOM',    # 갔이다 nominalizer
-        r'로:JKB':                   r'로:WIT',       # with/in/by particle
-        r'(는|ㄹ):ETM;것:NNB':         r'\1 것:GNOM',    # nominalizer
-        r'때문:NNB;에:JK(M|B)':        r'때문에:BEC',     # because
-        r'에:JKM;따르:VV;아서:ECD':     r'에 따라서:BYF',   # depending on, by following  KKama
-        r'에:JKM;따르:VV;아:ECS':      r'에 따라:BYF',   #   "  " (alt)
-        r'에:JKB;따라서:MAJ':          r'에 따라서:BYF',  # "  " (alt)  Kormoran
-        r'에:JKB;따르:VV;아:EC':       r'에 따라:BYF',  # "  " (alt)  Kormoran
-        r'(은|는|이|가):JX':           r'\1:JKS',       # subject marker
-        r'(았|었|ㄹ):(EPT?|ETM)':      r'\1:TM',       # tense marker
-        r'ㅁ:ETN;으로써:JKB':          r'ㅁ 으로써:BYI',  # by V-ing
-        r'면:EC':                    r'면:CON',       # conditional
-        r'거나:EC':                   r'거나:OR',       # disjunction (either/or)
-        r'는:ETM;것:NNB;이:VCP;다:EF': r'는 것이다:THI',   # not sure!!! todo: ask Philjae
-        r'(아|어|고):EC;있:V(V|X);([^:]+):EF': r'\1 있\3:PRO', # progressive
-        r'을:ETM;때:NNG':             r'을 때:WHI',     # while/when/at the time of
-        r'(아|어):EC;보:VV;시:EP;어요:EF': r'\1 보세요:PLT',  # please try to    아:EC;보:VV;시:EP;어요:EF
-        r'(아|어):EC;보:VV;았:EP;어요:EF':   r'\1 보다:TRY',    # try
-    }
 
-    grammar = r"""
-        TenseMarker:    {<TM>}
-        Adjective:      {<VA><ETM>}
-        Adverb:         {<MAG>}
-        PlainNoun:      {<N.*><XSN>?}
-        SimpleVerb:     {<V.*><TenseMarker>?<EF|EC>?}
-        HadaVerb:       {<PlainNoun><XSV><EF|EC>?}
-        PlainVerb:      {<SimpleVerb|HadaVerb>}
-        Progressive:    {<PlainVerb><PRO>}
-        Verb:           {<PlainVerb|Progressive>}
-        NominalizedVerb: {<Verb><GNOM><EF>?}
-        PluralNoun:     {<PlainNoun|NominalizedVerb><PLU>}
-        SimpleNoun:     {<PlainNoun|PluralNoun|NominalizedVerb>}
-        Object:         {<SimpleNoun><JKO>}
-        Subject:        {<SimpleNoun><JKS>}
-        Location:       {<SimpleNoun><JKB>}
-        With:           {<SimpleNoun><WIT>}
-        Possessive:     {<SimpleNoun><JKG>}
-        Noun:           {<SimpleNoun|Object|Subject|Location>}
-        NounPhrase:     {<MM|Adjective>?<Noun>}
-        Conditional:    {<Verb><CON>}
-        Or:             {<Verb><OR>}
-        Because:        {<NounPhrase><BEC>}
-        ByFollowing:    {<NounPhrase><BYF>}
-        ByDoing:        {<Verb><BYI>}
-        Thinging:       {<Verb><THI>}
-        While:          {<Verb><WHI>}
-        Try:            {<Verb><TRY>}
-        PleaseTry:      {<Verb><PLT>}
-        VerbPhrase:     {<Adverb>?<Verb>}
-    """
+    # first crude go....
+    # tagMappings = {
+    #     r'들:(TM|XSN)':              r'들:PLU',       # pluralizer
+    #     r'기:(ETN|NNG)':             r'기:GNOM',      # nominalizer
+    #     # r'(는|ㄹ):ETM;것:NNB;이:VCP;기:ETN': r'\1 것이기:GNOM',    # 갔이다 nominalizer
+    #     r'로:JKB':                   r'로:WIT',       # with/in/by particle
+    #     r'(는|ㄹ):ETM;것:NNB':         r'\1 것:GNOM',    # nominalizer
+    #     r'때문:NNB;에:JK(M|B)':        r'때문에:BEC',     # because
+    #     r'에:JKM;따르:VV;아서:ECD':     r'에 따라서:BYF',   # depending on, by following  KKama
+    #     r'에:JKM;따르:VV;아:ECS':      r'에 따라:BYF',   #   "  " (alt)
+    #     r'에:JKB;따라서:MAJ':          r'에 따라서:BYF',  # "  " (alt)  Kormoran
+    #     r'에:JKB;따르:VV;아:EC':       r'에 따라:BYF',  # "  " (alt)  Kormoran
+    #     r'(은|는|이|가):JX':           r'\1:JKS',       # subject marker
+    #     r'(았|었|ㄹ):(EPT?|ETM)':      r'\1:TM',       # tense marker
+    #     r'ㅁ:ETN;으로써:JKB':          r'ㅁ 으로써:BYI',  # by V-ing
+    #     r'면:EC':                    r'면:CON',       # conditional
+    #     r'거나:EC':                   r'거나:OR',       # disjunction (either/or)
+    #     r'는:ETM;것:NNB;이:VCP;다:EF': r'는 것이다:THI',   # not sure!!! todo: ask Philjae
+    #     r'(아|어|고):EC;있:V(V|X);([^:]+):EF': r'\1 있\3:PRO', # progressive
+    #     r'을:ETM;때:NNG':             r'을 때:WHI',     # while/when/at the time of
+    #     r'(아|어):EC;보:VV;시:EP;어요:EF': r'\1 보세요:PLT',  # please try to    아:EC;보:VV;시:EP;어요:EF
+    #     r'(아|어):EC;보:VV;았:EP;어요:EF':   r'\1 보다:TRY',    # try
+    # }
+    #
+    # grammar = r"""
+    #     TenseMarker:    {<TM>}
+    #     Adjective:      {<VA><ETM>}
+    #     Adverb:         {<MAG>}
+    #     PlainNoun:      {<N.*><XSN>?}
+    #     SimpleVerb:     {<V.*><TenseMarker>?<EF|EC>?}
+    #     HadaVerb:       {<PlainNoun><XSV><EF|EC>?}
+    #     PlainVerb:      {<SimpleVerb|HadaVerb>}
+    #     Progressive:    {<PlainVerb><PRO>}
+    #     Verb:           {<PlainVerb|Progressive>}
+    #     NominalizedVerb: {<Verb><GNOM><EF>?}
+    #     PluralNoun:     {<PlainNoun|NominalizedVerb><PLU>}
+    #     SimpleNoun:     {<PlainNoun|PluralNoun|NominalizedVerb>}
+    #     Object:         {<SimpleNoun><JKO>}
+    #     Subject:        {<SimpleNoun><JKS>}
+    #     Location:       {<SimpleNoun><JKB>}
+    #     With:           {<SimpleNoun><WIT>}
+    #     Possessive:     {<SimpleNoun><JKG>}
+    #     Noun:           {<SimpleNoun|Object|Subject|Location>}
+    #     NounPhrase:     {<MM|Adjective>?<Noun>}
+    #     Conditional:    {<Verb><CON>}
+    #     Or:             {<Verb><OR>}
+    #     Because:        {<NounPhrase><BEC>}
+    #     ByFollowing:    {<NounPhrase><BYF>}
+    #     ByDoing:        {<Verb><BYI>}
+    #     Thinging:       {<Verb><THI>}
+    #     While:          {<Verb><WHI>}
+    #     Try:            {<Verb><TRY>}
+    #     PleaseTry:      {<Verb><PLT>}
+    #     VerbPhrase:     {<Adverb>?<Verb>}
+    # """
 
     tagMappings = {
         r'들:(TM|XSN)':                 r'들:PLU',  # pluralizer
@@ -166,7 +169,7 @@ def parse():
         NominalizedVerb:    {<VV|HadaVerb><EP|FUT>*<GNOM>}
         Adjective:          {<Adverb>*<VA><ETM>}
         DescriptiveVerb:    {<VA>}
-        Verb:               {<VV|VCN|VCP|HadaVerb|DescriptiveVerb>}
+        Verb:               {<VV|VCN|HadaVerb|DescriptiveVerb>}
         VerbSuffix:         {<EP|FUT>*<EF|EC>}
 
         Location:           {<JKB>}
@@ -191,6 +194,7 @@ def parse():
         Complement:         {<Constituent><JKC>} 
         Object:             {<Constituent><JKO>}  
         Subject:            {<Constituent><JKS>}   
+        Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
         """
@@ -250,7 +254,7 @@ def parse():
     print(chunkTree.pprint())
 
     # flatten top-level subtrees into phrase structure descriptions
-    hiddenTags = { 'NounPhrase', 'VerbPhrase', 'PlainNoun', 'PlainVerb', }
+    hiddenTags = { 'Substantive', 'Constituent', 'NounPhrase', 'Connection', }
     def flatten(t, phrase):
         for st in t:
             if isinstance(st, nltk.Tree):
@@ -375,6 +379,14 @@ def parse():
                    phrases=phrases,
                    parseTree=parseTree,
                    debugging=debugging)
+
+wiktionary = WiktionaryParser()
+
+@konlpyApp.route('/definition/<word>', methods=['GET'])
+def definition(word):
+    "return the wiktionary definition(s) for the given word"
+    defs = wiktionary.fetch(word, 'korean')
+    return jsonify(defs)
 
 #
 if __name__ == "__main__":

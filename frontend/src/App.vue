@@ -49,7 +49,7 @@
                                   :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
                             <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
-                                    <tspan class="leaf-word" v-on:click="lookupWord(node)">{{ node.word }}</tspan>
+                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseover="mouseEnterWord(node)" v-on:mouseout="mouseLeaveWord()">{{ node.word }}</tspan>
                                     <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag">{{ node.tag }}</tspan>
@@ -57,6 +57,11 @@
                         </g>
                     </svg>
                 </template>
+            </div>
+            <div v-if="definition" id="definition-row" class="k-flexrow k-table">
+                <div v-for="def in definition" class="k-row">
+                    <div class="k-cell">{{def.partOfSpeech}}:</div><div class="k-cell"><span v-for="w in def.text">{{w}}<br></span></div>
+                </div>
             </div>
             <div v-if="!parsing && debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
                 <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{debugging.posList}}</pre></div>
@@ -100,7 +105,8 @@ export default {
             parsers: ["JHannanum", "Kkma", "KOMORAN", "MeCab-ko", "Open Korean Text"], // supported parsers
             defaultParser: "KOMORAN",
             debugOutput: false,
-            parserSelect: "KOMORAN"
+            parserSelect: "KOMORAN",
+            definition: null
 		};
 	},
 
@@ -205,7 +211,38 @@ export default {
 	        //  construct dictionary form of verb if needed
 	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
 	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
-	    }
+	    },
+
+        mouseEnterWord: function(node) {
+	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
+            $.ajax({
+                method: "GET",
+                url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                crossDomain: true,
+                cache: false,
+                success: function(response) {
+                    // check for a useful result & flatten definition groups
+                    if (response.length > 0 && response[0].definitions.length > 0) {
+                        self.definition = []
+                        for (var i = 0; i < response.length; i++) {
+                            var defs = response[i];
+                            for (var j = 0; j < defs.definitions.length; j++) {
+                                var def = defs.definitions[j];
+                                self.definition.push({partOfSpeech: def.partOfSpeech, text: def.text});
+                            }
+                        }
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    this.definition = null;
+                }
+            });
+
+        },
+
+        mouseLeaveWord: function() {
+            this.definition = null;
+        }
 	}
 }
 
