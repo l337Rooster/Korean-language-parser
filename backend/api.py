@@ -149,11 +149,13 @@ def parse():
     """
 
     tagMappings = {
-        r'들:(TM|XSN)':               r'들:PLU',  # pluralizer
-        r'기:(ETN|NNG)':              r'기:GNOM',  # nominalizer
-        r'(ㄴ|는|ㄹ):ETM;것:NNB':       r'\1 것:GNOM',  # nominalizer
-        r'(은|는):JX':                 r'\1:JKS',  # turn topic-marking partcile into subject-marker (I think this is right??)
+        r'들:(TM|XSN)':                 r'들:PLU',  # pluralizer
+        r'기:(ETN|NNG)':                r'기:GNOM',  # nominalizer
+        r'(ㄴ|는|ㄹ):ETM;것:NNB':         r'\1 것:GNOM',  # nominalizer
+        r'(은|는):JX':                   r'\1:JKS',  # turn topic-marking partcile into subject-marker (I think this is right??)
         r'(ㄹ|을|를):ETM;거:NNB;이:VCP':   r'\1 거 이:FUT',  # ㄹ/를 거 이다 future-tense conjugator (hack!)
+        r'전:NNG;에:JKB':                r'전에:BEF',  # before
+        r'때문:NNB;에:JKB':               r'때문에:BEC',  # because
     }
 
     grammar = r"""
@@ -161,7 +163,7 @@ def parse():
         HadaVerb:           {<NN.*><XSV>}
         AuxiliaryVerb:      {<EC><VX|VV>}
         Adverb:             {<MAG>}
-        NominalizedVerb:    {<VV|HadaVerb><GNOM>}
+        NominalizedVerb:    {<VV|HadaVerb><EP|FUT>*<GNOM>}
         Adjective:          {<Adverb>*<VA><ETM>}
         DescriptiveVerb:    {<VA>}
         Verb:               {<VV|VCN|VCP|HadaVerb|DescriptiveVerb>}
@@ -179,11 +181,16 @@ def parse():
                             
         Possessive:         {<NounPhrase><JKG><NounPhrase>}
         Component:          {<NounPhrase><JC>}
-        Conjunction:        {<Component><Component>*<NounPhrase>}
+        Connection:         {<Component><Component>*<NounPhrase>}
+        
+        Constituent:        {<NounPhrase|Possessive|Connection>}
+        
+        Before:             {<Constituent><BEF>}
+        Because:            {<Constituent><BEC>}
     
-        Complement:         {<NounPhrase|Possessive|Conjunction><JKC>} 
-        Object:             {<NounPhrase|Possessive|Conjunction><JKO>}  
-        Subject:            {<NounPhrase|Possessive|Conjunction><JKS>}   
+        Complement:         {<Constituent><JKC>} 
+        Object:             {<Constituent><JKO>}  
+        Subject:            {<Constituent><JKS>}   
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
         """
@@ -205,7 +212,7 @@ def parse():
     #   서:VV;어:EC;있:VV;을:ETM;때:NNG
 
     # test sentences
-    # 제 친구는 아주 예쁜 차를 샀어요.
+    # 제 친구는 아주 예쁜 차를 샀어요.   제 친구는 아주 빠른 차를 샀어요.
     # 그분은 선생님이 아닙니다.
     # 이것이 제 책이예요.
     # 여기는 서울역이예요.
@@ -223,12 +230,14 @@ def parse():
     # 내일 일요일인데, 뭐 할 거예요?
     # 한국어를 배우고 싶지 않아요.
     # 저는 숙제를 끝내고 나서 집으로 갈 거예요
-    # 나는 저녁으로 빵과 물과 밥을 먹었다.
+    # 나는 저녁으로 빵과 물과 밥을 먹었어요.    나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.
 
     # 창문 열어도 돼요?
 
     # 중국음식을 먹었다. 중국음식을 좋아하기 때문이에요.      중국음식을 먹었다. 왜냐하면 중국음식을 좋아하기 때문이에요.  (written)
     # 중국음식을 좋아하기 때문에 중국음식을 먹었어요.
+    # 여기 오기 전에 뭐 했어요?
+
 
 
 
