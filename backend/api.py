@@ -382,11 +382,21 @@ def parse():
 
 wiktionary = WiktionaryParser()
 
+# hangul & english unicode ranges
+ranges = [(0, 0x036f), (0x3130, 0x318F), (0xAC00, 0xD7AF), (0x1100, 0x11FF), (0x2022, 0x2022)]
+isHangulOrEnglish = lambda s: all(any(ord(c) >= r[0] and ord(c) <= r[1] for r in ranges) for c in s)
+
 @konlpyApp.route('/definition/<word>', methods=['GET'])
 def definition(word):
     "return the wiktionary definition(s) for the given word"
-    defs = wiktionary.fetch(word, 'korean')
-    return jsonify(defs)
+    definitions = []
+    # fetch defs, reformat layout & filter out hanja (for now)
+    for defs in wiktionary.fetch(word, 'korean'):
+        for d in defs['definitions']:
+            definitions.append(dict(partOfSpeech = d['partOfSpeech'],
+                                    text = [t for t in d['text'] if isHangulOrEnglish(t)]))
+
+    return jsonify(definitions)
 
 #
 if __name__ == "__main__":

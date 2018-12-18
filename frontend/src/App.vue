@@ -215,26 +215,20 @@ export default {
 
         mouseEnterWord: function(node) {
 	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
+	        var self = this;
             $.ajax({
                 method: "GET",
                 url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
                 crossDomain: true,
                 cache: false,
                 success: function(response) {
-                    // check for a useful result & flatten definition groups
-                    if (response.length > 0 && response[0].definitions.length > 0) {
-                        self.definition = []
-                        for (var i = 0; i < response.length; i++) {
-                            var defs = response[i];
-                            for (var j = 0; j < defs.definitions.length; j++) {
-                                var def = defs.definitions[j];
-                                self.definition.push({partOfSpeech: def.partOfSpeech, text: def.text});
-                            }
-                        }
+                    // display any non-empty useful result
+                    if (response.length > 0) {
+                        self.definition = response;
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    this.definition = null;
+                    self.definition = null;
                 }
             });
 
