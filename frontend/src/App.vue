@@ -31,7 +31,7 @@
                             <template v-for="element, i in phrase">
                                 <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
                                 <span v-if="element.type == 'word'" class="leaf-word" v-on:click="lookupWord(element)"
-                                      v-on:mouseover="mouseEnterWord(element, $event)" v-on:mouseout="mouseLeaveWord()">{{ element.word }}</span>
+                                      v-on:mouseenter="mouseEnterWord(element, $event)" v-on:mouseleave="mouseLeaveWord()">{{ element.word }}</span>
                                 <span v-if="element.type == 'label'" class="leaf-tag">({{ element.word }})</span>
                             </template>
                         </div>
@@ -50,7 +50,8 @@
                                   :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
                             <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
-                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseover="mouseEnterWord(node, $event)" v-on:mouseout="mouseLeaveWord()">{{ node.word }}</tspan>
+                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseenter="mouseEnterWord(node, $event)"
+                                           v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan>
                                     <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag">{{ node.tag }}</tspan>
@@ -109,7 +110,9 @@ export default {
             debugOutput: false,
             parserSelect: "KOMORAN",
             definition: null,
-            defPopup: null
+            defPopup: null,
+            mouseEnterX: null, mouseEnterY: null,
+            definitionTimeout: null,
 		};
 	},
 
@@ -217,36 +220,58 @@ export default {
 	    },
 
         mouseEnterWord: function(node, event) {
-	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
-	        var self = this;
-            $.ajax({
-                method: "GET",
-                url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
-                crossDomain: true,
-                cache: false,
-                success: function(response) {
-                    // display any non-empty useful result
-                    if (response.length > 0) {
-                        self.definition = response;
-                        var popup = self.$refs["defPopup"];
-                        var x = event.clientX,
-                            y = event.clientY;
-                        popup.style.top = (y + 12) + 'px';
-                        popup.style.left = (x + 12) + 'px';
-                        popup.classList.add("show");
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    self.definition = null;
+            var self = this;
+            if (self.definitionTimeout)
+                clearTimeout(self.definitionTimeout);
+	        var showDef = function() {
+	            // only show if mouse has hovered over node for 500ms
+                //console.log(self.mouseEnterX, window.screenX, self.mouseEnterY, window.screenY);
+	            if (Math.abs(self.mouseEnterX - window.screenX) < 15 && Math.abs(self.mouseEnterY - window.screenY) < 15) {
+                    var word = node.tag[0] == 'V' && node.word[node.word.length - 1] != '다' ? node.word + '다' : node.word;
+                    $.ajax({
+                        method: "GET",
+                        url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                        crossDomain: true,
+                        cache: false,
+                        success: function (response) {
+                            // display any non-empty useful result
+                            if (response.length > 0) {
+                                self.definition = response;
+                                var popup = self.$refs["defPopup"];
+                                var x = event.clientX,
+                                    y = event.clientY;
+                                popup.style.top = (y + 12) + 'px';
+                                popup.style.left = (x + 12) + 'px';
+                                popup.classList.add("show");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            self.definition = null;
+                        }
+                    });
                 }
-            });
+            };
+	        // handle mouse enter, start a timer & see if mouse still after 500ms
+	        self.mouseEnterX = event.screenX; self.mouseEnterY = event.screenY;
+	        self.definitionTimeout = setTimeout(showDef, 250);
         },
 
         mouseLeaveWord: function() {
+            if (self.definitionTimeout)
+                clearTimeout(self.definitionTimeout);
             this.definition = [];
             this.$refs["defPopup"].classList.remove("show");
+            this.mouseEnterLoc = null;
         }
 	}
+}
+
+//# register for mouse-move events
+document.onmousemove = function(e) {
+    var event = e || window.event;
+    window.screenX = event.screenX;
+    window.screenY = event.screenY;
+    //console.log("* ", event.screenX, window.screenX, event.screenY, window.screenY);
 }
 
 </script>
@@ -352,11 +377,12 @@ export default {
     /* definition-popup styles  */
     .definition {
         visibility: hidden;
+        visibility: hidden;
         background-color: rgba(200, 200, 200, .75);
         color: #111;
         font-size: 12px;
         border-radius: 6px;
-        padding: 4px;
+        padding: 0px 5px 5px 5px;
         position: absolute;
         z-index: 1;
         max-width: 500px;
@@ -370,8 +396,8 @@ export default {
     .definition ul {
         padding-left: 14px;
         margin-left: 5px;
-        maring-top: 2px;
-        margin-bottom: 2px;
+        maring-top: 02px;
+        margin-bottom: 0px;
         font-size: 50%;
     }
 
