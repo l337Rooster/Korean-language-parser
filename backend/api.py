@@ -75,7 +75,7 @@ def parse():
         # print(posString)
 
     # try the KHaiii parser
-    if sentence[-1] not in ['.', '?', '!']:
+    if sentence.strip()[-1] not in ['.', '?', '!']:
         sentence += '.'
     words = []
     for w in khaiiiAPI.analyze(sentence):
@@ -260,9 +260,9 @@ def parse():
             if isinstance(st, nltk.Tree):
                 phrase = flatten(st, phrase)
                 if st.label() not in hiddenTags:
-                    phrase.append(('label', st.label()))
+                    phrase.append({"type": 'label', "word": st.label()})
             else:
-                phrase.append(('word', st[0].strip())) # st[1][0] if st[1][0] in ('N', 'V') else st[0].strip()
+                phrase.append({"type": 'word', "word": st[0].strip(), "tag": st[1]}) # st[1][0] if st[1][0] in ('N', 'V') else st[0].strip()
         return phrase
     #
     phrases = []
@@ -380,7 +380,11 @@ def parse():
                    parseTree=parseTree,
                    debugging=debugging)
 
+# wikitionary definition parser
 wiktionary = WiktionaryParser()
+# include Korean parts-of-speech
+for pos in ('suffix', 'particle', 'determiners', 'counters', 'morphemes', ):
+    wiktionary.include_part_of_speech(pos)
 
 # hangul & english unicode ranges
 ranges = [(0, 0x036f), (0x3130, 0x318F), (0xAC00, 0xD7AF), (0x1100, 0x11FF), (0x2022, 0x2022)]
@@ -393,9 +397,9 @@ def definition(word):
     # fetch defs, reformat layout & filter out hanja (for now)
     for defs in wiktionary.fetch(word, 'korean'):
         for d in defs['definitions']:
-            definitions.append(dict(partOfSpeech = d['partOfSpeech'],
-                                    text = [t for t in d['text'] if isHangulOrEnglish(t)]))
-
+            definitions.append(dict(partOfSpeech = d['partOfSpeech'].capitalize(),
+                                    text = [('• ' if i > 0 else '')+ t for i, t in enumerate(d['text']) if isHangulOrEnglish(t)]))
+    #
     return jsonify(definitions)
 
 #

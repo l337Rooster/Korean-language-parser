@@ -29,9 +29,10 @@
                     <div id="pos-list">
                         <div v-for="phrase in phrases">
                             <template v-for="element, i in phrase">
-                                <span v-if="element[0] == 'word' && i > 0" class="phrase-plus"> + </span>
-                                <span v-if="element[0] == 'word'" class="leaf-word" v-on:click="lookupWord(element[1])">{{ element[1] }}</span>
-                                <span v-if="element[0] == 'label'" class="leaf-tag">({{ element[1] }})</span>
+                                <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
+                                <span v-if="element.type == 'word'" class="leaf-word" v-on:click="lookupWord(element)"
+                                      v-on:mouseover="mouseEnterWord(element, $event)" v-on:mouseout="mouseLeaveWord()">{{ element.word }}</span>
+                                <span v-if="element.type == 'label'" class="leaf-tag">({{ element.word }})</span>
                             </template>
                         </div>
                         <!--div v-for="parse in parseList">
@@ -49,7 +50,7 @@
                                   :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
                             <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
-                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseover="mouseEnterWord(node)" v-on:mouseout="mouseLeaveWord()">{{ node.word }}</tspan>
+                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseover="mouseEnterWord(node, $event)" v-on:mouseout="mouseLeaveWord()">{{ node.word }}</tspan>
                                     <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag">{{ node.tag }}</tspan>
@@ -57,11 +58,6 @@
                         </g>
                     </svg>
                 </template>
-            </div>
-            <div v-if="definition" id="definition-row" class="k-flexrow k-table">
-                <div v-for="def in definition" class="k-row">
-                    <div class="k-cell">{{def.partOfSpeech}}:</div><div class="k-cell"><span v-for="w in def.text">{{w}}<br></span></div>
-                </div>
             </div>
             <div v-if="!parsing && debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
                 <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{debugging.posList}}</pre></div>
@@ -72,6 +68,11 @@
             </div>
             <div v-if="wiktionaryUrl" class="k-row">
                 <iframe :src="wiktionaryUrl"  class="wiktionary-iframe"></iframe>
+            </div>
+            <div id="definition" ref="defPopup" class="definition k-table">
+                <div v-for="def in definition" class="k-row">
+                    <div class="k-cell">{{def.partOfSpeech}}:</div><div class="k-cell"><span v-for="w in def.text">{{w}}<br></span></div>
+                </div>
             </div>
         </div>
     </div>
@@ -106,7 +107,8 @@ export default {
             defaultParser: "KOMORAN",
             debugOutput: false,
             parserSelect: "KOMORAN",
-            definition: null
+            definition: null,
+            defPopup: null
 		};
 	},
 
@@ -213,7 +215,7 @@ export default {
 	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
 	    },
 
-        mouseEnterWord: function(node) {
+        mouseEnterWord: function(node, event) {
 	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
 	        var self = this;
             $.ajax({
@@ -225,17 +227,23 @@ export default {
                     // display any non-empty useful result
                     if (response.length > 0) {
                         self.definition = response;
+                        var popup = self.$refs["defPopup"];
+                        var x = event.clientX,
+                            y = event.clientY;
+                        popup.style.top = (y + 12) + 'px';
+                        popup.style.left = (x + 12) + 'px';
+                        popup.classList.add("show");
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     self.definition = null;
                 }
             });
-
         },
 
         mouseLeaveWord: function() {
-            this.definition = null;
+            this.definition = [];
+            this.$refs["defPopup"].classList.remove("show");
         }
 	}
 }
@@ -338,6 +346,41 @@ export default {
         width: 100%;
         height: 900px;
         border-width: thin;
+    }
+
+    /* definition-popup styles  */
+    .definition {
+        visibility: hidden;
+        background-color: rgba(200, 200, 200, .75);
+        color: #111;
+        font-size: 12px;
+        border-radius: 6px;
+        padding: 4px;
+        position: absolute;
+        z-index: 1;
+    }
+
+    .definition .k-cell {
+        padding-left: 4px;
+        padding-top: 5px;
+    }
+
+    /* toggle this class - hide and show the popup */
+    .show {
+      visibility: visible;
+      -webkit-animation: fadeIn 0.5s;
+      animation: fadeIn 0.5s;
+    }
+
+    /* Add animation (fade in the popup) */
+    @-webkit-keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity:1 ;}
     }
 
     /* useful CSS3 layout classes */
