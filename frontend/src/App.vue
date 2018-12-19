@@ -71,7 +71,8 @@
             </div>
             <div id="definition" ref="defPopup" class="definition k-table">
                 <div v-for="def in definition" class="k-row">
-                    <div class="k-cell">{{def.partOfSpeech}}:</div><div class="k-cell"><span v-for="w in def.text">{{w}}<br></span></div>
+                    <div class="k-cell">{{def.partOfSpeech}}:</div>
+                    <div class="k-cell"><ul><li v-for="w in def.text"><span>{{w}}</span></li></ul></div>
                 </div>
             </div>
         </div>
@@ -358,11 +359,25 @@ export default {
         padding: 4px;
         position: absolute;
         z-index: 1;
+        max-width: 500px;
     }
-
+å
     .definition .k-cell {
         padding-left: 4px;
         padding-top: 5px;
+    }
+
+    .definition ul {
+        padding-left: 14px;
+        margin-left: 5px;
+        maring-top: 2px;
+        margin-bottom: 2px;
+        font-size: 50%;
+    }
+
+    .definition li span {
+        font-size: 200%;
+        vertical-align:middle;
     }
 
     /* toggle this class - hide and show the popup */

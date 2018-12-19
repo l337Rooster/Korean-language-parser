@@ -398,7 +398,7 @@ def definition(word):
     for defs in wiktionary.fetch(word, 'korean'):
         for d in defs['definitions']:
             definitions.append(dict(partOfSpeech = d['partOfSpeech'].capitalize(),
-                                    text = [('• ' if i > 0 else '')+ t for i, t in enumerate(d['text']) if isHangulOrEnglish(t)]))
+                                    text = [t for t in d['text'] if isHangulOrEnglish(t)]))
     #
     return jsonify(definitions)
 
