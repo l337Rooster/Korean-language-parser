@@ -159,6 +159,7 @@ def parse():
         r'(ㄹ|을|를):ETM;거:NNB;이:VCP':   r'\1 거 이:FUT',  # ㄹ/를 거 이다 future-tense conjugator (hack!)
         r'전:NNG;에:JKB':                r'전에:BEF',  # before
         r'때문:NNB;에:JKB':               r'때문에:BEC',  # because
+        r'및:MAG':                       r'및:ALS',  # also connector (why is it an adverb??)
     }
 
     grammar = r"""
@@ -183,8 +184,8 @@ def parse():
         NounPhrase:         {<XPN>*<MAG>*<Adjective>*<Substantive><Title>*<Location>*<PLU>*<JX>*}
                             
         Possessive:         {<NounPhrase><JKG><NounPhrase>}
-        Component:          {<NounPhrase><JC>}
-        Connection:         {<Component><Component>*<NounPhrase>}
+        Component:          {<NounPhrase|Possessive><JC|ALS>}
+        Connection:         {<Component><Component>*<NounPhrase|Possessive>}
         
         Constituent:        {<NounPhrase|Possessive|Connection>}
         
@@ -198,6 +199,12 @@ def parse():
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
         """
+
+    # Component: { < NounPhrase > < JC | ALS > }
+    # Connection: { < Component > < Component > * < NounPhrase > }
+    # Possessive: { < NounPhrase | Connection > < JKG > < NounPhrase | Connection > }
+
+
 
     # Constituent:        {<Subject|Object|Complement>}
     # Clause:             {<Constituent>*<Predicate>}
@@ -251,14 +258,31 @@ def parse():
     parser = nltk.RegexpParser(grammar, trace=1)
     print(parser._stages)
     chunkTree = parser.parse(mappedWords)
-    print(chunkTree.pprint())
+    print("chunktree==========\n", chunkTree.pprint())
 
-    # flatten top-level subtrees into phrase structure descriptions
-    hiddenTags = { 'Substantive', 'Constituent', 'NounPhrase', 'Connection', }
-    def flatten(t, phrase):
+    # heuristic subtree simplifications
+    # toss sentence end node
+    if not isinstance(chunkTree[-1], nltk.Tree) and chunkTree[-1][1] == 'SF':
+        chunkTree.remove(chunkTree[-1])
+    # flatten connection trees
+    def flattenConnections(t):
         for st in t:
             if isinstance(st, nltk.Tree):
-                phrase = flatten(st, phrase)
+                if st.label() == 'Connection':
+                    # if Connection node, pull up component tuples into one long connection sequence
+                    for i, c in enumerate(list(st)[:-1]):
+                        st[2 * i] = c[0]
+                        st.insert(2 * i + 1, c[1])
+                else:
+                    flattenConnections(st)
+    flattenConnections(chunkTree)
+
+    # generate phrase-descriptors from top-level subtrees
+    hiddenTags = { 'Substantive', 'Constituent', 'NounPhrase', 'Connection', }
+    def flattenPhrase(t, phrase):
+        for st in t:
+            if isinstance(st, nltk.Tree):
+                phrase = flattenPhrase(st, phrase)
                 if st.label() not in hiddenTags:
                     phrase.append({"type": 'label', "word": st.label()})
             else:
@@ -268,9 +292,9 @@ def parse():
     phrases = []
     for t in chunkTree:
         if isinstance(t, nltk.Tree):
-            phrase = flatten(t, [])
+            phrase = flattenPhrase(t, [])
             if t.label() not in hiddenTags:
-                phrase.append(('label', t.label()))
+                phrase.append({"type": 'label', "word": t.label()})
             phrases.append(phrase)
         else:
             phrases.append(('word', t[0].strip()))
@@ -380,14 +404,15 @@ def parse():
                    parseTree=parseTree,
                    debugging=debugging)
 
-# wikitionary definition parser
+# ------------ wikitionary definition handler --------------
+
 wiktionary = WiktionaryParser()
 # include Korean parts-of-speech
 for pos in ('suffix', 'particle', 'determiners', 'counters', 'morphemes', ):
     wiktionary.include_part_of_speech(pos)
 
 # hangul & english unicode ranges
-ranges = [(0, 0x036f), (0x3130, 0x318F), (0xAC00, 0xD7AF), (0x1100, 0x11FF), (0x2022, 0x2022)]
+ranges = [(0, 0x036f), (0x3130, 0x318F), (0xAC00, 0xD7AF), (0x1100, 0x11FF), (0x1e00, 0x2c00), (0x2022, 0x2022)]
 isHangulOrEnglish = lambda s: all(any(ord(c) >= r[0] and ord(c) <= r[1] for r in ranges) for c in s)
 
 @konlpyApp.route('/definition/<word>', methods=['GET'])

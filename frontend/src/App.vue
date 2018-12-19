@@ -378,7 +378,7 @@ document.onmousemove = function(e) {
     .definition {
         visibility: hidden;
         visibility: hidden;
-        background-color: rgba(200, 200, 200, .75);
+        background-color: rgba(200, 200, 200, .80);
         color: #111;
         font-size: 12px;
         border-radius: 6px;
