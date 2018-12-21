@@ -93,34 +93,6 @@ def parse():
     #    tag-pattern                  replacement          subtree name-mapping             reference links
     # (r'전:NNG;에:JKB',              r'전에:PRP',      "PrepositionalPhrase:Before",  ("ttmik:lessons/level-3-lesson-10", "htsk:unit1/unit-1-lessons-17-25-2/lesson-24/#242"))     # before
 
-    class TagMap(object):
-        "holds a tag-mapping spec"
-        
-
-    def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=[], notes=None):
-        "builds a tag-map entry"
-        pass
-
-    # ----- noun sufffixes --------
-
-    # ----- verb part-of-speech transformation suffixes ---------
-
-    # ----- connection suffixes --------
-
-    # ----- prepositional phrase suffix patterns -------
-
-    tm( # 전 before X-ing prepositional suffix
-        tagPat = r'전:NNG;에:JKB', repl = r'전에:PRPP',
-        rename = "PrepositionalPhrase:Before",
-        wikiKey = '전',
-        refs = ("ttmik:lessons/level-3-lesson-10", "htsk:unit1/unit-1-lessons-17-25-2/lesson-24/#242"),
-        notes = "a time prepositional phrase suffix attached to a series of noun forms to indicate a time before that implied associated with the noun sequence",
-    )
-
-    # ------ special predicate forms ------
-
-
-
 
 
     # generate a version of the parser's original word:POC string including synthetic tag mappings above
