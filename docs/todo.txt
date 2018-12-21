@@ -1,0 +1,14 @@
+Fixes
+
+Improvements
+
+- make the tree layout based on actual text-width
+- add word popup menu that offers related wiktionary, ttmik, howtostudykorean page links
+
+Issues
+
+- 검사하기 parses as (검사 + 하 (HadaVerb) + 기 (NominalizedVerb)) - ['검사:NNG', '하:XSV', '기:ETN']
+   but I think 기 here is a verb making a causative verb out of 검사하다 (it was on a web-page button).  Khaiii classifies it as ETN, noun-modifier
+   or is 검사하기 a 명사 or 도사?
+
+- is 아니면 always "or"?  Khaiii sees it as '아니:VCN;면:EC'

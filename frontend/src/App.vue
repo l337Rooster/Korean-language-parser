@@ -35,14 +35,6 @@
                                 <span v-if="element.type == 'label'" class="leaf-tag">({{ element.word }})</span>
                             </template>
                         </div>
-                        <!--div v-for="parse in parseList">
-                            <span v-for="word in parse[0]" class="leaf-word" v-on:click="lookupWord(word)">{{ word }} </span>:
-                            <span class="leaf-tag">{{ parse[1] }}</span>
-                        </div>
-                        <br><br>
-                        <div v-for="pos in posList">
-                            <span class="leaf-word">{{pos[0]}}:</span> <span class="leaf-tag">{{pos[1]}}</span>
-                        </div-->
                     </div>
                     <svg id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
                         <g v-for="node in nodes">
@@ -63,7 +55,6 @@
             <div v-if="!parsing && debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
                 <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{debugging.posList}}</pre></div>
                 <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
-                <div class="k-row"><div class="k-cell">Parse list</div><pre class="k-cell">{{debugging.parseList}}</pre></div>
                 <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>
                 <div class="k-row"><div class="k-cell">Parse tree</div><pre class="k-cell">{{debugging.parseTree}}</pre></div>
             </div>
@@ -85,13 +76,13 @@
 export default {
     name: 'App',
 
+    // ------------ component local data ------------
 	data: function() {
 		return {
 		    parsing: false,
             mappedPosList: null,
 		    parseTree: null,
 		    posList: null,
-		    parseList: null,
 		    phrases: null,
             debugging: null,
 		    sentence: "",
@@ -122,6 +113,8 @@ export default {
 	computed: {
 	},
 
+    // ---------- component methods ---------
+
 	methods: {
 
 	    requestParse: function() {
@@ -143,7 +136,6 @@ export default {
 	                    self.mappedPosList = response.mappedPosList;
                         self.parseTree = response.parseTree;
                         self.posList = response.posList;
-                        self.parseList = response.parseList;
                         self.phrases = response.phrases;
                         self.debugging = response.debugging;
                         //  console.log(JSON.stringify(self.debugging));
