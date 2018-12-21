@@ -73,11 +73,11 @@ def parse():
     # synthetic tag patterns -
     #    patterns of these word:POC strings are preprocessed to define new
     #    synthetic word:POC tags used in the chunking grammar below
-    #  at presen, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
+    #  at present, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
 
-    tagMappings = [
-        pattern = r'들:(TM|XSN)', replacement = r'들:PLU',  # pluralizer
-        r'기:(ETN|NNG)':                r'기:GNOM',  # nominalizer
+    tagMappings = {
+        r'들:(TM|XSN)':                  r'들:PLU',  # pluralizer
+        r'기:(ETN|NNG)':                  r'기:GNOM',  # nominalizer
         r'(ㄴ|는|ㄹ):ETM;것:NNB':         r'\1 것:GNOM',  # nominalizer
         r'(은|는):JX':                   r'\1:JKS',  # turn topic-marking partcile into subject-marker (I think this is right??)
         r'(ㄹ|을|를):ETM;거:NNB;이:VCP':   r'\1 거 이:FUT',  # ㄹ/를 거 이다 future-tense conjugator (hack!)
@@ -86,7 +86,16 @@ def parse():
         r'및:MAG':                       r'및:ALS',  # also connector (why is it an adverb??)
         r'또는:MAG':                      r'또는:ALT',  # alternative connector (why is it an adverb??)
         r'에:JKB;(대하|관하):VV;([^:]+):EC': r'에 \1\2:PRP',  # preposition "about
-    ]
+    }
+
+    # prepositional phrase suffix-patterns  (generate a <PRPP> pos-tag + metadata to label the parsing
+
+    #    tag-pattern                  replacement          subtree name-mapping             reference links
+    # (r'전:NNG;에:JKB',              r'전에:PRP',      "PrepositionalPhrase:Before",  ("ttmik:lessons/level-3-lesson-10", "htsk:unit1/unit-1-lessons-17-25-2/lesson-24/#242"))     # before
+
+    # special predicate forms
+
+
 
     # generate a version of the parser's original word:POC string including synthetic tag mappings above
     tagString = ';' + posString + ';'
@@ -125,12 +134,13 @@ def parse():
         
         Constituent:        {<NounPhrase|Possessive|Connection>}
         
-        Before:             {<Constituent><BEF>}
-        Because:            {<Constituent><BEC>}
-    
         Complement:         {<Constituent><JKC>} 
         Object:             {<Constituent><JKO>}  
-        Subject:            {<Constituent><JKS>}   
+        Subject:            {<Constituent><JKS>}
+        
+        Before:             {<Constituent|Object|Subject>*<Constituent><BEF>}
+        Because:            {<Constituent|Object|Subject>*<Constituent><BEC>}
+    
         Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
 
@@ -273,10 +283,14 @@ if __name__ == "__main__":
 # 창문 열어도 돼요?
 
 # 중국음식을 먹었다. 중국음식을 좋아하기 때문이에요.      중국음식을 먹었다. 왜냐하면 중국음식을 좋아하기 때문이에요.  (written)
-# 중국음식을 좋아하기 때문에 중국음식을 먹었어요.
-# 여기 오기 전에 뭐 했어요?
+# 중국 음식을 좋아하기 때문에 중국 음식을 먹었어요.   중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.
+# 여기 오기 전에 뭐 했어요?     밥을 먹은 후에 손을 씻다.     그는 일하기 전에 달렸다.
 # 나는 그것에 대해서 책을 쓸 거야
 # 그 회계사는 정부에 대해서 나쁜 말을 했어요
+# 네가 요리하는 것 좋아해요
+#
+#  그가 웜을 먹었 기 때문에 아팠다.
+#
 
 
 
