@@ -5,6 +5,7 @@ __author__ = 'jwainwright'
 
 import re
 from collections import defaultdict
+from pprint import pprint
 
 import nltk
 
@@ -20,7 +21,7 @@ class TagMap(object):
         self.tagPat = tagPat
         if rename:
             # uniquify synthetic tag & record it if this mapping includes a chunktree node renaming
-            self.repl = repl + ("_%d" % self.tagOrdinal); self.tagOrdinal += 1
+            self.repl = repl + ("_%d" % TagMap.tagOrdinal); TagMap.tagOrdinal += 1
             self.newTag = self.repl.split(':')[1] # extract this pattern's synthetic tag
         else:
             self.repl = repl
@@ -40,6 +41,8 @@ class TagMap(object):
             if tm.rename and ':' in tm.rename:
                 old, new = tm.rename.split(':')
                 cls.nodeNameMaps[tm.newTag][old] = new
+        #
+        pprint(cls.nodeNameMaps)
 
     @classmethod
     def mapTags(cls, posString):
@@ -55,26 +58,23 @@ class TagMap(object):
     def mapNodeNames(cls, tree):
         "maps NLTK ChunkTree node names under tag-mapping 'rename' definitions"
         #
-        def walkTree(t):
+        def walkTree(t, parentList):
             # walk tree looking for terminal nodes with tags that are in the nodeNameMap table
             #   search up for ancestor node with label in the above-selected nodeNameMap entry, taking label rename
             for st in t:
                 if isinstance(st, nltk.Tree):
-                    walkTree(st)
+                    walkTree(st, [st] + parentList)
                 else:
                     nm = cls.nodeNameMaps.get(st[1])
                     if nm:
                         # we have a terminal node for a synthetic tag, run up parents looking for the map's old label
-                        node = t
-                        while node:
-                            if node.label() in nm:
+                        for p in parentList:
+                            if p.label() in nm:
                                 # found matching parent node, rename
-                                node.set_label(nm[node.label()])
+                                p.set_label(nm[p.label()])
                                 return
-                            else:
-                                node = node.parent
         #
-        walkTree(tree)
+        walkTree(tree, [tree])
 
 
 # --------------- tag-mapping specs ----------------
@@ -84,7 +84,7 @@ class TagMap(object):
 #    synthetic word:POC tags used in the chunking grammar below
 #  at present, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
 
-def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=[], notes=None):
+def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=(), notes=None):
     "build & store a tag-map entry"
     TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, rename, wikiKey, refs, notes)
 
@@ -144,6 +144,13 @@ tm( # 전 "before X-ing" prepositional suffix
     notes="a time prepositional phrase suffix attached to a series of noun forms to indicate a time before that implied associated with the noun sequence",
 )
 
+tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
+    tagPat=r'(후|다음|뒤):NNG;에:JKB', repl=r'\1에:PRP',
+    rename="PrepositionalPhrase:After",
+    wikiKey='후',
+    refs=("ttmik:/lessons/level-3-lesson-19;ticket=153893", "htsk:/unit1/unit-1-lessons-17-25-2/lesson-24/"),
+)
+
 tm( # 때문에 "because X" prepositional suffix
     tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
     rename="PrepositionalPhrase:Because",
@@ -157,12 +164,18 @@ tm( # 에대해 "about X" prepositional suffix
     wikiKey='대하다',
     refs=("htsk:/unit1/unit-1-lessons-9-16/lesson-13/#kp6"),
 )
-# ------ predicate ending forms ------  mapping to VSX.* & renaming VerbSuffix
+# ------ predicate ending forms ------  mapping to PSX.* & renaming VerbSuffix
 
-tm( # ㄹ/를 거 이다 future-tense conjugator
-    tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:VSX',
+tm( # 었 past-tense suffix
+    tagPat=r'(았|었):EP', repl=r'\1:PSX',
+    rename="VerbSuffix:PastTense",
+    refs=("ttmik:/lessons/l1l17", "htsk:/unit1/unit-1-lessons-1-8/unit-1-lesson-5/#vpast"),
+    notes="",
+)
+
+tm( # ㄹ/를 거 이다 future-tense suffix pattern
+    tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:PSX',
     rename="VerbSuffix:FutureTense",
-    wikiKey='',
     refs=("ttmik:/lessons/level-2-lesson-1-future-tense", "htsk:/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"),
     notes="",
 )

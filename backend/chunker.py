@@ -16,11 +16,11 @@ class Chunker(object):
          AuxiliaryVerb:      {<EC><VX|VV>}
          Adverb:             {<MAG>}
          NominalizedVerb:    {<VV|HadaVerb><EP>*<NOM.*>}
-         Adjective:          {<Adverb>*<VA><ETM>}
+         Adjective:          {<Adverb>*<VA|VV|HadaVerb><ETM>}
          DescriptiveVerb:    {<VA>}
          Verb:               {<VV|VCN|HadaVerb|DescriptiveVerb>}
         
-         VerbSuffix:         {<EP|VSX.*>*<EF|EC>}
+         VerbSuffix:         {<EP|PSX.*>*<EF|EC>}
     
          Location:           {<JKB>}
          Title:              {<XSN>}
@@ -40,11 +40,11 @@ class Chunker(object):
     
          Constituent:        {<NounPhrase|Possessive|Connection>}
     
-         Complement:         {<Constituent><JKC>} 
-         Object:             {<Constituent><JKO>}  
-         Subject:            {<Constituent><JKS>}
+         PrepositionalPhrase: {<Constituent|Object|Adjective>*<Constituent|Object|Adjective><PRP.*>}
     
-         PrepositionalPhrase: {<Constituent|Object|Subject>*<Constituent><PRP.*>}
+         Complement:         {<Constituent><JKC>} 
+         Object:             {<Constituent|PrepositionalPhrase><JKO>}  
+         Subject:            {<Constituent|PrepositionalPhrase><JKS>}
     
          Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
          Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
