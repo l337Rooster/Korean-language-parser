@@ -46,7 +46,7 @@
                                            v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan>
                                     <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
                                 </template>
-                                <tspan v-else class="node-tag">{{ node.tag }}</tspan>
+                                <tspan v-else class="node-tag" @click.prevent.stop="nodePopupMenuClick($event, node)">{{ node.tag }}</tspan>
                             </text>
                         </g>
                     </svg>
@@ -69,6 +69,12 @@
             </div>
         </div>
     </div>
+
+    <vue-simple-context-menu
+        :options="options"
+        ref="nodePopupMenu"
+        @optionClicked="nodePopupMenuItemSelected">
+    </vue-simple-context-menu>
 </template>
 
 <script>
@@ -254,6 +260,10 @@ export default {
             this.definition = [];
             this.$refs["defPopup"].classList.remove("show");
             this.mouseEnterLoc = null;
+        },
+
+        // handle node context-menu popup
+        nodePopupMenuClick: function(event, node) {
         }
 	}
 }
