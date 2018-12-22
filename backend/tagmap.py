@@ -3,95 +3,179 @@
 #
 __author__ = 'jwainwright'
 
+import re
+from collections import defaultdict
+
+import nltk
 
 class TagMap(object):
     "holds a tag-mapping spec"
 
     tagMappings = {}
+    tagMapPatterns = []
+    nodeNameMaps = defaultdict(dict)
+    tagOrdinal = 0
 
     def __init__(self, tagPat, repl, rename, wikiKey, refs, notes):
         self.tagPat = tagPat
-        self.repl = repl
+        if rename:
+            # uniquify synthetic tag & record it if this mapping includes a chunktree node renaming
+            self.repl = repl + ("_%d" % self.tagOrdinal); self.tagOrdinal += 1
+            self.newTag = self.repl.split(':')[1] # extract this pattern's synthetic tag
+        else:
+            self.repl = repl
         self.rename = rename
         self.wikiKey = wikiKey
         self.refs = refs
         self.notes = notes
 
+    @classmethod
+    def completeInit(cls):
+        "complete tag-mapping setup"
+        # build mapping pattern list sorted in reducing pattern length to control transform ordering (todo: might need explicit ordering)
+        cls.tagMapPatterns = sorted(((tm.tagPat, tm) for tm in cls.tagMappings.values()), key=lambda x: len(x[0]), reverse=True)
+        # build node-name mapping table
+        #   maps uniquified synthetic tag to tables that map ancestor node label to renamed label
+        for tm in cls.tagMappings.values():
+            if tm.rename and ':' in tm.rename:
+                old, new = tm.rename.split(':')
+                cls.nodeNameMaps[tm.newTag][old] = new
 
-def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=[], notes=None):
-    "build & store a tag-map entry"
-    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, rename, wikiKey, refs, notes)
+    @classmethod
+    def mapTags(cls, posString):
+        "generate a version of the parser's original word:POC string under the below-defined synthetic tag mappings"
+        # returns a list of (tag,word) tuples
+        tagString = ';' + posString + ';'
+        for tagPat, tm in cls.tagMapPatterns:
+            tagString = re.sub(';' + tagPat + ';', ';' + tm.repl + ';', tagString)
+        #
+        return [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
 
+    @classmethod
+    def mapNodeNames(cls, tree):
+        "maps NLTK ChunkTree node names under tag-mapping 'rename' definitions"
+        #
+        def walkTree(t):
+            # walk tree looking for terminal nodes with tags that are in the nodeNameMap table
+            #   search up for ancestor node with label in the above-selected nodeNameMap entry, taking label rename
+            for st in t:
+                if isinstance(st, nltk.Tree):
+                    walkTree(st)
+                else:
+                    nm = cls.nodeNameMaps.get(st[1])
+                    if nm:
+                        # we have a terminal node for a synthetic tag, run up parents looking for the map's old label
+                        node = t
+                        while node:
+                            if node.label() in nm:
+                                # found matching parent node, rename
+                                node.set_label(nm[node.label()])
+                                return
+                            else:
+                                node = node.parent
+        #
+        walkTree(tree)
+
+
+# --------------- tag-mapping specs ----------------
 
 # synthetic tag patterns -
 #    patterns of these word:POC strings are preprocessed to define new
 #    synthetic word:POC tags used in the chunking grammar below
 #  at present, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
 
-tagMappings = {
-    r'들:(TM|XSN)': r'들:PLU',  # pluralizer
-    r'기:(ETN|NNG)': r'기:GNOM',  # nominalizer
-    r'(ㄴ|는|ㄹ):ETM;것:NNB': r'\1 것:GNOM',  # nominalizer
-    r'(은|는):JX': r'\1:JKS',  # turn topic-marking partcile into subject-marker (I think this is right??)
-    r'(ㄹ|을|를):ETM;거:NNB;이:VCP': r'\1 거 이:FUT',  # ㄹ/를 거 이다 future-tense conjugator (hack!)
-    r'전:NNG;에:JKB': r'전에:BEF',  # before
-    r'때문:NNB;에:JKB': r'때문에:BEC',  # because
-    r'및:MAG': r'및:ALS',  # also connector (why is it an adverb??)
-    r'또는:MAG': r'또는:ALT',  # alternative connector (why is it an adverb??)
-    r'에:JKB;(대하|관하):VV;([^:]+):EC': r'에 \1\2:PRP',  # preposition "about
-}
+def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=[], notes=None):
+    "build & store a tag-map entry"
+    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, rename, wikiKey, refs, notes)
 
+# ----- simple tag transforms --------
 
-# ----- noun sufffixes --------  map to NSX + NounSuffix node rename
+tm(  # 은/는 - turn topic-marking partcile into subject-marker (I think this is right??)
+    tagPat=r'(은|는):JX', repl=r'\1:JKS',
+)
 
-tm(  # 들 pluralizer
-    tagPat=r'들:(TM|XSN)', repl=r'들:NSX',
-    rename="NounSuffix:Plural",
-    wikiKey='',
-    refs=("ttmik:", "htsk:"),
+# note that in the defs below, any def that includes a node rename field will add a unique integer suffix to the replacing synthetic tag
+#  so that unambiguous node renaming is possible.  Such synthetic tags MUST be included with a trailing ".*" in the chunking grammar so that it
+#  matches all gnerated integer-suffixed variations of the base synthetic tag
+
+# ----- dependent (aka bound) noun forms --------  map to DNF.* + DependentNounForm node rename
+
+# ----- particles --------  map to PRT.* + Particle node rename
+
+tm( # 들 pluralizer
+    tagPat=r'들:(TM|XSN)', repl=r'들:PRT',
+    rename="Particle:Plural",
+    refs=("htsk:/unit1/unit-1-lessons-9-16/lesson-12/#kp1", ),
+)
+
+# ----- nominal forms -- transforming verbs & adjectives to nouns ---------  mapping (usually) to NOM.*
+
+tm( # 기/음 nominalizer
+    tagPat=r'(기|음):(ETN|NNG)', repl=r'\1:NOM',
+    refs=("ttmik:/lessons/level-2-lesson-19", "htsk:/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-29"),
+)
+
+tm( # 는것 nominalizer
+    tagPat=r'(ㄴ|는|ㄹ):ETM;것:NNB', repl=r'\1 것:NOM',
+    wikiKey='것',
+    refs=("ttmik:/lessons/level-2-lesson-19", "htsk:/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-26/"),
     notes="",
 )
 
-tm(  # 들 pluralizer
-    tagPat=r'들', repl=r':NSX',
-    rename="NounSuffix:",
-    wikiKey='',
-    refs=("ttmik:", "htsk:"),
-    notes="",
+# ----- connection suffixes --------  mapping to CON.* & renaming Connection
+
+tm( # 및 "also" connecting adverb(??)
+    tagPat=r'및:MAG', repl=r'및:CON',
+    rename="Connection:Also",
 )
 
-tm(  # 들 pluralizer
-    tagPat=r'들', repl=r':NSX',
-    rename="NounSuffix:",
-    wikiKey='',
-    refs=("ttmik:", "htsk:"),
-    notes="",
+tm( # 또는 "alternatives" connecting adverb(??)
+    tagPat=r'또는:MAG', repl=r'또는:CON',
+    rename="Connection:Alternatives",
 )
 
-tm(  # 들 pluralizer
-    tagPat=r'들', repl=r':NSX',
-    rename="NounSuffix:",
-    wikiKey='',
-    refs=("ttmik:", "htsk:"),
-    notes="",
-)
+# ----- prepositional phrase suffix patterns -------  mapping to PRP.* & renaming PrepositionalPhrase
 
-
-# ----- verb part-of-speech transformation suffixes ---------
-
-# ----- connection suffixes --------
-
-# ----- prepositional phrase suffix patterns -------
-
-tm(  # 전 "before X-ing" prepositional suffix
-    tagPat=r'전:NNG;에:JKB', repl=r'전에:PRPP',
+tm( # 전 "before X-ing" prepositional suffix
+    tagPat=r'전:NNG;에:JKB', repl=r'전에:PRP',
     rename="PrepositionalPhrase:Before",
     wikiKey='전',
     refs=("ttmik:lessons/level-3-lesson-10", "htsk:unit1/unit-1-lessons-17-25-2/lesson-24/#242"),
     notes="a time prepositional phrase suffix attached to a series of noun forms to indicate a time before that implied associated with the noun sequence",
 )
 
-# ------ special predicate forms ------
+tm( # 때문에 "because X" prepositional suffix
+    tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
+    rename="PrepositionalPhrase:Because",
+    wikiKey='때문',
+    refs=("htsk:/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"),
+)
 
+tm( # 에대해 "about X" prepositional suffix
+    tagPat=r'에:JKB;(대하|관하):VV;([^:]+):EC', repl=r'에 \1\2:PRP',
+    rename="PrepositionalPhrase:About",
+    wikiKey='대하다',
+    refs=("htsk:/unit1/unit-1-lessons-9-16/lesson-13/#kp6"),
+)
+# ------ predicate ending forms ------  mapping to VSX.* & renaming VerbSuffix
 
+tm( # ㄹ/를 거 이다 future-tense conjugator
+    tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:VSX',
+    rename="VerbSuffix:FutureTense",
+    wikiKey='',
+    refs=("ttmik:/lessons/level-2-lesson-1-future-tense", "htsk:/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"),
+    notes="",
+)
 
+# ------------
+
+TagMap.completeInit()
+
+# tm(  #
+#     tagPat=r'', repl=r':NSX',
+#     rename="NounSuffix:",
+#     wikiKey='',
+#     refs=("ttmik:", "htsk:"),
+#     notes="",
+# )
+#
