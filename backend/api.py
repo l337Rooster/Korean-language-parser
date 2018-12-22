@@ -82,6 +82,9 @@ def parse():
     # apply any synthetic-tag-related node renamings
     TagMap.mapNodeNames(chunkTree)
 
+    # extract popup menu item definitions for implicated nodes
+    popups = TagMap.getPopUps(chunkTree)
+
     # build descriptive phrase list
     phrases = Chunker.phraseList(chunkTree)
 
@@ -99,13 +102,15 @@ def parse():
     debugging = dict(posList=pformat(words),
                      mappedPosList=pformat(mappedPosList),
                      phrases=pformat(phrases),
-                     parseTree=pformat(parseTree))
+                     parseTree=pformat(parseTree),
+                     popups=popups)
 
     return jsonify(result="OK",
                    posList=words,
                    mappedPosList=mappedPosList,
                    phrases=phrases,
                    parseTree=parseTree,
+                   popups=popups,
                    debugging=debugging)
 
 # ------------ wikitionary definition handler --------------

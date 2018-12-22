@@ -44,9 +44,12 @@
                                 <template v-if="node.word">
                                     <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseenter="mouseEnterWord(node, $event)"
                                            v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan>
-                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
+                                    <!-- tspan class="leaf-word" @click.prevent.stop="wordPopupMenuClick(node, $event)"
+                                           v-on:mouseenter="mouseEnterWord(node, $event)"
+                                           v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan>
+                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan-->
                                 </template>
-                                <tspan v-else class="node-tag" @click.prevent.stop="nodePopupMenuClick($event, node)">{{ node.tag }}</tspan>
+                                <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
                         </g>
                     </svg>
@@ -57,6 +60,7 @@
                 <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
                 <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>
                 <div class="k-row"><div class="k-cell">Parse tree</div><pre class="k-cell">{{debugging.parseTree}}</pre></div>
+                <div class="k-row"><div class="k-cell">Popups</div><pre class="k-cell">{{debugging.popups}}</pre></div>
             </div>
             <div v-if="wiktionaryUrl" class="k-row">
                 <iframe :src="wiktionaryUrl"  class="wiktionary-iframe"></iframe>
@@ -68,16 +72,20 @@
                 </div>
             </div>
         </div>
+
+        <vue-simple-context-menu
+            :options="wordPopupMenuOptions"
+            ref="wordPopupMenu"
+            @optionClicked="wordPopupMenuItemSelected">
+        </vue-simple-context-menu>
     </div>
 
-    <vue-simple-context-menu
-        :options="options"
-        ref="nodePopupMenu"
-        @optionClicked="nodePopupMenuItemSelected">
-    </vue-simple-context-menu>
 </template>
 
 <script>
+import Vue from 'vue'
+import VueSimpleContextMenu from 'vue-simple-context-menu'
+Vue.component('vue-simple-context-menu', VueSimpleContextMenu)
 
 export default {
     name: 'App',
@@ -90,6 +98,7 @@ export default {
 		    parseTree: null,
 		    posList: null,
 		    phrases: null,
+            popups: null,
             debugging: null,
 		    sentence: "",
 		    error: "",
@@ -110,6 +119,7 @@ export default {
             defPopup: null,
             mouseEnterX: null, mouseEnterY: null,
             definitionTimeout: null,
+            wordPopupMenuOptions: []
 		};
 	},
 
@@ -143,6 +153,7 @@ export default {
                         self.parseTree = response.parseTree;
                         self.posList = response.posList;
                         self.phrases = response.phrases;
+                        self.popups = response.popups;
                         self.debugging = response.debugging;
                         //  console.log(JSON.stringify(self.debugging));
                         self.buildDisplay();
@@ -263,7 +274,16 @@ export default {
         },
 
         // handle node context-menu popup
-        nodePopupMenuClick: function(event, node) {
+        wordPopupMenuClick: function(node, event) {
+	        console.log(node.word);
+	        // load node-specific popup options
+            this.wordPopupMenuOptions = this.popups[node.word];
+            console.log(this.wordPopupMenuOptions)
+            this.$refs["wordPopupMenu"].showMenu(event, node)
+        },
+
+        wordPopupMenuItemSelected: function(option) {
+
         }
 	}
 }
