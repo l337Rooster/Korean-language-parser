@@ -61,7 +61,7 @@ class TagMap(object):
         def walkTree(t, parentList):
             # walk tree looking for terminal nodes with tags that are in the nodeNameMap table
             #   search up for ancestor node with label in the above-selected nodeNameMap entry, taking label rename
-            for st in t:
+            for i, st in enumerate(t):
                 if isinstance(st, nltk.Tree):
                     walkTree(st, [st] + parentList)
                 else:
@@ -70,23 +70,110 @@ class TagMap(object):
                         # we have a terminal node for a synthetic tag, run up parents looking for the map's old label
                         for p in parentList:
                             if p.label() in nm:
-                                # found matching parent node, rename
+                                # found matching parent node, rename node & trim POS tag
                                 p.set_label(nm[p.label()])
+                                t[i] = (st[0], st[1].split('_')[0])
                                 return
         #
         walkTree(tree, [tree])
 
+def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=(), notes=None):
+    "build & store a tag-map entry"
+    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, rename, wikiKey, refs, notes)
 
-# --------------- tag-mapping specs ----------------
+# -------- parts-of-speech descriptors ---------------
+
+partsOfSpeech = {
+    "NNG": "Noun",
+    "NNP": "Noun",
+    "NNB": "Bound Noun",
+    "NR": "Number",
+    "NP": "Pronoun",
+    "VV": "Verb",
+    "VA": "Adjective",
+    "VX": "Auxiliar Verb",
+    "VCP": "VCP",
+    "VCN": "VCN",
+    "MM": "MM",
+    "MAG": "MAG",
+    "MAJ": "MAJ",
+    "IC": "IC",
+    "JKS": "JKS",
+    "JKC": "JKC",
+    "JKG": "JKG",
+    "JKO": "JKO",
+    "JKB": "JKB",
+    "JKV": "JKV",
+    "JKQ": "JKQ",
+    "JC": "JC",
+    "JX": "JX",
+    "EP": "EP",
+    "EF": "EF",
+    "EC": "EC",
+    "ETN": "ETN",
+    "ETM": "ETM",
+    "XPN": "XPN",
+    "XSN": "XSN",
+    "XSV": "XSV",
+    "XSA": "XSA",
+    "XR": "XR",
+    "SF": "SF",
+    "SE": "SE",
+    "SS": "SS",
+    "SP": "SP",
+    "SO": "SO",
+    "SW": "SW",
+    "SH": "SH",
+    "SL": "SL",
+    "SN": "SN",
+    "NF": "NF",
+    "NV": "NV",
+    "NA": "NA",
+}
+
+"""
+NNG	일반 명사	General noun
+NNP	고유 명사	Distinguished noun
+NNB	의존 명사	Dependent noun
+NR	수사	Numerals
+NP	대명사	Pronoun
+VV	동사	Verb
+VA	형용사	Adjective
+VX	보조 용언	Secondary verb
+VCP	긍정 지정사	Positive determiner
+VCN	부정 지정사	Negative designator
+MM	관형사	Pre-noun (관형사) 
+MAG	일반 부사	General adverb
+MAJ	접속 부사	Junction adverb
+		
+IC	감탄사	Interjection (감탄사) 
+JKS	주격 조사	Subject Postposition (주격 조사): -이/가, -께서 (honorific) 
+JKC	보격 조사	Complement Postposition (보격 조사): -이/가 (after consonant/vowel, respectively) 
+JKG	관형격 조사	Pre-nounal Postposition (관형격 조사): -의[of]
+JKO	목적격 조사	Object Postposition (목적격 조사): -을/를 (after consonant/vowel, respectively) 
+JKB	부사격 조사	Adverbial Postposition (부사격 조사) -에[at, to], -에게[to], -께[to], -에서[at, from], -로/으로[to] 
+JKV	호격 조사	Vocative Postposition (호격 조사): -아/야, -(이)여, -(이)시여
+JKQ	인용격 조사	
+JC	접속 조사	Connection Postposition (접속 조사): -와/과: after vowel and after consonant, respectively 
+		
+JX	보조사	Supplement Postposition (보조사) auxiliary particles
+		
+EP	선어말 어미	"pre ending", "head suffix" often tense-head suffix like 었 or 시
+EF	종결 어미	predicate closing suffix
+EC	연결 어미	connecting suffix
+ETN	명사형 전성 어미	Noun form of Transmutation Suffix
+ETM	관형형 전성 어미	Pre-noun form of Transmutation Suffix
+XPN	체언 접두사	Substantive prefix
+		
+XSN	명사파생 접미사	noun-derived suffix
+"""
+
+# ================================== tag-mapping specs ==============================
 
 # synthetic tag patterns -
 #    patterns of these word:POC strings are preprocessed to define new
 #    synthetic word:POC tags used in the chunking grammar below
 #  at present, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
-
-def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=(), notes=None):
-    "build & store a tag-map entry"
-    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, rename, wikiKey, refs, notes)
 
 # ----- simple tag transforms --------
 
@@ -100,12 +187,18 @@ tm(  # 은/는 - turn topic-marking partcile into subject-marker (I think this i
 
 # ----- dependent (aka bound) noun forms --------  map to DNF.* + DependentNounForm node rename
 
-# ----- particles --------  map to PRT.* + Particle node rename
+# ----- particles --------  map to PRT.* + NounPhrase node rename
 
 tm( # 들 pluralizer
     tagPat=r'들:(TM|XSN)', repl=r'들:PRT',
-    rename="Particle:Plural",
+    rename="NounPhrase:Plural",
     refs=("htsk:/unit1/unit-1-lessons-9-16/lesson-12/#kp1", ),
+)
+
+tm( # 에/에서 Location/Time marker
+    tagPat=r'(에|에서):JKB', repl=r'\1:PRT',
+    rename="NounPhrase:Location/Time",
+    refs=("ttmik:/lessons/l1l18", "htsk:/unit-1-lessons-9-16/lesson-12/#kp3", ),
 )
 
 # ----- nominal forms -- transforming verbs & adjectives to nouns ---------  mapping (usually) to NOM.*
@@ -180,6 +273,14 @@ tm( # ㄹ/를 거 이다 future-tense suffix pattern
     notes="",
 )
 
+tm( # 고 싶다 want-to suffix pattern
+    tagPat=r'고:EC;싶:VX', repl=r'고 싶:PSX',
+    rename="VerbSuffix:WantTo",
+    wikiKey="싶다",
+    refs=("ttmik:/lessons/l1l13", "htsk:/unit1/unit-1-lessons-17-25-2/lesson-17/#co5"),
+    notes="",
+)
+
 # ------------
 
 TagMap.completeInit()
@@ -192,3 +293,7 @@ TagMap.completeInit()
 #     notes="",
 # )
 #
+
+##  Questions
+#
+#   점심을 먹은 다음에, 도서관에 갔어요.  - should 'after' also bind the related (opening) object?;   Should N에 phrase be called "Location"? - ambiguous with AtTime

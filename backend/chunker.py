@@ -25,7 +25,7 @@ class Chunker(object):
          Location:           {<JKB>}
          Title:              {<XSN>}
          Preposition:        {<PRPxx>}
-         Particle:           {PRT.*}
+         Particle:           {<PRT.*>}
     
          Noun:               {<NN.*|NR|SL>}       
          Pronoun:            {<NP>}
