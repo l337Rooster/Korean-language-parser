@@ -46,8 +46,8 @@
                                            v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan>
                                     <!-- tspan class="leaf-word" @click.prevent.stop="wordPopupMenuClick(node, $event)"
                                            v-on:mouseenter="mouseEnterWord(node, $event)"
-                                           v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan>
-                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan-->
+                                           v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan-->
+                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
@@ -70,6 +70,11 @@
                     <div class="k-cell">{{def.partOfSpeech}}:</div>
                     <div class="k-cell"><ul><li v-for="w in def.text"><span>{{w}}</span></li></ul></div>
                 </div>
+                <div class="k-row"></div>
+                <div class="k-row">
+                    <div class="k-cell">References:</div>
+                    <div class="k-cell"><ul><li  v-for="ref in references"><a href="{{re.slug}}">{{ref.name}}</a></li></ul></div>
+                </div> references
             </div>
         </div>
 
@@ -119,7 +124,8 @@ export default {
             defPopup: null,
             mouseEnterX: null, mouseEnterY: null,
             definitionTimeout: null,
-            wordPopupMenuOptions: []
+            wordPopupMenuOptions: [],
+            references: []
 		};
 	},
 
@@ -252,6 +258,8 @@ export default {
                                 popup.style.top = (y + 12) + 'px';
                                 popup.style.left = (x + 12) + 'px';
                                 popup.classList.add("show");
+                                // add reference links
+                                //self.references = this.popups[node.word];
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
