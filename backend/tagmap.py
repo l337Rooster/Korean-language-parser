@@ -257,102 +257,53 @@ TagMap.completeInit()
 # -------- parts-of-speech descriptors ---------------
 
 partsOfSpeech = {
-    "NNG": ("Noun", "Substantive: general noun", "체언: 일반 명사"),
-    "NNP": ("Proper Noun", "Substantive: proper noun", "체언:	고유 명사"),
-    "NNB": ("Noun", "Substantive: bound noun, eg 것", "체언: 의존 명사"),
-    "NR": "Number",
-    "NP": "Pronoun",
-    "VV": "Verb",
-    "VA": "Adjective",
-    "VX": "Verb",
-    "VCP": ("Adjective", "Inflectional word: the positive copula - 이다", "용언: 긍정 지정사"),
-    "VCN": ("Adjective", "Inflectional word: the negative copula - 아니다", "용언:	부정 지정사"),
-    "MM": "Determiner",
-    "MAG": "Adverb",
-    "MAJ": "Adverb",
-    "IC": "IC",
-    "JKS": "JKS",
-    "JKC": "JKC",
-    "JKG": "JKG",
-    "JKO": "JKO",
-    "JKB": "JKB",
-    "JKV": "JKV",
-    "JKQ": "JKQ",
-    "JC": "JC",
-    "JX": "JX",
-    "EP": "EP",
-    "EF": "EF",
-    "EC": "EC",
-    "ETN": "ETN",
-    "ETM": "ETM",
-    "XPN": "XPN",
-    "XSN": "XSN",
-    "XSV": "XSV",
-    "XSA": "XSA",
-    "XR": "XR",
-    "SF": "SF",
-    "SE": "SE",
-    "SS": "SS",
-    "SP": "SP",
-    "SO": "SO",
-    "SW": "SW",
-    "SH": "SH",
-    "SL": "SL",
-    "SN": "SN",
-    "NF": "NF",
-    "NV": "NV",
-    "NA": "NA",
+  #  POS-tag    (Wiktionary POS, Khaiii class,         Detail,                          Korean class:POS)
+    "NNG":      ("Noun",        "Substantive",      "General noun",                     "체언: 일반 명사"),
+    "NNP":      ("Proper Noun", "Substantive",      "Proper noun",                      "체언: 고유 명사"),
+    "NNB":      ("Noun",        "Substantive",      "Bound noun, e.g. 것",               "체언: 의존 명사"),
+    "NP":       ("Pronoun",     "Substantive",      "Pronoun",                          "체언	: 대명사"),
+    "NR":       ("Noun",        "Substantive",      "Number",                           "체언	: 수사"),
+    "VV":       ("Verb",        "Inflectional",     "Verb",                             "용언	: 동사"),
+    "VA":       ("Adjective",   "Inflectional",     "Descriptive verb / Adjective",     "용언	: 형용사"),
+    "VX":       ("Verb",        "Inflectional",     "Auxiliary or supplimental verb",   "용언: 보조 용언"),
+    "VCP":      ("Adjective",   "Inflectional",     "The positive copula - 이다",        "용언: 긍정 지정사"),
+    "VCN":      ("Adjective",   "Inflectional",     "The negative copula - 아니다",       "용언:	부정 지정사"),
+    "MM":       ("Determiner",  "Modifier",         "Determiner",                       "수식언: 관형사"),
+    "MAG":      ("Adverb",      "Modifier",         "General adverb",                   "수식언: 일반 부사"),
+    "MAJ":      ("Adverb",      "Modifier",         "Joining adverb, e.g. 그래서",        "수식언: 접속 부사"),
+    "IC":       ("Interjection","Independent",      "Interjection e.g. 야!",             "독립언: 감탄사"),
+    "JKS":      ("Particle",    "Post-position",    "Subject-marking particle",         "관계언: 주격 조사"),
+    "JKC":      ("Particle",    "Post-position",    "Subject-marker for complement words", "관계언: 보격 조사"),
+    "JKG":      ("Particle",    "Post-position",    "Possessive-marker 의",              "관계언: 관형격 조사"),
+    "JKO":      ("Particle",    "Post-position",    "Object-marking particle",          "관계언: 목적격 조사"),
+    "JKB":      ("Particle",    "Post-position",    "Adverbial particle",               "관계언: 부사격 조사"),
+    "JKV":      ("Particle",    "Post-position",    "Vocative case marker",             "관계언: 호격 조사"),
+    "JKQ":      ("Particle",    "Post-position",    "Quotation marker",                 "관계언: 인용격 조사"),
+    "JX":       ("Particle",    "Post-position",    "Topic-marking particle",           "관계언: 보조사"),
+    "EP":       ("Suffix",      "Dependent form",   "Suffix-head, e.g. 었 or 시",        "의존 형태	: 선어말 어미"),
+    "EF":       ("Suffix",      "Dependent form",   "Predicate-closing suffix",         "의존 형태	: 종결 어미"),
+    "EC":       ("Suffix",      "Dependent form",   "Verb/Auxiliary connecting suffix", "의존 형태	: 연결 어미"),
+    "ETN":      ("Suffix",      "Dependent form",   "Verb-nominalizing suffix, e.g. 기", "의존 형태: 명사형 전성 어미"),
+    "ETM":      ("Suffix",      "Dependent form",   "Verb-to-adjective transforming suffix, e.g. 은", "의존 형태: 관형형 전성 어미"),
+    "XPN":      ("Prefix",      "Dependent form",   "Substantive prefix",               "의존 형태	: 체언 접두사"),
+    "XSN":      ("", "Dependent form", "", "의존 형태: 명사 파생 접미사"),
+    "XSV":      ("", "Dependent form", "", "의존 형태: 동사 파생 접미사"),
+    "XSA":      ("", "Dependent form", "", "의존 형태: 형용사 파생 접미사"),
+    "XR":       ("", "Dependent form", "", "의존 형태: 어근"),
+    "SF":       ("", "Punctuation", "", "기호; 마침표, 물음표, 느낌표"),
+    "SP":       ("", "Punctuation", "", "기호: 쉼표, 가운뎃점, 콜론, 빗금"),
+    "SS":       ("", "Punctuation", "", "기호: 따옴표, 괄호표, 줄표"),
+    "SE":       ("", "Punctuation", "", "기호: 줄임표"),
+    "SO":       ("", "Punctuation", "", "기호: 붙임표(물결, 숨김, 빠짐)"),
+    "SL":       ("", "Punctuation", "", "기호: 외국어"),
+    "SH":       ("", "Punctuation", "", "기호: 한자"),
+    "SW":       ("", "Punctuation", "", "기호: 기타 기호(논리, 수학 기호, 화폐 기호 등)"),
+    "SWK":      ("", "Punctuation", "", "기호: 한글 자소"),
+    "SN":       ("", "Punctuation", "", "기호: 숫자"),
+    "ZN":       ("", "", "", "추정: 분석 불능(명사 추정)"),
+    "ZV":       ("", "", "", "추정: 분석 불능(용언 추정)"),
+    "ZZ":       ("", "", "", "추정: 분석 불능(기타)"),
 }
-
-"""
-
-['저:NP',
- '는:JX',
- '지금:MAG',
- '멋:NNG',
- '있:VA',
- '는:ETM',
- '오빠:NNG',
- '이:VCP',
- '에요:EF',
- '!:SF']
- 
- 
-NNG	일반 명사	General noun
-NNP	고유 명사	Distinguished noun
-NNB	의존 명사	Dependent noun
-NR	수사	Numerals
-NP	대명사	Pronoun
-VV	동사	Verb
-VA	형용사	Adjective
-VX	보조 용언	Secondary verb
-VCP	긍정 지정사	Positive determiner
-VCN	부정 지정사	Negative designator
-MM	관형사	Pre-noun (관형사) 
-MAG	일반 부사	General adverb
-MAJ	접속 부사	Junction adverb
-
-IC	감탄사	Interjection (감탄사) 
-JKS	주격 조사	Subject Postposition (주격 조사): -이/가, -께서 (honorific) 
-JKC	보격 조사	Complement Postposition (보격 조사): -이/가 (after consonant/vowel, respectively) 
-JKG	관형격 조사	Pre-nounal Postposition (관형격 조사): -의[of]
-JKO	목적격 조사	Object Postposition (목적격 조사): -을/를 (after consonant/vowel, respectively) 
-JKB	부사격 조사	Adverbial Postposition (부사격 조사) -에[at, to], -에게[to], -께[to], -에서[at, from], -로/으로[to] 
-JKV	호격 조사	Vocative Postposition (호격 조사): -아/야, -(이)여, -(이)시여
-JKQ	인용격 조사	
-JC	접속 조사	Connection Postposition (접속 조사): -와/과: after vowel and after consonant, respectively 
-
-JX	보조사	Supplement Postposition (보조사) auxiliary particles
-
-EP	선어말 어미	"pre ending", "head suffix" often tense-head suffix like 었 or 시
-EF	종결 어미	predicate closing suffix
-EC	연결 어미	connecting suffix
-ETN	명사형 전성 어미	Noun form of Transmutation Suffix
-ETM	관형형 전성 어미	Pre-noun form of Transmutation Suffix
-XPN	체언 접두사	Substantive prefix
-
-XSN	명사파생 접미사	noun-derived suffix
-"""
 
 ##  Questions
 #

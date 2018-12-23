@@ -9,7 +9,7 @@
             </div>
             <div class="k-flexrow k-table">
                 <div class="k-row">
-                    <textarea id="input-sentence" class="k-cell" placeholder="enter Korean sentence to parse" v-model="sentence"></textarea>
+                    <textarea autofocus id="input-sentence" class="k-cell" placeholder="enter Korean sentence to parse" v-model="sentence"></textarea>
                     <button autofocus class="k-cell" id="parse-button" v-on:click="requestParse" :disabled="sentence == ''">{{ parseButtonText }}</button>
                 </div>
                 <div class="k-row controls-row">
