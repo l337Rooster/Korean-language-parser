@@ -97,8 +97,9 @@ export default {
 		    wiktionaryUrl: null,
 		    parseButtonText: "Parse",
 		    levelHeight: 50,
-		    nodeWidth: 60,
-		    nodePadding: 10,
+		    minNodeWidth: 50,
+		    nodePadding: 20,
+            hangulCharWidth: 12,
 		    parseTreeWidth: 1200,
 		    parseTreeHeight: 600,
             parsers: ["JHannanum", "Kkma", "KOMORAN", "MeCab-ko", "Open Korean Text"], // supported parsers
@@ -170,25 +171,24 @@ export default {
 	        function subtree(t, level) {
 	            if (layers.length < level+1)
 	                layers[level] = { count:0, width: 0, level: level, entries: [] };  // add new layer level;
-	            var count = 0;
+	            var width = 0;
 	            if (t.type == 'tree') {
 	                for (var i = 0; i < t.children.length; i++) {
 	                    var child = t.children[i];
 	                    child.parent = t;
-	                    count += subtree(t.children[i], level + 1);
+	                    width += subtree(t.children[i], level + 1);
 	                }
 	            }
 	            else
-	                count = 1;
+	                width = Math.max(self.minNodeWidth, self.nodePadding + t.word.length * self.hangulCharWidth);
 	            //
-	            layers[level].count += count;
 	            t.id = nodes.length;
 	            nodes.push(t);
 	            t.yOffset = level * self.levelHeight + 20;
 	            maxY = Math.max(maxY, t.yOffset);
-	            t.width = count * self.nodeWidth;
+	            t.width = width;
 	            layers[level].entries.push(t)
-	            return count;
+	            return width;
 	        }
 	        //
 	        subtree(self.parseTree, 0);

@@ -15,11 +15,11 @@ class Chunker(object):
          HadaVerb:           {<NN.*><XSV>}
          AuxiliaryVerb:      {<EC><VX|VV>}
          Adverb:             {<MAG>}
-         NominalizedVerb:    {<VV|HadaVerb><EP>*<NOM.*>}
          Adjective:          {<Adverb>*<VA|VV|HadaVerb><ETM>}
          DescriptiveVerb:    {<VA>}
          Verb:               {<VV|VCN|HadaVerb|DescriptiveVerb>}
-        
+         NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
+       
          VerbSuffix:         {<EP|PSX.*>*<EF|EC>}
     
          Location:           {<JKB>}

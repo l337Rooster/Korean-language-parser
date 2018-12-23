@@ -208,7 +208,7 @@ tm( # 때문에 "because X" prepositional suffix
     tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
     rename="PrepositionalPhrase:Because",
     wikiKey='때문',
-    refs={"ttmik": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"},
+    refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"},
 )
 
 tm( # 에대해 "about X" prepositional suffix
