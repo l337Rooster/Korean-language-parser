@@ -29,7 +29,7 @@ def loadCorpus(files):
                     line = f.readline()
                     if not line:
                         break
-                    korean = line.strip()
+                    korean = line.strip().strip('#')
                     if not korean:
                         continue
                     # have English & Korean forms, apply Khaiii POS analyzer to Korean
@@ -55,4 +55,5 @@ if __name__ == "__main__":
     #
     sentences = loadCorpus('/Users/jwainwright/Downloads/VUfHM5Uc6HwOcoy/Corpus10/*.txt')
     with open('kaist.corpus.json', 'w') as outf:
-        json.dump(sentences, outf)
+        for s in sentences:
+            outf.write('["{0}", "{1}", "{2}"]\n'.format(*s))
