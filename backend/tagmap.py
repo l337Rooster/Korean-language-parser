@@ -259,12 +259,12 @@ TagMap.completeInit()
 partsOfSpeech = {
     "NNG": "Noun",
     "NNP": "Noun",
-    "NNB": "Bound Noun",
+    "NNB": "Noun",
     "NR": "Number",
     "NP": "Pronoun",
     "VV": "Verb",
     "VA": "Adjective",
-    "VX": "Auxiliar Verb",
+    "VX": "Verb",
     "VCP": "VCP",
     "VCN": "VCN",
     "MM": "MM",
@@ -305,6 +305,19 @@ partsOfSpeech = {
 }
 
 """
+
+['저:NP',
+ '는:JX',
+ '지금:MAG',
+ '멋:NNG',
+ '있:VA',
+ '는:ETM',
+ '오빠:NNG',
+ '이:VCP',
+ '에요:EF',
+ '!:SF']
+ 
+ 
 NNG	일반 명사	General noun
 NNP	고유 명사	Distinguished noun
 NNB	의존 명사	Dependent noun

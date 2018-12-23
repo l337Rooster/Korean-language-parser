@@ -45,7 +45,6 @@ def run_dev_server():
 
 parser = None
 nodeData = {}
-KONLPY_ENABLED = False
 
 @parserApp.route('/analyzer')
 def analyzer():
