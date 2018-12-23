@@ -88,37 +88,39 @@ class TagMap(object):
         walkTree(tree, [tree])
 
     @classmethod
-    def getPopUps(cls, tree):
-        "travers NLTK ChunkTree for reference popup defs"
+    def getReferences(cls, tree):
+        "traverse NLTK ChunkTree for reference link defs"
         #
-        popups = {}
+        references = {}
+        wikiKeys = {}
         def walkTree(t):
             # walk tree looking for terminal nodes with tags that are in the refMap or wikiKey tables & build popup menu items
             for i, st in enumerate(t):
                 if isinstance(st, nltk.Tree):
                     walkTree(st)
                 else:
-                    popup = []
+                    refList = []
                     wk = cls.wikiKeyMap.get(st[1])
                     if wk:
                         word = wk
                     else:
                         word = (st[0] + '다') if st[1][0] == 'V' and st[1][-1] != '다' else st[0]
-                    popup.append(dict(name="Wiktionary entry", slug="https://en.wiktionary.org/wiki/" + word))
+                    refList.append(dict(name="Wiktionary", slug="https://en.wiktionary.org/wiki/" + word))
+                    wikiKeys[st[0]] = word
                     #
                     refs = cls.refsMap.get(st[1])
                     if refs:
                         for ref in refs:
-                            popup.append(dict(name=ref['ref'], slug=ref['url']))
-                    if popup:
-                        popups[st[0]] = popup
+                            refList.append(dict(name=ref['ref'], slug=ref['url']))
+                    if refList:
+                        references[st[0]] = refList
                     if '_' in st[1]:
                         # trim indexed POS tags
                         pass # not for now.....t[i] = (st[0], st[1].split('_')[0])
 
         #
         walkTree(tree)
-        return popups
+        return references, wikiKeys
 
 
 
@@ -213,7 +215,7 @@ tm( # 에대해 "about X" prepositional suffix
     tagPat=r'에:JKB;(대하|관하):VV;([^:]+):EC', repl=r'에 \1\2:PRP',
     rename="PrepositionalPhrase:About",
     wikiKey='대하다',
-    refs={"ttmik": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
+    refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
 )
 # ------ predicate ending forms ------  mapping to PSX.* & renaming VerbSuffix
 

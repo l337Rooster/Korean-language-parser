@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.3.0 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.3.1 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow k-table">
                 <div class="k-row">
@@ -30,8 +30,8 @@
                         <div v-for="phrase in phrases">
                             <template v-for="element, i in phrase">
                                 <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
-                                <span v-if="element.type == 'word'" class="leaf-word" v-on:click="lookupWord(element)"
-                                      v-on:mouseenter="mouseEnterWord(element, $event)" v-on:mouseleave="mouseLeaveWord()">{{ element.word }}</span>
+                                <span v-if="element.type == 'word'" class="leaf-word"
+                                      v-on:mouseenter="mouseEnterWord(element, $event)">{{ element.word }}</span>
                                 <span v-if="element.type == 'label'" class="leaf-tag">({{ element.word }})</span>
                             </template>
                         </div>
@@ -42,12 +42,8 @@
                                   :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
                             <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
-                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseenter="mouseEnterWord(node, $event)"
-                                           v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan>
-                                    <!-- tspan class="leaf-word" @click.prevent.stop="wordPopupMenuClick(node, $event)"
-                                           v-on:mouseenter="mouseEnterWord(node, $event)"
-                                           v-on:mouseleave="mouseLeaveWord()">{{ node.word }}</tspan-->
-                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ node.tag }}</tspan>
+                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
+                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ trimTag(node.tag) }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
@@ -60,7 +56,7 @@
                 <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
                 <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>
                 <div class="k-row"><div class="k-cell">Parse tree</div><pre class="k-cell">{{debugging.parseTree}}</pre></div>
-                <div class="k-row"><div class="k-cell">Popups</div><pre class="k-cell">{{debugging.popups}}</pre></div>
+                <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{debugging.references}}</pre></div>
             </div>
             <div v-if="wiktionaryUrl" class="k-row">
                 <iframe :src="wiktionaryUrl"  class="wiktionary-iframe"></iframe>
@@ -73,25 +69,15 @@
                 <div class="k-row"></div>
                 <div class="k-row">
                     <div class="k-cell">References:</div>
-                    <div class="k-cell"><ul><li  v-for="ref in references"><a href="{{re.slug}}">{{ref.name}}</a></li></ul></div>
-                </div> references
+                    <div class="k-cell"><ul><li  v-for="ref in wordRefs"><a :href=ref.slug target="_blank">{{ref.name}}</a></li></ul></div>
+                </div>
             </div>
         </div>
-
-        <vue-simple-context-menu
-            :options="wordPopupMenuOptions"
-            ref="wordPopupMenu"
-            @optionClicked="wordPopupMenuItemSelected">
-        </vue-simple-context-menu>
     </div>
 
 </template>
 
 <script>
-import Vue from 'vue'
-import VueSimpleContextMenu from 'vue-simple-context-menu'
-Vue.component('vue-simple-context-menu', VueSimpleContextMenu)
-
 export default {
     name: 'App',
 
@@ -103,9 +89,8 @@ export default {
 		    parseTree: null,
 		    posList: null,
 		    phrases: null,
-            popups: null,
             debugging: null,
-		    sentence: "",
+		    sentence: "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
 		    nodes: [],
 		    answer: "Answer goes here",
@@ -124,8 +109,9 @@ export default {
             defPopup: null,
             mouseEnterX: null, mouseEnterY: null,
             definitionTimeout: null,
-            wordPopupMenuOptions: [],
-            references: []
+            references: null,
+            wordRefs: null,
+            wikiKeys: null,
 		};
 	},
 
@@ -159,7 +145,8 @@ export default {
                         self.parseTree = response.parseTree;
                         self.posList = response.posList;
                         self.phrases = response.phrases;
-                        self.popups = response.popups;
+                        self.references = response.references;
+                        self.wikiKeys = response.wikiKeys;
                         self.debugging = response.debugging;
                         //  console.log(JSON.stringify(self.debugging));
                         self.buildDisplay();
@@ -227,12 +214,17 @@ export default {
 	        self.nodes = nodes;
 	    },
 
+        // deprecated. now wiki link is in def popup
 	    lookupWord: function(node) {
 	        // lookup word in wiktionary, open in iframe
 	        //  construct dictionary form of verb if needed
 	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
 	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
 	    },
+
+        trimTag: function(tag) {
+	        return tag.split("_")[0];
+        },
 
         mouseEnterWord: function(node, event) {
             var self = this;
@@ -242,7 +234,7 @@ export default {
 	            // only show if mouse has hovered over node for 500ms
                 //console.log(self.mouseEnterX, window.screenX, self.mouseEnterY, window.screenY);
 	            if (Math.abs(self.mouseEnterX - window.screenX) < 15 && Math.abs(self.mouseEnterY - window.screenY) < 15) {
-                    var word = node.tag[0] == 'V' && node.word[node.word.length - 1] != '다' ? node.word + '다' : node.word;
+                    var word = self.wikiKeys[node.word];
                     $.ajax({
                         method: "GET",
                         url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
@@ -250,20 +242,21 @@ export default {
                         cache: false,
                         success: function (response) {
                             // display any non-empty useful result
-                            if (response.length > 0) {
-                                self.definition = response;
+                            self.definition = response.length > 0 ? response : null;
+                            // add reference links
+                            self.wordRefs = self.references[node.word];
+                            // show referece popup if anything to show
+                            if (self.definition || self.wordRefs) {
                                 var popup = self.$refs["defPopup"];
                                 var x = event.clientX,
                                     y = event.clientY;
                                 popup.style.top = (y + 12) + 'px';
                                 popup.style.left = (x + 12) + 'px';
                                 popup.classList.add("show");
-                                // add reference links
-                                //self.references = this.popups[node.word];
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            self.definition = null;
+                            self.definition = self.wordRefs = null;
                         }
                     });
                 }
@@ -273,25 +266,13 @@ export default {
 	        self.definitionTimeout = setTimeout(showDef, 250);
         },
 
+        // deprecated, now def popup is sticky, dismissed with outside click
         mouseLeaveWord: function() {
             if (self.definitionTimeout)
                 clearTimeout(self.definitionTimeout);
-            this.definition = [];
+            this.definition = this.wordRefs = null;
             this.$refs["defPopup"].classList.remove("show");
             this.mouseEnterLoc = null;
-        },
-
-        // handle node context-menu popup
-        wordPopupMenuClick: function(node, event) {
-	        console.log(node.word);
-	        // load node-specific popup options
-            this.wordPopupMenuOptions = this.popups[node.word];
-            console.log(this.wordPopupMenuOptions)
-            this.$refs["wordPopupMenu"].showMenu(event, node)
-        },
-
-        wordPopupMenuItemSelected: function(option) {
-
         }
 	}
 }
@@ -303,6 +284,17 @@ document.onmousemove = function(e) {
     window.screenY = event.screenY;
     //console.log("* ", event.screenX, window.screenX, event.screenY, window.screenY);
 }
+
+// dismiss popup ref div if click is outside popup
+document.onmouseup = function (e) {
+    var popup = $("#definition");
+    if (popup.length > 0 &&
+        !popup.is(e.target) // if the target of the click isn't the container...
+        && popup.has(e.target).length === 0) // ... nor a descendant of the container
+    {
+        popup[0].classList.remove("show");
+    }
+};
 
 </script>
 
@@ -407,7 +399,6 @@ document.onmousemove = function(e) {
     /* definition-popup styles  */
     .definition {
         visibility: hidden;
-        visibility: hidden;
         background-color: rgba(200, 200, 200, .80);
         color: #111;
         font-size: 12px;
@@ -432,6 +423,11 @@ document.onmousemove = function(e) {
     }
 
     .definition li span {
+        font-size: 200%;
+        vertical-align:middle;
+    }
+
+    .definition li a {
         font-size: 200%;
         vertical-align:middle;
     }
