@@ -43,7 +43,7 @@
                             <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
                                     <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
-                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ trimTag(node.tag) }}</tspan>
+                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(node.tag) }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
@@ -61,15 +61,21 @@
             <div v-if="wiktionaryUrl" class="k-row">
                 <iframe :src="wiktionaryUrl"  class="wiktionary-iframe"></iframe>
             </div>
-            <div id="definition" ref="defPopup" class="definition k-table">
-                <div v-for="def in definition" class="k-row">
-                    <div class="k-cell">{{def.partOfSpeech}}:</div>
-                    <div class="k-cell"><ul><li v-for="w in def.text"><span>{{w}}</span></li></ul></div>
+            <div id="definition" ref="defPopup" class="definition">
+                <div class="k-table">
+                    <div class="k-row"><div v-if="POS" class="def-pos k-cell">{{POS.descr}}</div></div>
+                    <div class="k-row"><div v-if="POS && POS.notes" class="def-notes k-cell">{{POS.notes}}</div></div>
                 </div>
-                <div class="k-row"></div>
-                <div class="k-row">
-                    <div class="k-cell">References:</div>
-                    <div class="k-cell"><ul><li  v-for="ref in wordRefs"><a :href=ref.slug target="_blank">{{ref.name}}</a></li></ul></div>
+                <div class="k-table">
+                    <div v-for="def in definition" class="k-row">
+                        <div class="k-cell">{{def.partOfSpeech}}:</div>
+                        <div class="k-cell"><ul><li v-for="w in def.text"><span>{{w}}</span></li></ul></div>
+                    </div>
+                    <div class="k-row"></div>
+                    <div class="k-row">
+                        <div class="k-cell">References:</div>
+                        <div class="k-cell"><ul><li  v-for="ref in wordRefs"><a :href=ref.slug target="_blank">{{ref.name}}</a></li></ul></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,7 +118,7 @@ export default {
             definitionTimeout: null,
             references: null,
             wordRefs: null,
-            wikiKeys: null,
+            POS: null
 		};
 	},
 
@@ -147,7 +153,6 @@ export default {
                         self.posList = response.posList;
                         self.phrases = response.phrases;
                         self.references = response.references;
-                        self.wikiKeys = response.wikiKeys;
                         self.debugging = response.debugging;
                         //  console.log(JSON.stringify(self.debugging));
                         self.buildDisplay();
@@ -222,48 +227,53 @@ export default {
 	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
 	    },
 
-        trimTag: function(tag) {
-	        return tag.split("_")[0];
+        tagDisplay: function(tag) {
+	        // return displayable
+            return this.references.posTable[tag].wikiPOS
+	        // return tag.split("_")[0];
+        },
+
+        showReferences: function(node, event) {
+            // only show if mouse has hovered over node for 500ms
+            //console.log(self.mouseEnterX, window.screenX, self.mouseEnterY, window.screenY);
+            if (Math.abs(self.mouseEnterX - window.screenX) < 15 && Math.abs(self.mouseEnterY - window.screenY) < 15) {
+                var word = self.references.wikiKeys[node.word];
+                $.ajax({
+                    method: "GET",
+                    url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                    crossDomain: true,
+                    cache: false,
+                    success: function (response) {
+                        // set POS description & any synth-tag notes
+                        self.POS = self.references.posTable[node.tag]
+                        // display any non-empty useful result
+                        self.definition = response.length > 0 ? response : null;
+                        // add reference links
+                        self.wordRefs = self.references.references[node.word];
+                        // show referece popup if anything to show
+                        if (self.definition || self.wordRefs) {
+                            var popup = self.$refs["defPopup"];
+                            var x = event.clientX,
+                                y = event.clientY;
+                            popup.style.top = (y + 12) + 'px';
+                            popup.style.left = (x + 12) + 'px';
+                            popup.classList.add("show");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        self.definition = self.wordRefs = null;
+                    }
+                });
+            }
         },
 
         mouseEnterWord: function(node, event) {
             var self = this;
             if (self.definitionTimeout)
                 clearTimeout(self.definitionTimeout);
-	        var showDef = function() {
-	            // only show if mouse has hovered over node for 500ms
-                //console.log(self.mouseEnterX, window.screenX, self.mouseEnterY, window.screenY);
-	            if (Math.abs(self.mouseEnterX - window.screenX) < 15 && Math.abs(self.mouseEnterY - window.screenY) < 15) {
-                    var word = self.wikiKeys[node.word];
-                    $.ajax({
-                        method: "GET",
-                        url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
-                        crossDomain: true,
-                        cache: false,
-                        success: function (response) {
-                            // display any non-empty useful result
-                            self.definition = response.length > 0 ? response : null;
-                            // add reference links
-                            self.wordRefs = self.references[node.word];
-                            // show referece popup if anything to show
-                            if (self.definition || self.wordRefs) {
-                                var popup = self.$refs["defPopup"];
-                                var x = event.clientX,
-                                    y = event.clientY;
-                                popup.style.top = (y + 12) + 'px';
-                                popup.style.left = (x + 12) + 'px';
-                                popup.classList.add("show");
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            self.definition = self.wordRefs = null;
-                        }
-                    });
-                }
-            };
-	        // handle mouse enter, start a timer & see if mouse still after 500ms
+	        // handle mouse enter, note entering mouse-pos & show refs if (roughly) still after 250ms
 	        self.mouseEnterX = event.screenX; self.mouseEnterY = event.screenY;
-	        self.definitionTimeout = setTimeout(showDef, 250);
+	        self.definitionTimeout = setTimeout(self.showReferences, 250, node, event);
         },
 
         // deprecated, now def popup is sticky, dismissed with outside click
@@ -408,7 +418,15 @@ document.onmouseup = function (e) {
         z-index: 1;
         max-width: 500px;
     }
-å
+
+    .definition .def-pos {
+        width: 100%;
+    }
+
+    .definition .def-notes {
+        width: 100%;
+    }
+
     .definition .k-cell {
         padding-left: 4px;
         padding-top: 5px;

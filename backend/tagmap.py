@@ -149,8 +149,9 @@ class TagMap(object):
         #
         references = {}
         wikiKeys = {}
+        posTable = {}
         def walkTree(t):
-            # walk tree looking for terminal nodes with tags that are in the refMap or wikiKey tables & build popup menu items
+            # walk tree looking for terminal nodes with tags that are in the refMap or wikiKey tables & build reference items
             for i, st in enumerate(t):
                 if isinstance(st, nltk.Tree):
                     walkTree(st)
@@ -174,13 +175,19 @@ class TagMap(object):
                             refList.append(dict(name=ref['ref'], slug=ref['url']))
                     if refList:
                         references[st[0]] = refList
-                    if '_' in st[1]:
-                        # trim indexed POS tags
-                        pass # not for now.....t[i] = (st[0], st[1].split('_')[0])
-
+                    # add POS reference table entries
+                    posEntry = {}
+                    tm = cls.tagMappings.get(st[1])
+                    if tm:
+                        posEntry['notes'] = tm.notes
+                    posDef = cls.partsOfSpeech.get(st[1])
+                    if posDef:
+                        posEntry['wikiPOS'] = posDef[0]
+                        posEntry['descr'] = posDef[2]
+                    posTable[st[1]] = posEntry
         #
         walkTree(tree)
-        return references, wikiKeys
+        return dict(references=references, wikiKeys=wikiKeys, posTable=posTable)
 
 
 
