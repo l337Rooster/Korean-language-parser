@@ -42,7 +42,7 @@
                                   :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
                             <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
-                                    <tspan class="leaf-word" v-on:click="lookupWord(node)" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
+                                    <tspan class="leaf-word" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
                                     <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(node.tag) }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
@@ -63,16 +63,15 @@
             </div>
             <div id="definition" ref="defPopup" class="definition">
                 <div class="k-table">
-                    <div class="k-row"><div v-if="POS" class="def-pos k-cell">{{POS.descr}}</div></div>
-                    <div class="k-row"><div v-if="POS && POS.notes" class="def-notes k-cell">{{POS.notes}}</div></div>
+                    <div class="def-row k-row"><div v-if="POS" class="def-pos k-cell">{{POS.descr}}</div></div>
+                    <div class="def-row k-row"><div v-if="POS && POS.notes" class="def-notes k-cell">{{POS.notes}}</div></div>
                 </div>
                 <div class="k-table">
                     <div v-for="def in definition" class="k-row">
                         <div class="k-cell">{{def.partOfSpeech}}:</div>
                         <div class="k-cell"><ul><li v-for="w in def.text"><span>{{w}}</span></li></ul></div>
                     </div>
-                    <div class="k-row"></div>
-                    <div class="k-row">
+                    <div class="k-row refs-row">
                         <div class="k-cell">References:</div>
                         <div class="k-cell"><ul><li  v-for="ref in wordRefs"><a :href=ref.slug target="_blank">{{ref.name}}</a></li></ul></div>
                     </div>
@@ -236,7 +235,7 @@ export default {
         showReferences: function(node, event) {
             // only show if mouse has hovered over node for 500ms
             //console.log(self.mouseEnterX, window.screenX, self.mouseEnterY, window.screenY);
-            if (Math.abs(self.mouseEnterX - window.screenX) < 15 && Math.abs(self.mouseEnterY - window.screenY) < 15) {
+            if (Math.abs(self.mouseEnterX - window.screenX) < 20 && Math.abs(self.mouseEnterY - window.screenY) < 20) {
                 var word = self.references.wikiKeys[node.word];
                 $.ajax({
                     method: "GET",
@@ -245,7 +244,7 @@ export default {
                     cache: false,
                     success: function (response) {
                         // set POS description & any synth-tag notes
-                        self.POS = self.references.posTable[node.tag]
+                        self.POS = self.references.posTable[node.tag];
                         // display any non-empty useful result
                         self.definition = response.length > 0 ? response : null;
                         // add reference links
@@ -421,10 +420,25 @@ document.onmouseup = function (e) {
 
     .definition .def-pos {
         width: 100%;
+        padding-bottom: 5px;
+       /* font-weight: bold; */
     }
 
     .definition .def-notes {
         width: 100%;
+    }
+
+    .definition .k-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .definition .def-row {
+        border-bottom: 0.5px solid gray;
+    }
+
+    .definition .refs-row {
+        /* border-top: 0.5px solid gray; */
     }
 
     .definition .k-cell {
