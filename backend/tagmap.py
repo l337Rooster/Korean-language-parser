@@ -106,6 +106,7 @@ class TagMap(object):
                     else:
                         word = (st[0] + '다') if st[1][0] == 'V' and st[1][-1] != '다' else st[0]
                     refList.append(dict(name="Wiktionary", slug="https://en.wiktionary.org/wiki/" + word))
+                    refList.append(dict(name="Naver dictionary", slug="https://endic.naver.com/search.nhn?sLn=en&searchOption=all&query=" + word))
                     wikiKeys[st[0]] = word
                     #
                     refs = cls.refsMap.get(st[1])
@@ -139,6 +140,16 @@ def tm(tagPat=r'', repl=r'', rename=None, wikiKey=None, refs=(), notes=None):
 
 tm(  # 은/는 - turn topic-marking partcile into subject-marker (I think this is right??)
     tagPat=r'(은|는):JX', repl=r'\1:JKS',
+)
+
+tm(  # noun-dervied verbs, N하다, N되다, N당하다, N시키다, etc. - combine XR|NN & VND suffix into a single NDV (noun-derived verb) verb
+    tagPat=r'([^:]+):(XR|NNG);([^:]+):XSV', repl=r'\1\3:VND',
+    notes="Noun-derived verb - ${1} + ${3}",
+)
+
+tm(  # noun-dervied adjective,  - combine XR|NN & XSA suffix into a single VAND (noun-derived adjective) adjective
+    tagPat=r'([^:]+):(XR|NNG);([^:]+):XSA', repl=r'\1\3:VAND',
+    notes="Noun-derived adjective - ${1} + ${3}",
 )
 
 # note that in the defs below, any def that includes a node rename field will add a unique integer suffix to the replacing synthetic tag
@@ -267,7 +278,7 @@ partsOfSpeech = {
     "VA":       ("Adjective",   "Inflectional",     "Descriptive verb / Adjective",     "용언	: 형용사"),
     "VX":       ("Verb",        "Inflectional",     "Auxiliary or supplimental verb",   "용언: 보조 용언"),
     "VCP":      ("Adjective",   "Inflectional",     "The positive copula - 이다",        "용언: 긍정 지정사"),
-    "VCN":      ("Adjective",   "Inflectional",     "The negative copula - 아니다",       "용언:	부정 지정사"),
+    "VCN":      ("Adjective",   "Inflectional",     "The negative copula - 아니다",       "용언: 부정 지정사"),
     "MM":       ("Determiner",  "Modifier",         "Determiner",                       "수식언: 관형사"),
     "MAG":      ("Adverb",      "Modifier",         "General adverb",                   "수식언: 일반 부사"),
     "MAJ":      ("Adverb",      "Modifier",         "Joining adverb, e.g. 그래서",        "수식언: 접속 부사"),
@@ -286,10 +297,10 @@ partsOfSpeech = {
     "ETN":      ("Suffix",      "Dependent form",   "Verb-nominalizing suffix, e.g. 기", "의존 형태: 명사형 전성 어미"),
     "ETM":      ("Suffix",      "Dependent form",   "Verb-to-adjective transforming suffix, e.g. 은", "의존 형태: 관형형 전성 어미"),
     "XPN":      ("Prefix",      "Dependent form",   "Substantive prefix",               "의존 형태	: 체언 접두사"),
-    "XSN":      ("", "Dependent form", "", "의존 형태: 명사 파생 접미사"),
-    "XSV":      ("", "Dependent form", "", "의존 형태: 동사 파생 접미사"),
-    "XSA":      ("", "Dependent form", "", "의존 형태: 형용사 파생 접미사"),
-    "XR":       ("", "Dependent form", "", "의존 형태: 어근"),
+    "XSN":      ("Suffix",      "Dependent form",   "Noun-modifying suffix, e.g. 들, 님", "의존 형태: 명사 파생 접미사"),
+    "XSV":      ("Suffix",      "Dependent form",   "Verb-forming suffix, e.g. ~하다",    "의존 형태: 동사 파생 접미사"),
+    "XSA":      ("Suffix",      "Dependent form",   "Adjective-forming suffix",         "의존 형태: 형용사 파생 접미사"),
+    "XR":       ("Noun",        "Dependent form",   "Noun root for formed verb or adjective", "의존 형태: 어근"),
     "SF":       ("", "Punctuation", "", "기호; 마침표, 물음표, 느낌표"),
     "SP":       ("", "Punctuation", "", "기호: 쉼표, 가운뎃점, 콜론, 빗금"),
     "SS":       ("", "Punctuation", "", "기호: 따옴표, 괄호표, 줄표"),

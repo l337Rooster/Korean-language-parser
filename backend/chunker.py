@@ -12,12 +12,13 @@ class Chunker(object):
 
     grammar = r"""
     
-         HadaVerb:           {<NN.*><XSV>}
+         NounDerivedVerb:    {<VND>}
          AuxiliaryVerb:      {<EC><VX|VV>}
          Adverb:             {<MAG>}
-         Adjective:          {<Adverb>*<VA|VV|HadaVerb><ETM>}
+         NounDerivedAdjective: {<VAND>}
+         Adjective:          {<Adverb>*<VA|VV|NounDerivedAdjective|NounDerivedVerb><ETM>}
          DescriptiveVerb:    {<VA>}
-         Verb:               {<VV|VCN|HadaVerb|DescriptiveVerb>}
+         Verb:               {<VV|VCN|NounDerivedVerb|DescriptiveVerb>}
          NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
        
          VerbSuffix:         {<EP|PSX.*>*<EF|EC>}
