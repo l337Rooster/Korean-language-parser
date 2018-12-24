@@ -12,10 +12,10 @@ class Chunker(object):
 
     grammar = r"""
     
-         NounDerivedVerb:    {<VND>}
+         NounDerivedVerb:    {<VND.*>}
          AuxiliaryVerb:      {<EC><VX|VV>}
          Adverb:             {<MAG>}
-         NounDerivedAdjective: {<VAND>}
+         NounDerivedAdjective: {<VAND.*>}
          Adjective:          {<Adverb>*<VA|VV|NounDerivedAdjective|NounDerivedVerb><ETM>}
          DescriptiveVerb:    {<VA>}
          Verb:               {<VV|VCN|NounDerivedVerb|DescriptiveVerb>}
@@ -46,6 +46,7 @@ class Chunker(object):
          Complement:         {<Constituent><JKC>} 
          Object:             {<Constituent|PrepositionalPhrase><JKO>}  
          Subject:            {<Constituent|PrepositionalPhrase><JKS>}
+         Topic:              {<Constituent|PrepositionalPhrase><JX>}
     
          Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
          Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
