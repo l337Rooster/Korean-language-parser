@@ -19,8 +19,11 @@ class TagMap(object):
     wikiKeyMap = {}
     tagOrdinal = 0
 
-    references = {"ttmik": ["Talk to me in Korean", "talktomeinkorean.com"],
-                  "htsk": ["How to study Korean", "www.howtostudykorean.com"] }
+    dictionaries = [{"title": "Wiktionary",       "slug": "https://en.wiktionary.org/wiki/${word}"},
+                    {"title": "Naver dictionary", "slug": "https://endic.naver.com/search.nhn?sLn=en&searchOption=all&query=${word}" },]
+
+    references = {"ttmik": {"title": "Talk to me in Korean", "hostname": "talktomeinkorean.com"},
+                  "htsk":  {"title": "How to study Korean",  "hostname": "www.howtostudykorean.com"}, }
 
     #  parts-of-speech descriptors
     partsOfSpeech = {
@@ -103,7 +106,8 @@ class TagMap(object):
             if tm.wikiKey:
                 cls.wikiKeyMap[tm.newTag] = tm.wikiKey
             if tm.refs:
-                cls.refsMap[tm.newTag] = [dict(ref=cls.references[key][0], url="https://" + cls.references[key][1] + page) for key, page in tm.refs.items()]
+                cls.refsMap[tm.newTag] = [dict(ref=cls.references[key]['title'],
+                                               url="https://" + cls.references[key]['hostname'] + page) for key, page in tm.refs.items()]
         #
         pprint(cls.nodeNameMaps)
 
@@ -153,13 +157,16 @@ class TagMap(object):
                 else:
                     refList = []
                     wk = cls.wikiKeyMap.get(st[1])
-                    if wk:
-                        word = wk
-                    else:
-                        word = (st[0] + '다') if st[1][0] == 'V' and st[1][-1] != '다' else st[0]
-                    refList.append(dict(name="Wiktionary", slug="https://en.wiktionary.org/wiki/" + word))
-                    refList.append(dict(name="Naver dictionary", slug="https://endic.naver.com/search.nhn?sLn=en&searchOption=all&query=" + word))
-                    wikiKeys[st[0]] = word
+                    if wk != "none":
+                        if wk:
+                            word = wk
+                        else:
+                            word = (st[0] + '다') if st[1][0] == 'V' and st[1][-1] != '다' else st[0]
+                        # add dictionary links
+                        for d in cls.dictionaries:
+                            refList.append(dict(name=d['title'], slug=d['slug'].replace("${word}", word)))
+                        #
+                        wikiKeys[st[0]] = word
                     #
                     refs = cls.refsMap.get(st[1])
                     if refs:
@@ -303,6 +310,7 @@ tm( # ㄹ/를 거 이다 future-tense suffix pattern
     tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:PSX',
     basePOS="VX", descr="Future-tense predicate suffix",
     rename="VerbSuffix:FutureTense",
+    wikiKey="none",
     refs={"ttmik": "/lessons/level-2-lesson-1-future-tense", "htsk": "/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"},
     notes="",
 )
