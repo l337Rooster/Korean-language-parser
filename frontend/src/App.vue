@@ -78,6 +78,12 @@
                 </div>
             </div>
         </div>
+        <!-- following template text elements used for computing text display bounds before rendering trees -->
+        <svg id="template" style="visibility: hidden;" width="500" height="32">
+            <text class="leaf-word"></text>
+            <text class="leaf-tag"></text>
+            <text class="node-tag"></text>
+        </svg>
     </div>
 
 </template>
@@ -118,6 +124,8 @@ export default {
             references: null,
             wordRefs: null,
             POS: null
+            // second tree display layout test
+
 		};
 	},
 
@@ -155,6 +163,7 @@ export default {
                         self.debugging = response.debugging;
                         //  console.log(JSON.stringify(self.debugging));
                         self.buildDisplay();
+                        self.buildDisplay2();
                     }
                     else {
                     }
@@ -217,6 +226,46 @@ export default {
 	        self.parseTreeWidth = maxX + 20;
 	        self.nodes = nodes;
 	    },
+
+        buildDisplay2: function() {
+	        // build display layout for 2nd test form
+            var terminals = [], layers = [], nodes = [];
+            // descend parse-tree, figuring tree levels & collecting terminals
+	        function subtree(t, level) {
+	            if (layers.length < level + 1)
+	                // add new layer level
+	                layers[level] = { count:0, width: 0, level: level, entries: [] };
+	            if (t.type == 'tree') {
+	                // recurse down subtree
+	                for (var i = 0; i < t.children.length; i++) {
+	                    var child = t.children[i];
+	                    child.parent = t;
+	                    subtree(child, level + 1);
+	                }
+	            }
+	            else {
+	                // terminal node, gather
+                    terminals.push(t);
+                }
+	        }
+	        subtree(self.parseTree, 0);
+	        // first, lay out terminal line
+            var x = 0, y = 0;
+            for (var i = 0; i < terminals.length; i++) {
+                var t = terminals[i];
+                var bbox = Math.max(this.textBBox(t.word, "leaf-word"), this.textBBox(this.tagDisplay(t.tag, "leaf-tag")));
+                t.x = x; t.y = y;
+                t.width = bbox.width; t.height = bbox.height;
+                x += t.width + this.terminalGap;
+            }
+        },
+
+        textBBox: function(text, cls) {
+            // return bounding box for text rendered in given class
+            var t = $("#template ." + cls)[0];
+            t.textContent = text;
+            return t.getBBox();
+        },
 
         // deprecated. now wiki link is in def popup
 	    lookupWord: function(node) {
@@ -370,7 +419,7 @@ document.onmouseup = function (e) {
 
     .link-line {
         stroke: rgb(114, 194, 119);
-        stroke-width: 0.8;
+        stroke-width: 0.8px;
     }
 
     .leaf-word {
@@ -511,3 +560,21 @@ document.onmouseup = function (e) {
     }
 
 </style>
+
+
+function renderedTextSize(string, font, fontSize) {
+  var paper = Raphael(0, 0, 0, 0);
+  paper.canvas.style.visibility = 'hidden';
+
+  var el = paper.text(0, 0, string);
+  el.attr('font-family', font);
+  el.attr('font-size', fontSize);
+
+  var bBox = el.getBBox();
+  paper.remove();
+
+  return {
+    width: bBox.width,
+    height: bBox.height
+  };
+}
