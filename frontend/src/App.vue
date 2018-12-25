@@ -63,11 +63,11 @@
             </div>
             <div id="definition" ref="defPopup" class="definition">
                 <div class="k-table">
-                    <div class="def-row k-row"><div v-if="POS" class="def-pos k-cell">{{POS.descr}}</div></div>
+                    <div class="border-row k-row"><div v-if="POS" class="def-pos k-cell">{{POS.descr}}</div></div>
                     <div class="def-row k-row"><div v-if="POS && POS.notes" class="def-notes k-cell">{{POS.notes}}</div></div>
                 </div>
                 <div class="k-table">
-                    <div v-for="def in definition" class="k-row">
+                    <div v-for="(def, index) in definition" :class="{'border-row': index == definition.length-1}" class="k-row">
                         <div class="k-cell">{{def.partOfSpeech}}:</div>
                         <div class="k-cell"><ul><li v-for="w in def.text"><span>{{w}}</span></li></ul></div>
                     </div>
@@ -433,8 +433,9 @@ document.onmouseup = function (e) {
         width: 100%;
     }
 
-    .definition .def-row {
+    .definition .border-row {
         border-bottom: 0.5px solid gray;
+        padding-bottom: 5px;
     }
 
     .definition .refs-row {
@@ -443,7 +444,8 @@ document.onmouseup = function (e) {
 
     .definition .k-cell {
         padding-left: 4px;
-        padding-top: 5px;
+        /* padding-top: 3px; */
+        padding-bottom: 2px;
     }
 
     .definition ul {

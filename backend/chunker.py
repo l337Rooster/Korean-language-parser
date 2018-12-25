@@ -6,7 +6,7 @@ __author__ = 'jwainwright'
 import nltk
 
 # Korean phrase NLTK chunking grammar
-
+ 
 class Chunker(object):
     "finds phrase chunks in the POS list produced by the KHaiii phoneme analyzer"
 
