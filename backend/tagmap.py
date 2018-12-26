@@ -118,38 +118,18 @@ class TagMap(object):
         tagString = ';' + posString + ';'
         for tagPat, tm in cls.tagMapPatterns:
             def replTags(m):
-                print('---\n', tagString)
-                print('  ', ';' + tagPat + ';')
-                print(m.groups())
-                print(list(m.span(i) for i, g in enumerate(m.groups())))
-                print(m.span(), '=', tagString[m.span()[0]:m.span()[1]])
-                print(m.expand(';' + tm.repl + ';'))
+                # print('---\n', tagString)
+                # print('  ', ';' + tagPat + ';')
+                # print(m.groups())
+                # print(list(m.span(i) for i, g in enumerate(m.groups())))
+                # print(m.span(), '=', tagString[m.span()[0]:m.span()[1]])
+                # print(m.expand(';' + tm.repl + ';'))
                 return m.expand(';' + tm.repl + ';')
             tagString = re.sub(';' + tagPat + ';', replTags, tagString)
-        print('=>', tagString)
+        #print('=>', tagString)
         #
         mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
         #
-        # # figure changed word-to-mapped-morph assignments (assumes first morpheme in words remain unmapped)
-        # pi = 0
-        # wordIndexes = []
-        # for w, morphemes in morphemeGroups:
-        #     m0 = morphemes[0] # head morpheme of this word
-        #     # look for it in POS list
-        #     while pi < len(mappedPosList) and m0 != mappedPosList[pi][0]:
-        #         pi += 1
-        #     # record word index
-        #     wordIndexes.append(pi)
-        #     # run through rest of word's matching morphemes
-        #     mi = 1
-        #     pi += 1
-        #     while pi < len(mappedPosList) and mi < len(morphemes) and morphemes[mi] == mappedPosList[pi][0]:
-        #         mi += 1
-        #         pi += 1
-        #
-        # print(mappedPosList)
-        # print(wordIndexes)
-
         # figure changed word-to-mapped-morph assignments (assumes first morpheme in words remain unmapped)
         gi = mi = pi = 0; strippedMorph = None
         word, morphemes = morphemeGroups[0]
@@ -161,17 +141,17 @@ class TagMap(object):
                 gi += 1; mi = 0
                 if gi >= len(morphemeGroups):
                     while pi < len(mappedPosList)and mappedPosList[pi][1] != 'SF':
-                        newMorphemes.append(mappedPosList[pi][0])
+                        newMorphemes.append(mappedPosList[pi])
                         pi += 1
                     break
                 word, morphemes = morphemeGroups[gi]
                 newMorphemes = []
                 newGroups.append([word, newMorphemes])
             if m.strip() == morphemes[mi]:
-                newMorphemes.append(m)
+                newMorphemes.append((m, tag))
                 mi += 1
             elif m.startswith(morphemes[mi]):
-                newMorphemes.append(morphemes[mi])
+                newMorphemes.append((morphemes[mi], ''))
                 strippedMorph = morphemes[mi]
                 m = m[len(morphemes[mi]):]
                 mi += 1
@@ -187,10 +167,10 @@ class TagMap(object):
                 # found next word start in mappedPOS list, add intervening morphemes to last word & proceed
                 if mappedPosList[pi][0].startswith(strippedMorph):
                     # trim leading prior morpheme if present
-                    newMorphemes.append(mappedPosList[pi][0][len(strippedMorph):])
+                    newMorphemes.append((mappedPosList[pi][0][len(strippedMorph):], mappedPosList[pi][1]))
                     pi += 1
                 while pi < pis:
-                    newMorphemes.append(mappedPosList[pi][0])
+                    newMorphemes.append(mappedPosList[pi])
                     pi += 1
                 m, tag  = mappedPosList[pi]
                 mi = len(morphemes)
@@ -200,6 +180,7 @@ class TagMap(object):
                 break
             m, tag = mappedPosList[pi]
 
+        pprint(newGroups)
         return mappedPosList, newGroups
 
         #
@@ -212,12 +193,12 @@ class TagMap(object):
         #  ['쓸', ['쓰', 'ㄹ']],
         #  ['거야.', ['거', '이', '야']]]
         #
-        # [['나는', ['나', '는']],
-        #  ['그것에', ['그것', '에']],
-        #  ['대해서', [' 대하여서']],
-        #  ['책을', ['책', '을']],
-        #  ['쓸', ['쓰', 'ㄹ']],
-        #  ['거야.', [' 거 이', '야']]]
+        # [['나는', [('나', 'NP'), ('는', 'JX')]],
+        #  ['그것에', [('그것', 'NP'), ('에', '')]],
+        #  ['대해서', [(' 대하여서', 'PRP_11')]],
+        #  ['책을', [('책', 'NNG'), ('을', 'JKO')]],
+        #  ['쓸', [('쓰', 'VV'), ('ㄹ', '')]],
+        #  ['거야.', [(' 거 이', 'PSX_13'), ('야', 'EF')]]]
         #
         # [('나', 'NP'),
         #      ('는', 'JX'),

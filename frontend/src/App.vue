@@ -59,7 +59,14 @@
                             </text>
                         </g>
                     </svg>
-                    <svg id="parse-tree-2" class="tree-svg" :width="parseTreeWidth" :height="200" style="background-color: rgba(0,0,0,0);">
+                    <svg id="parse-tree-2" class="tree-svg" :width="parseTreeWidth" :height="400" style="background-color: rgba(0,0,0,0);">
+                        <g v-for="word in words">
+=                            <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
+                                <tspan class="word-word">{{ word.word }}</tspan>
+                            </text>
+                            <line :x1="word.lineX" :y1="word.y + 6" class="word-line"
+                                  :x2="word.lineX + word.lineWidth" :y2="word.y + 6"/>
+                        </g>
                         <g v-for="node in terminals">
 =                            <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
@@ -104,6 +111,7 @@
             <text class="leaf-word"></text>
             <text class="leaf-tag"></text>
             <text class="node-tag"></text>
+            <text class="word-word"></text>
         </svg>
     </div>
 
@@ -151,9 +159,10 @@ export default {
             // second tree display layout test
             parseTree2: null,
             morphemeGroups: null,
-            terminalGap: 20,
+            terminalGap: 20, lineGap: 20,
             treeMarginTop: 20, treeMarginLeft: 10,
-            terminals: []
+            terminals: [],
+            words: []
 		};
 	},
 
@@ -237,6 +246,7 @@ export default {
 	        }
 	        //
 	        subtree(self.parseTree, 0);
+
 	        // compute layout coords
 	        var maxX = 0;
 	        for (var i = 0; i < layers.length; i++) {
@@ -253,6 +263,7 @@ export default {
 	            }
 	        }
 	        //console.log(layers);
+
 	        // trigger graph draw
 	        self.parseTreeHeight = maxY + 20;
 	        self.parseTreeWidth = maxX + 20;
@@ -282,13 +293,55 @@ export default {
                 }
 	        }
 	        subtree(self.parseTree2, 0);
-	        // first, lay out terminal line
+
+	        // lay out word line based on morphemeGroup word-groupings
             var x = self.treeMarginLeft, y = self.treeMarginTop;
+            var words = [], height = 0, lastTag = '?';
+            for (var i = 0; i < self.morphemeGroups.length; i++) {
+                var g = self.morphemeGroups[i];
+                var word = g[0], width = 0, lineWidth = 0;
+                for (var j = 0; j < g[1].length; j++) {
+                    // compute bounds of morpheme group
+                    console.log(' ', j, g[1][j][0]);
+                    lastTag = g[1][j][1];
+                    var bbox1 = self.textBBox(g[1][j][0], "leaf-word"), bbox2 = self.textBBox(self.tagDisplay(g[1][j][1]), "leaf-tag");
+                    width += Math.max(bbox1.width, bbox2.width) + (j < g[1].length-1 ? self.terminalGap : 0);
+                    lineWidth += bbox1.width + (j < g[1].length-1 ? self.terminalGap : 0);
+                    height = Math.max(height, bbox1.height, bbox2.height);
+                }
+                words.push({word: word, x: x, y: y, width: width, height: height, lineX: x + (width - lineWidth) / 2, lineWidth: lineWidth});
+                console.log(word, x, width);
+                // no terminal gap if we split prior terminal (tag == '')
+                x += width + (lastTag != '' ? self.terminalGap : 0);
+            }
+            self.words = words;
+            x = self.treeMarginLeft; y += height + self.lineGap;
+
+        // [['나는', [('나', 'NP'), ('는', 'JX')]],
+        //  ['그것에', [('그것', 'NP'), ('에', '')]],
+        //  ['대해서', [(' 대하여서', 'PRP_11')]],
+        //  ['책을', [('책', 'NNG'), ('을', 'JKO')]],
+        //  ['쓸', [('쓰', 'VV'), ('ㄹ', '')]],
+        //  ['거야.', [(' 거 이', 'PSX_13'), ('야', 'EF')]]]
+
+        // [('나', 'NP'),
+        //  ('는', 'JX'),
+        //  ('그것', 'NP'),
+        //  ('에 대하여서', 'PRP_11'),
+        //  ('책', 'NNG'),
+        //  ('을', 'JKO'),
+        //  ('쓰', 'VV'),
+        //  ('ㄹ 거 이', 'PSX_13'),
+        //  ('야', 'EF'),
+        //  ('.', 'SF')]
+
+	        // lay out terminal line
             for (var i = 0; i < terminals.length; i++) {
                 var t = terminals[i];
                 var bbox1 = self.textBBox(t.word, "leaf-word"), bbox2 = self.textBBox(self.tagDisplay(t.tag), "leaf-tag");
                 t.x = x; t.y = y;
                 t.width = Math.max(bbox1.width, bbox2.width); t.height = Math.max(bbox1.height, bbox2.height);
+                console.log(t.word, t.x, t.width);
                 x += t.width + self.terminalGap;
             }
             //
@@ -312,7 +365,7 @@ export default {
 
         tagDisplay: function(tag) {
 	        // return displayable
-            return this.references.posTable[tag].wikiPOS
+            return tag != '' ? this.references.posTable[tag].wikiPOS : '';
 	        // return tag.split("_")[0];
         },
 
@@ -464,6 +517,11 @@ document.onmouseup = function (e) {
         stroke-width: 0.8px;
     }
 
+    .word-line {
+        stroke: rgb(105, 105, 105);
+        stroke-width: 0.5px;
+    }
+
     .leaf-word {
         fill: #00a6de;
         color: #00a6de;
@@ -478,6 +536,11 @@ document.onmouseup = function (e) {
     .leaf-word {
         fill: #00a6de;
         cursor: pointer;
+    }
+
+    .word-word {
+        fill: black;
+        color: black;
     }
 
     .phrase-plus {
