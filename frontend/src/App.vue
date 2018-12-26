@@ -150,6 +150,7 @@ export default {
             POS: null,
             // second tree display layout test
             parseTree2: null,
+            morphemeGroups: null,
             terminalGap: 20,
             treeMarginTop: 20, treeMarginLeft: 10,
             terminals: []
@@ -183,6 +184,7 @@ export default {
 	                self.parseButtonText = "Parse";
 	                if (response.result == 'OK') {
 	                    self.mappedPosList = response.mappedPosList;
+	                    self.morphemeGroups = response.morphemeGroups;
                         self.parseTree = response.parseTree;
                         self.posList = response.posList;
                         self.phrases = response.phrases;

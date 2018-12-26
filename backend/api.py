@@ -111,6 +111,7 @@ def parse():
     return jsonify(result="OK",
                    posList=words,
                    mappedPosList=mappedPosList,
+                   morphemeGroups=morphemeGroups,
                    phrases=phrases,
                    parseTree=parseTree,
                    references=references,

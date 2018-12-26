@@ -117,94 +117,119 @@ class TagMap(object):
         # returns a list of (tag,word) tuples
         tagString = ';' + posString + ';'
         for tagPat, tm in cls.tagMapPatterns:
-            tagString = re.sub(';' + tagPat + ';', ';' + tm.repl + ';', tagString)
+            def replTags(m):
+                print('---\n', tagString)
+                print('  ', ';' + tagPat + ';')
+                print(m.groups())
+                print(list(m.span(i) for i, g in enumerate(m.groups())))
+                print(m.span(), '=', tagString[m.span()[0]:m.span()[1]])
+                print(m.expand(';' + tm.repl + ';'))
+                return m.expand(';' + tm.repl + ';')
+            tagString = re.sub(';' + tagPat + ';', replTags, tagString)
+        print('=>', tagString)
         #
         mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
         #
-        # figure word-to-mapped-morph assignments
-        i = j = k = 0; newGroups = []
-        for m, tag in mappedPosList:
-            
-
-
-        while i < len(morphemeGroups) - 1:
-            w, mList = morphemeGroups[i]
-            newList = []
-            newGroups.append([w, newList])
-            while j < len(mList) - 1:
-                m = mList[j]
-                if mappedPosList[k][0] == m:
-                    newList.append(m)
-                    k += 1; j += 1
-                else:
-
-
-
-        for g in enumerate(morphemeGroups):
-            w, mlist = g
-            newlist = []
-            newGroups.append([w, newlist])
-
-
-
-
+        # # figure changed word-to-mapped-morph assignments (assumes first morpheme in words remain unmapped)
+        # pi = 0
+        # wordIndexes = []
+        # for w, morphemes in morphemeGroups:
+        #     m0 = morphemes[0] # head morpheme of this word
+        #     # look for it in POS list
+        #     while pi < len(mappedPosList) and m0 != mappedPosList[pi][0]:
+        #         pi += 1
+        #     # record word index
+        #     wordIndexes.append(pi)
+        #     # run through rest of word's matching morphemes
+        #     mi = 1
+        #     pi += 1
+        #     while pi < len(mappedPosList) and mi < len(morphemes) and morphemes[mi] == mappedPosList[pi][0]:
+        #         mi += 1
+        #         pi += 1
         #
+        # print(mappedPosList)
+        # print(wordIndexes)
+
+        # figure changed word-to-mapped-morph assignments (assumes first morpheme in words remain unmapped)
+        gi = mi = pi = 0; strippedMorph = None
+        word, morphemes = morphemeGroups[0]
+        newMorphemes = []
+        newGroups = [[word, newMorphemes]]
+        m, tag = mappedPosList[0]
+        while True:
+            if mi >= len(morphemes):
+                gi += 1; mi = 0
+                if gi >= len(morphemeGroups):
+                    while pi < len(mappedPosList)and mappedPosList[pi][1] != 'SF':
+                        newMorphemes.append(mappedPosList[pi][0])
+                        pi += 1
+                    break
+                word, morphemes = morphemeGroups[gi]
+                newMorphemes = []
+                newGroups.append([word, newMorphemes])
+            if m.strip() == morphemes[mi]:
+                newMorphemes.append(m)
+                mi += 1
+            elif m.startswith(morphemes[mi]):
+                newMorphemes.append(morphemes[mi])
+                strippedMorph = morphemes[mi]
+                m = m[len(morphemes[mi]):]
+                mi += 1
+                continue
+            else:
+                # no match, find start of next word & consume intervening mappedPOS morphemes in current word
+                gis = gi + 1; pis = pi
+                if gis < len(morphemeGroups):
+                    wordss, morphemess = morphemeGroups[gis]
+                    m0 = morphemess[0]
+                    while pis < len(mappedPosList) and mappedPosList[pis][0] != m0:
+                        pis += 1
+                # found next word start in mappedPOS list, add intervening morphemes to last word & proceed
+                if mappedPosList[pi][0].startswith(strippedMorph):
+                    # trim leading prior morpheme if present
+                    newMorphemes.append(mappedPosList[pi][0][len(strippedMorph):])
+                    pi += 1
+                while pi < pis:
+                    newMorphemes.append(mappedPosList[pi][0])
+                    pi += 1
+                m, tag  = mappedPosList[pi]
+                mi = len(morphemes)
+                continue
+            pi += 1
+            if pi >= len(mappedPosList):
+                break
+            m, tag = mappedPosList[pi]
+
         return mappedPosList, newGroups
 
-
-
-
-        "나는 그것에 대해서 책을 쓸 거야"
-
-        """
-===> 나는	나/NP + 는/JX | 나는 | 0 2
-  -> 나/NP | 나 | NP 0 1
-  -> 는/JX | 는 | JX 1 1
-===> 그것에	그것/NP + 에/JKB | 그것에 | 3 3
-  -> 그것/NP | 그것 | NP 3 2
-  -> 에/JKB | 에 | JKB 5 1
-===> 대해서	대하/VV + 여서/EC | 대해서 | 7 3
-  -> 대하/VV | 대하 | VV 7 2
-  -> 여서/EC | 여서 | EC 8 2
-===> 책을	책/NNG + 을/JKO | 책을 | 11 2
-  -> 책/NNG | 책 | NNG 11 1
-  -> 을/JKO | 을 | JKO 12 1
-===> 쓸	쓰/VV + ㄹ/ETM | 쓸 | 14 1
-  -> 쓰/VV | 쓰 | VV 14 1
-  -> ㄹ/ETM | ㄹ | ETM 14 1
-===> 거야.	거/NNB + 이/VCP + 야/EF + ./SF | 거야. | 16 3
-  -> 거/NNB | 거 | NNB 16 1
-  -> 이/VCP | 이 | VCP 17 1
-  -> 야/EF | 야 | EF 17 1
-  -> ./SF | . | SF 18 1 
-        """
-
-        [['나는', ['나', '는']],
-         ['그것에', ['그것', '에']],
-         ['대해서', ['대하', '여서']],
-         ['책을', ['책', '을']],
-         ['쓸', ['쓰', 'ㄹ']],
-         ['거야.', ['거', '이', '야']]]
-
-        [['나는', ['나', '는']],
-         ['그것에', ['그것', '에']],
-         ['대해서', [' 대하여서']],
-         ['책을', ['책', '을']],
-         ['쓸', ['쓰', 'ㄹ']],
-         ['거야.', [' 거 이', '야']]]
-
-        [('나', 'NP'),
-             ('는', 'JX'),
-             ('그것', 'NP'),
-             ('에 대하여서', 'PRP_11'),
-             ('책', 'NNG'),
-             ('을', 'JKO'),
-             ('쓰', 'VV'),
-             ('ㄹ 거 이', 'PSX_13'),
-             ('야', 'EF'),
-             ('.', 'SF')]
-
-        return [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
+        #
+        #
+        #
+        # [['나는', ['나', '는']],
+        #  ['그것에', ['그것', '에']],
+        #  ['대해서', ['대하', '여서']],
+        #  ['책을', ['책', '을']],
+        #  ['쓸', ['쓰', 'ㄹ']],
+        #  ['거야.', ['거', '이', '야']]]
+        #
+        # [['나는', ['나', '는']],
+        #  ['그것에', ['그것', '에']],
+        #  ['대해서', [' 대하여서']],
+        #  ['책을', ['책', '을']],
+        #  ['쓸', ['쓰', 'ㄹ']],
+        #  ['거야.', [' 거 이', '야']]]
+        #
+        # [('나', 'NP'),
+        #      ('는', 'JX'),
+        #      ('그것', 'NP'),
+        #      ('에 대하여서', 'PRP_11'),
+        #      ('책', 'NNG'),
+        #      ('을', 'JKO'),
+        #      ('쓰', 'VV'),
+        #      ('ㄹ 거 이', 'PSX_13'),
+        #      ('야', 'EF'),
+        #      ('.', 'SF')]
+        #
 
     @classmethod
     def mapNodeNames(cls, tree):
