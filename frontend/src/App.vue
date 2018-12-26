@@ -59,6 +59,17 @@
                             </text>
                         </g>
                     </svg>
+                    <svg id="parse-tree-2" class="tree-svg" :width="parseTreeWidth" :height="200" style="background-color: rgba(0,0,0,0);">
+                        <g v-for="node in terminals">
+=                            <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
+                                <template v-if="node.word">
+                                    <tspan class="leaf-word" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
+                                    <tspan :x="node.x + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(node.tag) }}</tspan>
+                                </template>
+                                <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
+                            </text>
+                        </g>
+                    </svg>
                 </template>
             </div>
             <div v-if="!parsing && debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
@@ -136,9 +147,12 @@ export default {
             definitionTimeout: null,
             references: null,
             wordRefs: null,
-            POS: null
+            POS: null,
             // second tree display layout test
-
+            parseTree2: null,
+            terminalGap: 20,
+            treeMarginTop: 20, treeMarginLeft: 10,
+            terminals: []
 		};
 	},
 
@@ -194,6 +208,9 @@ export default {
 	        var idCounter = 0, maxY = 0;
 	        var text = [], links = [];
 	        var layers = [], nodes = [];
+            // temp: take a deep copy of parsetree for display2 experiment
+            self.parseTree2 = JSON.parse(JSON.stringify(self.parseTree));
+            //
 	        function subtree(t, level) {
 	            if (layers.length < level+1)
 	                layers[level] = { count:0, width: 0, level: level, entries: [] };  // add new layer level;
@@ -242,6 +259,7 @@ export default {
 
         buildDisplay2: function() {
 	        // build display layout for 2nd test form
+            var self = this;
             var terminals = [], layers = [], nodes = [];
             // descend parse-tree, figuring tree levels & collecting terminals
 	        function subtree(t, level) {
@@ -261,16 +279,18 @@ export default {
                     terminals.push(t);
                 }
 	        }
-	        subtree(self.parseTree, 0);
+	        subtree(self.parseTree2, 0);
 	        // first, lay out terminal line
-            var x = 0, y = 0;
+            var x = self.treeMarginLeft, y = self.treeMarginTop;
             for (var i = 0; i < terminals.length; i++) {
                 var t = terminals[i];
-                var bbox = Math.max(this.textBBox(t.word, "leaf-word"), this.textBBox(this.tagDisplay(t.tag, "leaf-tag")));
+                var bbox1 = self.textBBox(t.word, "leaf-word"), bbox2 = self.textBBox(self.tagDisplay(t.tag), "leaf-tag");
                 t.x = x; t.y = y;
-                t.width = bbox.width; t.height = bbox.height;
-                x += t.width + this.terminalGap;
+                t.width = Math.max(bbox1.width, bbox2.width); t.height = Math.max(bbox1.height, bbox2.height);
+                x += t.width + self.terminalGap;
             }
+            //
+            self.terminals = terminals;
         },
 
         textBBox: function(text, cls) {

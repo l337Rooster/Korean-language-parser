@@ -112,13 +112,98 @@ class TagMap(object):
         pprint(cls.nodeNameMaps)
 
     @classmethod
-    def mapTags(cls, posString):
+    def mapTags(cls, posString, morphemeGroups):
         "generate a version of the parser's original word:POC string under the below-defined synthetic tag mappings"
         # returns a list of (tag,word) tuples
         tagString = ';' + posString + ';'
         for tagPat, tm in cls.tagMapPatterns:
             tagString = re.sub(';' + tagPat + ';', ';' + tm.repl + ';', tagString)
         #
+        mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
+        #
+        # figure word-to-mapped-morph assignments
+        i = j = k = 0; newGroups = []
+        for m, tag in mappedPosList:
+            
+
+
+        while i < len(morphemeGroups) - 1:
+            w, mList = morphemeGroups[i]
+            newList = []
+            newGroups.append([w, newList])
+            while j < len(mList) - 1:
+                m = mList[j]
+                if mappedPosList[k][0] == m:
+                    newList.append(m)
+                    k += 1; j += 1
+                else:
+
+
+
+        for g in enumerate(morphemeGroups):
+            w, mlist = g
+            newlist = []
+            newGroups.append([w, newlist])
+
+
+
+
+        #
+        return mappedPosList, newGroups
+
+
+
+
+        "나는 그것에 대해서 책을 쓸 거야"
+
+        """
+===> 나는	나/NP + 는/JX | 나는 | 0 2
+  -> 나/NP | 나 | NP 0 1
+  -> 는/JX | 는 | JX 1 1
+===> 그것에	그것/NP + 에/JKB | 그것에 | 3 3
+  -> 그것/NP | 그것 | NP 3 2
+  -> 에/JKB | 에 | JKB 5 1
+===> 대해서	대하/VV + 여서/EC | 대해서 | 7 3
+  -> 대하/VV | 대하 | VV 7 2
+  -> 여서/EC | 여서 | EC 8 2
+===> 책을	책/NNG + 을/JKO | 책을 | 11 2
+  -> 책/NNG | 책 | NNG 11 1
+  -> 을/JKO | 을 | JKO 12 1
+===> 쓸	쓰/VV + ㄹ/ETM | 쓸 | 14 1
+  -> 쓰/VV | 쓰 | VV 14 1
+  -> ㄹ/ETM | ㄹ | ETM 14 1
+===> 거야.	거/NNB + 이/VCP + 야/EF + ./SF | 거야. | 16 3
+  -> 거/NNB | 거 | NNB 16 1
+  -> 이/VCP | 이 | VCP 17 1
+  -> 야/EF | 야 | EF 17 1
+  -> ./SF | . | SF 18 1 
+        """
+
+        [['나는', ['나', '는']],
+         ['그것에', ['그것', '에']],
+         ['대해서', ['대하', '여서']],
+         ['책을', ['책', '을']],
+         ['쓸', ['쓰', 'ㄹ']],
+         ['거야.', ['거', '이', '야']]]
+
+        [['나는', ['나', '는']],
+         ['그것에', ['그것', '에']],
+         ['대해서', [' 대하여서']],
+         ['책을', ['책', '을']],
+         ['쓸', ['쓰', 'ㄹ']],
+         ['거야.', [' 거 이', '야']]]
+
+        [('나', 'NP'),
+             ('는', 'JX'),
+             ('그것', 'NP'),
+             ('에 대하여서', 'PRP_11'),
+             ('책', 'NNG'),
+             ('을', 'JKO'),
+             ('쓰', 'VV'),
+             ('ㄹ 거 이', 'PSX_13'),
+             ('야', 'EF'),
+             ('.', 'SF')]
+
         return [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
 
     @classmethod
@@ -144,7 +229,7 @@ class TagMap(object):
         walkTree(tree, [tree])
 
     @classmethod
-    def getReferences(cls, tree, sentence):
+    def getReferences(cls, tree):
         "traverse NLTK ChunkTree for reference link defs"
         #
         references = {}

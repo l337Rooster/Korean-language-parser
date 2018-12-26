@@ -66,14 +66,18 @@ def parse():
         sentence += '.'
 
     # run Khaiii
-    words = []
+    words = []; morphemeGroups = []
     for w in khaiiiAPI.analyze(sentence):
+        #print('===>', w, '|', w.lex, '|',  w.begin, w.length)
+        morphemeGroups.append([w.lex, [m.lex for m in w.morphs if m.tag != 'SF']])
         for m in w.morphs:
+            #print('  ->', m, '|', m.lex, '|', m.tag, m.begin, m.length)
             words.append('{0}:{1}'.format(m.lex.strip(), m.tag))
     posString = ';'.join(words)
+    pprint(morphemeGroups)
 
-    # map POS through synthetic tag mapper
-    mappedPosList = TagMap.mapTags(posString)
+    # map POS through synthetic tag mapper & extract word groupings
+    mappedPosList, morphemeGroups = TagMap.mapTags(posString, morphemeGroups)
 
     # perform chunk parsing
     chunkTree = Chunker.parse(mappedPosList)
@@ -82,7 +86,7 @@ def parse():
     TagMap.mapNodeNames(chunkTree)
 
     # extract popup wiki definitions & references links & notes for implicated nodes
-    references = TagMap.getReferences(chunkTree, sentence)
+    references = TagMap.getReferences(chunkTree)
 
     # build descriptive phrase list
     phrases = Chunker.phraseList(chunkTree)
