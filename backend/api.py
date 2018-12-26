@@ -82,7 +82,7 @@ def parse():
     TagMap.mapNodeNames(chunkTree)
 
     # extract popup wiki definitions & references links & notes for implicated nodes
-    references = TagMap.getReferences(chunkTree)
+    references = TagMap.getReferences(chunkTree, sentence)
 
     # build descriptive phrase list
     phrases = Chunker.phraseList(chunkTree)

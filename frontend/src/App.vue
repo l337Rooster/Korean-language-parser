@@ -7,19 +7,29 @@
                 <div id="input-title" >Korean sentence parser</div>
                 <div id="attribution">v0.3.1 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
-            <div class="k-flexrow k-table">
-                <div class="k-row">
-                    <textarea autofocus id="input-sentence" class="k-cell" placeholder="enter Korean sentence to parse" v-model="sentence"></textarea>
-                    <button autofocus class="k-cell" id="parse-button" v-on:click="requestParse" :disabled="sentence == ''">{{ parseButtonText }}</button>
-                </div>
-                <div class="k-row controls-row">
-                    <label for="debug">Debug output: </label>
-                    <input type="checkbox" id="debug" v-model="debugOutput">
-                    <!-- label id="parser-select-label" for="parser-select">Select parser: </label>
-                    <select id="parser-select" v-model="parserSelect" class="k-cell">
-                        <option v-for="p in parsers" >{{p}}</option>
-                    </select -->
-                </div>
+            <div class="k-flexrow">
+                <table>
+                    <tr id="text-row">
+                        <td><textarea autofocus id="input-sentence" class="" placeholder="enter Korean sentence to parse" v-model="sentence"></textarea></td>
+                        <td><button autofocus class="" id="parse-button" v-on:click="requestParse" :disabled="sentence == ''">{{ parseButtonText }}</button></td>
+                    </tr>
+                    <tr id="controls-row">
+                        <td>
+                            <template v-if="sentence != ''">
+                                <span v-for="t in translators" class="">
+                                    <a :href="t.slug.replace('${sentence}', sentence)" target="_blank">{{t.title}}</a> ~
+                                </span>
+                            </template>
+                        <!-- label id="parser-select-label" for="parser-select">Select parser: </label>
+                        <select id="parser-select" v-model="parserSelect" class="k-cell">
+                            <option v-for="p in parsers" >{{p}}</option>
+                        </select -->
+                            <label for="debug">Debug output: </label>
+                            <input class="" type="checkbox" id="debug" v-model="debugOutput">
+                        </td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </table>
             </div>
             <div v-if="!parsing" id="output-row" class="k-flexrow k-table">
                 <div v-if="error" class="error-msg">
@@ -107,6 +117,9 @@ export default {
 		    answer: "Answer goes here",
 		    wiktionaryUrl: null,
 		    parseButtonText: "Parse",
+            translators: [{"title": "Google translate", "slug": "https://translate.google.com/#view=home&op=translate&sl=ko&tl=en&text=${sentence}"},
+                          {"title": "Naver Papago translator", "slug": "https://papago.naver.com/?sk=ko&tk=en&st=${sentence}"},
+                          {"title": "PNU spell-checker", "slug": "http://speller.cs.pusan.ac.kr"}],
 		    levelHeight: 50,
 		    minNodeWidth: 50,
 		    nodePadding: 20,
@@ -377,23 +390,30 @@ document.onmouseup = function (e) {
 
     #input-sentence {
         width: 45em;
-        margin: 20px;
-        padding: 10px;
+        margin: 20px 20px 5px 20px;
+        padding: 10px 10px 0px 10px;
         font-size: 18px;
+        vertical-align: top;
     }
 
     #parse-button {
         vertical-align: top;
-        margin-top: 35px;
-        padding: 5px;
+        margin-top: 15px;
+        /* padding: 5px; */
         font-size: 14px;
         width: 75px;
     }
 
-    .controls-row {
-        text-align: right;
-        font-size: 12px;
+    #controls-row {
+        float: right;
+        font-size: 11px;
     }
+
+    #controls-row a {
+        /* padding-right: 10px; */
+        color:rgba(85, 117, 255, 1);
+    }
+
     .controls-row label {
         padding-left: 10px;
     }

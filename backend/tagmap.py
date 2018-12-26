@@ -144,7 +144,7 @@ class TagMap(object):
         walkTree(tree, [tree])
 
     @classmethod
-    def getReferences(cls, tree):
+    def getReferences(cls, tree, sentence):
         "traverse NLTK ChunkTree for reference link defs"
         #
         references = {}
@@ -187,6 +187,7 @@ class TagMap(object):
                     posTable[st[1]] = posEntry
         #
         walkTree(tree)
+        #
         return dict(references=references, wikiKeys=wikiKeys, posTable=posTable)
 
 
