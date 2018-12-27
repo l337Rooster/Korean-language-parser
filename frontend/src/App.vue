@@ -386,7 +386,7 @@ export default {
             // figure graph bounds
             var lt = self.terminals[self.terminals.length-1];
             self.tree2Width = self.treeMarginX * 2 + lt.x + lt.width;
-            self.tree2Height = y + self.layers.length * self.levelHeight + self.treeMarginY;
+            self.tree2Height = y + layers.length * self.levelHeight + self.treeMarginY;
             self.layers = layers;
 
 	        //console.log(layers);
@@ -394,8 +394,11 @@ export default {
 
         textBBox: function(text, cls) {
             // return bounding box for text rendered in given class
+            if (text == '')
+                return {width: 0, height: 0}
             var t = $("#template ." + cls)[0];
             t.textContent = text;
+            console.log('bbox', text, t.textContent, cls, t.getBBox().width);
             return t.getBBox();
         },
 
