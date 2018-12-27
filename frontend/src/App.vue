@@ -59,22 +59,29 @@
                             </text>
                         </g>
                     </svg>
-                    <svg id="parse-tree-2" class="tree-svg" :width="parseTreeWidth" :height="400" style="background-color: rgba(0,0,0,0);">
+                    <svg id="parse-tree-2" class="tree-svg" :width="tree2Width" :height="tree2Height" style="background-color: rgba(0,0,0,0);">
                         <g v-for="word in words">
-=                            <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
+                            <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
                                 <tspan class="word-word">{{ word.word }}</tspan>
                             </text>
                             <line :x1="word.lineX" :y1="word.y + 7" class="word-line"
                                   :x2="word.lineX + word.lineWidth" :y2="word.y + 7"/>
                         </g>
                         <g v-for="node in terminals">
-=                            <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
+                            <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
                                     <tspan class="leaf-word" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
                                     <tspan :x="node.x + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(node.tag) }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
+                        </g>
+                        <g v-for="layer in layers">
+                            <g v-for="node in layer.entries">
+                                <text :x="node.x" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
+                                    <tspan class="node-tag" >{{ node.tag }}</tspan>
+                                </text>
+                            </g>
                         </g>
                     </svg>
                 </template>
@@ -160,9 +167,11 @@ export default {
             parseTree2: null,
             morphemeGroups: null,
             terminalGap: 20, lineGap: 6,
-            treeMarginTop: 20, treeMarginLeft: 10,
+            treeMarginX: 20, treeMarginY: 20,
             terminals: [],
-            words: []
+            layers: [],
+            words: [],
+            tree2Width: 0, tree2Height: 0
 		};
 	},
 
@@ -273,13 +282,16 @@ export default {
         buildDisplay2: function() {
 	        // build display layout for 2nd test form
             var self = this;
-            var terminals = [], layers = [], nodes = [];
+            var terminals = [], layers = [], nodes = [], layer;
             // descend parse-tree, figuring tree levels & collecting terminals
 	        function subtree(t, level) {
-	            if (layers.length < level + 1)
-	                // add new layer level
-	                layers[level] = { count:0, width: 0, level: level, entries: [] };
 	            if (t.type == 'tree') {
+	                // build tree layers above the terminals
+                    if (layers.length < level + 1)
+                        // add new layer level
+                        layer = layers[level] = { count:0, width: 0, level: level, entries: [] };
+                    t.level = level;
+                    layer.entries.push(t);
 	                // recurse down subtree
 	                for (var i = 0; i < t.children.length; i++) {
 	                    var child = t.children[i];
@@ -288,14 +300,17 @@ export default {
 	                }
 	            }
 	            else {
-	                // terminal node, gather
+	                // terminal node, gather separately
+                    t.level = -1;
                     terminals.push(t);
                 }
 	        }
 	        subtree(self.parseTree2, 0);
+	        // record inverted layer array (since we will draw in terminal-to-root order
+            layers.reverse();
 
 	        // lay out word line based on morphemeGroup word-groupings
-            var x = self.treeMarginLeft, y = self.treeMarginTop;
+            var x = self.treeMarginX, y = self.treeMarginY;
             var words = [], height = 0, lastTag = '?';
             var spaceWidth = self.textBBox('x x', "leaf-word").width - self.textBBox('xx', "leaf-word").width;
             for (var i = 0; i < self.morphemeGroups.length; i++) {
@@ -309,6 +324,7 @@ export default {
                     var wmax = Math.max(bbox1.width, bbox2.width);
                     width += wmax + (j < g[1].length-1 ? self.terminalGap : 0);
                     height = Math.max(height, bbox1.height, bbox2.height);
+                    // compute underline dx's form each end of the the word
                     if (j == 0)
                         lineDx0 = wmax / 2 - bbox1.width / 2 + (g[1][j][0][0] == ' ' ? spaceWidth : 0);
                     if (j == g[1].length-1)
@@ -321,25 +337,7 @@ export default {
                 x += width + (lastTag != '' ? self.terminalGap : 0);
             }
             self.words = words;
-            x = self.treeMarginLeft; y += height + self.lineGap;
-
-        // [['나는', [('나', 'NP'), ('는', 'JX')]],
-        //  ['그것에', [('그것', 'NP'), ('에', '')]],
-        //  ['대해서', [(' 대하여서', 'PRP_11')]],
-        //  ['책을', [('책', 'NNG'), ('을', 'JKO')]],
-        //  ['쓸', [('쓰', 'VV'), ('ㄹ', '')]],
-        //  ['거야.', [(' 거 이', 'PSX_13'), ('야', 'EF')]]]
-
-        // [('나', 'NP'),
-        //  ('는', 'JX'),
-        //  ('그것', 'NP'),
-        //  ('에 대하여서', 'PRP_11'),
-        //  ('책', 'NNG'),
-        //  ('을', 'JKO'),
-        //  ('쓰', 'VV'),
-        //  ('ㄹ 거 이', 'PSX_13'),
-        //  ('야', 'EF'),
-        //  ('.', 'SF')]
+            x = self.treeMarginX; y += height + self.lineGap;
 
 	        // lay out terminal line
             for (var i = 0; i < terminals.length; i++) {
@@ -352,6 +350,46 @@ export default {
             }
             //
             self.terminals = terminals;
+
+	        // compute tree layout coords
+	        y += self.lineGap + self.levelHeight;
+	        // draw an inverted tree from the terminal layer down; start at layer above terminals,
+            //   find parent & siblings & layout parent midway between siblings
+ 	        for (var i = 0; i < layers.length; i++) {
+                var entries = layers[i].entries;
+                for (var j = 0; j < entries.length; j++) {
+                    var node = entries[j];
+                    node.y = y + i * self.levelHeight;
+                    // get children bounds & center me within that
+                    var c0 = node.children[0], cn = node.children[node.children.length - 1],
+                        x0, xn;
+                    if (node.children.length > 0) {
+                        if (c0.level >= 0) // tree node
+                            x0 = c0.x;
+                        else
+                            x0 = c0.x + c0.width / 2;
+                        if (cn.level >= 0)
+                            xn = cn.x;
+                        else
+                            xn = cn.x + cn.width / 2;
+                    }
+                    else {
+                        if (c0.level >= 0) // tree node
+                            x0 = c0.x;
+                        else
+                            x0 = c0.x + c0.width / 2;
+                    }
+                    node.x = (x0 + xn) / 2;
+                }
+            }
+
+            // figure graph bounds
+            var lt = self.terminals[self.terminals.length-1];
+            self.tree2Width = self.treeMarginX * 2 + lt.x + lt.width;
+            self.tree2Height = y + self.layers.length * self.levelHeight + self.treeMarginY;
+            self.layers = layers;
+
+	        //console.log(layers);
         },
 
         textBBox: function(text, cls) {
