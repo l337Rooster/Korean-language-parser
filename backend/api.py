@@ -162,7 +162,7 @@ def buildParseTree(chunkTree):
     layers = [list() for i in range(maxLayer + 1)]
     for n in allNodes:
         layers[n['layer']].append(n['id'])
-        del n['parent']
+        n['parent'] = id(n['parent']) if n['parent'] else None
     #
     return dict(tree=tree, layers=layers)
 

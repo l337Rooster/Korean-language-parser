@@ -75,12 +75,20 @@
                                 </template>
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
+                            <line :x1="node.x + node.width / 2" :y1="node.y + 18" class="link-line"
+                                  :x2="node.x + node.width / 2" :y2="node.parent.y - 28"/>
                         </g>
                         <g v-for="layer in layers">
                             <g v-for="node in layer">
                                 <text :x="node.x" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
                                     <tspan class="node-tag" >{{ node.tag }}</tspan>
                                 </text>
+                                <line v-if="node.parent" :x1="node.x" :y1="node.y + 8" class="link-line"
+                                                         :x2="node.x" :y2="node.parent.y - 28"/>
+                                <line :x1="node.x0" :y1="node.y - 28" class="link-line"
+                                      :x2="node.xn" :y2="node.y - 28"/>
+                                <line :x1="node.x" :y1="node.y - 14" class="link-line"
+                                      :x2="node.x" :y2="node.y - 28"/>
                             </g>
                         </g>
                     </svg>
@@ -316,6 +324,7 @@ export default {
             var nodes = {}
             function addID(n) {
                 nodes[n.id] = n;
+                n.parent = nodes[n.parent];
                 for (var i = 0; i < n.children.length; i++)
                     addID(n.children[i]);
             }
@@ -359,6 +368,7 @@ export default {
                     else
                         x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
                     node.x = (x0 + xn) / 2;
+                    node.x0 = x0; node.xn = xn;
                 }
             }
 
