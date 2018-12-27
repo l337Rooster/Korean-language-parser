@@ -64,8 +64,8 @@
 =                            <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
                                 <tspan class="word-word">{{ word.word }}</tspan>
                             </text>
-                            <line :x1="word.lineX" :y1="word.y + 6" class="word-line"
-                                  :x2="word.lineX + word.lineWidth" :y2="word.y + 6"/>
+                            <line :x1="word.lineX" :y1="word.y + 7" class="word-line"
+                                  :x2="word.lineX + word.lineWidth" :y2="word.y + 7"/>
                         </g>
                         <g v-for="node in terminals">
 =                            <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
@@ -159,7 +159,7 @@ export default {
             // second tree display layout test
             parseTree2: null,
             morphemeGroups: null,
-            terminalGap: 20, lineGap: 20,
+            terminalGap: 20, lineGap: 6,
             treeMarginTop: 20, treeMarginLeft: 10,
             terminals: [],
             words: []
@@ -297,19 +297,25 @@ export default {
 	        // lay out word line based on morphemeGroup word-groupings
             var x = self.treeMarginLeft, y = self.treeMarginTop;
             var words = [], height = 0, lastTag = '?';
+            var spaceWidth = self.textBBox('x x', "leaf-word").width - self.textBBox('xx', "leaf-word").width;
             for (var i = 0; i < self.morphemeGroups.length; i++) {
                 var g = self.morphemeGroups[i];
-                var word = g[0], width = 0, lineWidth = 0;
+                var word = g[0], width = 0, lineDx0, lineDx1;
                 for (var j = 0; j < g[1].length; j++) {
                     // compute bounds of morpheme group
                     console.log(' ', j, g[1][j][0]);
                     lastTag = g[1][j][1];
                     var bbox1 = self.textBBox(g[1][j][0], "leaf-word"), bbox2 = self.textBBox(self.tagDisplay(g[1][j][1]), "leaf-tag");
-                    width += Math.max(bbox1.width, bbox2.width) + (j < g[1].length-1 ? self.terminalGap : 0);
-                    lineWidth += bbox1.width + (j < g[1].length-1 ? self.terminalGap : 0);
+                    var wmax = Math.max(bbox1.width, bbox2.width);
+                    width += wmax + (j < g[1].length-1 ? self.terminalGap : 0);
                     height = Math.max(height, bbox1.height, bbox2.height);
+                    if (j == 0)
+                        lineDx0 = wmax / 2 - bbox1.width / 2 + (g[1][j][0][0] == ' ' ? spaceWidth : 0);
+                    if (j == g[1].length-1)
+                        lineDx1 = wmax / 2 - bbox1.width / 2 + (lastTag == '' ? spaceWidth : 0);
                 }
-                words.push({word: word, x: x, y: y, width: width, height: height, lineX: x + (width - lineWidth) / 2, lineWidth: lineWidth});
+                //
+                words.push({word: word, x: x, y: y, width: width, height: height, lineX: x + lineDx0, lineWidth: width - lineDx0 - lineDx1});
                 console.log(word, x, width);
                 // no terminal gap if we split prior terminal (tag == '')
                 x += width + (lastTag != '' ? self.terminalGap : 0);
