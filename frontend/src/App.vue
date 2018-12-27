@@ -77,7 +77,7 @@
                             </text>
                         </g>
                         <g v-for="layer in layers">
-                            <g v-for="node in layer.entries">
+                            <g v-for="node in layer">
                                 <text :x="node.x" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
                                     <tspan class="node-tag" >{{ node.tag }}</tspan>
                                 </text>
@@ -204,6 +204,7 @@ export default {
 	                    self.mappedPosList = response.mappedPosList;
 	                    self.morphemeGroups = response.morphemeGroups;
                         self.parseTree = response.parseTree;
+                        self.parseTree2 = response.parseTree2;
                         self.posList = response.posList;
                         self.phrases = response.phrases;
                         self.references = response.references;
@@ -228,8 +229,6 @@ export default {
 	        var idCounter = 0, maxY = 0;
 	        var text = [], links = [];
 	        var layers = [], nodes = [];
-            // temp: take a deep copy of parsetree for display2 experiment
-            self.parseTree2 = JSON.parse(JSON.stringify(self.parseTree));
             //
 	        function subtree(t, level) {
 	            if (layers.length < level+1)
@@ -282,32 +281,6 @@ export default {
         buildDisplay2: function() {
 	        // build display layout for 2nd test form
             var self = this;
-            var terminals = [], layers = [], nodes = [], layer;
-            // descend parse-tree, figuring tree levels & collecting terminals
-	        function subtree(t, level) {
-	            if (t.type == 'tree') {
-	                // build tree layers above the terminals
-                    if (layers.length < level + 1)
-                        // add new layer level
-                        layer = layers[level] = { count:0, width: 0, level: level, entries: [] };
-                    t.level = level;
-                    layer.entries.push(t);
-	                // recurse down subtree
-	                for (var i = 0; i < t.children.length; i++) {
-	                    var child = t.children[i];
-	                    child.parent = t;
-	                    subtree(child, level + 1);
-	                }
-	            }
-	            else {
-	                // terminal node, gather separately
-                    t.level = -1;
-                    terminals.push(t);
-                }
-	        }
-	        subtree(self.parseTree2, 0);
-	        // record inverted layer array (since we will draw in terminal-to-root order
-            layers.reverse();
 
 	        // lay out word line based on morphemeGroup word-groupings
             var x = self.treeMarginX, y = self.treeMarginY;
@@ -339,9 +312,21 @@ export default {
             self.words = words;
             x = self.treeMarginX; y += height + self.lineGap;
 
-	        // lay out terminal line
-            for (var i = 0; i < terminals.length; i++) {
-                var t = terminals[i];
+            // build layer node-id lookup tables
+            var nodes = {}
+            function addID(n) {
+                nodes[n.id] = n;
+                for (var i = 0; i < n.children.length; i++)
+                    addID(n.children[i]);
+            }
+            addID(self.parseTree2.tree)
+
+	        // lay out terminals line
+            var terminalIDs = self.parseTree2.layers[0],
+                terminals = [];
+            for (var i = 0; i < terminalIDs.length; i++) {
+                var t = nodes[terminalIDs[i]];
+                terminals.push(t);
                 var bbox1 = self.textBBox(t.word, "leaf-word"), bbox2 = self.textBBox(self.tagDisplay(t.tag), "leaf-tag");
                 t.x = x; t.y = y;
                 t.width = Math.max(bbox1.width, bbox2.width); t.height = Math.max(bbox1.height, bbox2.height);
@@ -355,36 +340,30 @@ export default {
 	        y += self.lineGap + self.levelHeight;
 	        // draw an inverted tree from the terminal layer down; start at layer above terminals,
             //   find parent & siblings & layout parent midway between siblings
- 	        for (var i = 0; i < layers.length; i++) {
-                var entries = layers[i].entries;
-                for (var j = 0; j < entries.length; j++) {
-                    var node = entries[j];
-                    node.y = y + i * self.levelHeight;
+            var layerIDs = self.parseTree2.layers,
+                layers = [];
+ 	        for (var i = 1; i < layerIDs.length; i++) {
+ 	            layers.push([]);
+                var entryIDs = layerIDs[i];
+                for (var j = 0; j < entryIDs.length; j++) {
+                    var node = nodes[entryIDs[j]];
+                    layers[i - 1].push(node);
+                    node.y = y + (i - 1)* self.levelHeight;
                     // get children bounds & center me within that
                     var c0 = node.children[0], cn = node.children[node.children.length - 1],
-                        x0, xn;
+                        x0, xn = 0;
                     if (node.children.length > 0) {
-                        if (c0.level >= 0) // tree node
-                            x0 = c0.x;
-                        else
-                            x0 = c0.x + c0.width / 2;
-                        if (cn.level >= 0)
-                            xn = cn.x;
-                        else
-                            xn = cn.x + cn.width / 2;
+                        x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
+                        xn = cn.level >= 0 ? xn = cn.x : cn.x + cn.width / 2;
                     }
-                    else {
-                        if (c0.level >= 0) // tree node
-                            x0 = c0.x;
-                        else
-                            x0 = c0.x + c0.width / 2;
-                    }
+                    else
+                        x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
                     node.x = (x0 + xn) / 2;
                 }
             }
 
             // figure graph bounds
-            var lt = self.terminals[self.terminals.length-1];
+            var lt = terminals[terminals.length - 1];
             self.tree2Width = self.treeMarginX * 2 + lt.x + lt.width;
             self.tree2Height = y + layers.length * self.levelHeight + self.treeMarginY;
             self.layers = layers;

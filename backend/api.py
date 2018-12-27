@@ -5,6 +5,7 @@ __author__ = 'jwainwright'
 
 import re
 from pprint import pprint, pformat
+from collections import defaultdict
 
 from flask import (Flask, request, abort, render_template, Response, jsonify)
 from flask_cors import CORS
@@ -102,6 +103,8 @@ def parse():
             return dict(type='pos', word=chunk[0].strip(), tag=chunk[1])
     #
     parseTree = asDict(chunkTree)
+    parseTree2 = buildParseTree(chunkTree)
+
     debugging = dict(posList=pformat(words),
                      mappedPosList=pformat(mappedPosList),
                      phrases=pformat(phrases),
@@ -114,8 +117,55 @@ def parse():
                    morphemeGroups=morphemeGroups,
                    phrases=phrases,
                    parseTree=parseTree,
+                   parseTree2=parseTree2,
                    references=references,
                    debugging=debugging)
+
+def buildParseTree(chunkTree):
+    "constructs display structures from NLTK chunk-tree"
+    # first, recursively turn the chunk tree into a Python nested dict so it can be JSONified
+    #  gathering terminals list & adding level from root & parent links along the way
+    terminals = []; height = [0]; allNodes = []
+    def asDict(chunk, parent=None, level=0):
+        height[0] = max(height[0], level)
+        while isinstance(chunk, nltk.Tree) and len(chunk) == 1:
+            # flatten degenerate tree nodes
+            chunk = chunk[0]
+        if isinstance(chunk, nltk.Tree):
+            node = dict(type='tree', tag='Sentence' if chunk.label() == 'S' else chunk.label(), level=level, layer=1, parent=parent)
+            node['children'] = [asDict(c, node, level+1) for c in chunk]
+            node['id'] = id(node)
+            allNodes.append(node)
+            return node
+        else:
+            node = dict(type='pos', word=chunk[0].strip(), tag=chunk[1], children=[], parent=parent, level=-1, layer=0)
+            node['id'] = id(node)
+            terminals.append(node)
+            allNodes.append(node)
+            return node
+    tree = asDict(chunkTree)
+
+    # breadth-first traversal up from terminals to set layer-assignemnt for each node
+    nodes = list(terminals)
+    maxLayer = 0
+    while nodes:
+        parents = []
+        for n in nodes:
+            parent = n['parent']
+            if parent:
+                parent['layer'] = max(n['layer'] + 1, parent['layer'])
+                maxLayer = max(maxLayer, parent['layer'])
+                parents.append(parent)
+        nodes = list(parents)
+
+    # add nodes to their assigned layer, drop parent field circular refs so structures can be JSONified
+    layers = [list() for i in range(maxLayer + 1)]
+    for n in allNodes:
+        layers[n['layer']].append(n['id'])
+        del n['parent']
+    #
+    return dict(tree=tree, layers=layers)
+
 
 # ------------ wikitionary definition handler --------------
 
