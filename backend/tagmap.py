@@ -75,6 +75,8 @@ class TagMap(object):
         "ZZ":       ("Unknown",     "Guess",            "Unknown",                          "추정: 분석 불능(기타)"),
         #
         # note that synthetic tags defined below include a mapping to one of the above basic POS
+        # extra synthetic parts, mostly to label suffix phrases built from the mapping rules
+        "AVS":      ("Suffix",      "Post-position",    "Adverbial suffix",                 ""),
     }
 
     def __init__(self, tagPat, repl, basePOS, descr, rename, wikiKey, refs, notes):
@@ -118,24 +120,19 @@ class TagMap(object):
         tagString = ';' + posString + ';'
         for tagPat, tm in cls.tagMapPatterns:
             def replTags(m):
-                # print('---\n', tagString)
-                # print('  ', ';' + tagPat + ';')
-                # print(m.groups())
-                # print(list(m.span(i) for i, g in enumerate(m.groups())))
-                # print(m.span(), '=', tagString[m.span()[0]:m.span()[1]])
-                # print(m.expand(';' + tm.repl + ';'))
                 return m.expand(';' + tm.repl + ';')
             tagString = re.sub(';' + tagPat + ';', replTags, tagString)
         #print('=>', tagString)
         #
         mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
         #
-        # figure changed word-to-mapped-morph assignments (assumes first morpheme in words remain unmapped)
+        # build updated assignment of mapped morphemes to original words. (assumes first morpheme in words remain unmapped)
         gi = mi = pi = 0; strippedMorph = None
         word, morphemes = morphemeGroups[0]
         newMorphemes = []
         newGroups = [[word, newMorphemes]]
         m, tag = mappedPosList[0]
+        # progress along original morpheme grouping elements & the mapped POS list, shifting morhpemes between words as needed to match the new mapping
         while True:
             if mi >= len(morphemes):
                 gi += 1; mi = 0
@@ -151,11 +148,21 @@ class TagMap(object):
                 newMorphemes.append((m, tag))
                 mi += 1
             elif m.startswith(morphemes[mi]):
-                newMorphemes.append((morphemes[mi], ''))
-                strippedMorph = morphemes[mi]
-                m = m[len(morphemes[mi]):]
+                # consume any additional morphemes that match
+                mic = mi + 1; mc = morphemes[mi]
+                while mic < len(morphemes):
+                    if m.startswith(mc + morphemes[mic]):
+                        mc += morphemes[mic]
+                        mi = mic
+                        mic += 1
+                    else:
+                        break
+                newMorphemes.append((mc, '' if m != mc else tag))
+                strippedMorph = mc
+                m = m[len(mc):]
                 mi += 1
-                continue
+                if m != '':
+                    continue
             else:
                 # no match, find start of next word & consume intervening mappedPOS morphemes in current word
                 gis = gi + 1; pis = pi
@@ -182,35 +189,6 @@ class TagMap(object):
 
         pprint(newGroups)
         return mappedPosList, newGroups
-
-        #
-        #
-        #
-        # [['나는', ['나', '는']],
-        #  ['그것에', ['그것', '에']],
-        #  ['대해서', ['대하', '여서']],
-        #  ['책을', ['책', '을']],
-        #  ['쓸', ['쓰', 'ㄹ']],
-        #  ['거야.', ['거', '이', '야']]]
-        #
-        # [['나는', [('나', 'NP'), ('는', 'JX')]],
-        #  ['그것에', [('그것', 'NP'), ('에', '')]],
-        #  ['대해서', [(' 대하여서', 'PRP_11')]],
-        #  ['책을', [('책', 'NNG'), ('을', 'JKO')]],
-        #  ['쓸', [('쓰', 'VV'), ('ㄹ', '')]],
-        #  ['거야.', [(' 거 이', 'PSX_13'), ('야', 'EF')]]]
-        #
-        # [('나', 'NP'),
-        #      ('는', 'JX'),
-        #      ('그것', 'NP'),
-        #      ('에 대하여서', 'PRP_11'),
-        #      ('책', 'NNG'),
-        #      ('을', 'JKO'),
-        #      ('쓰', 'VV'),
-        #      ('ㄹ 거 이', 'PSX_13'),
-        #      ('야', 'EF'),
-        #      ('.', 'SF')]
-        #
 
     @classmethod
     def mapNodeNames(cls, tree):
@@ -365,7 +343,7 @@ tm( # 또는 "alternatives" connecting adverb(??)
 
 tm( # 전 "before X-ing" prepositional suffix
     tagPat=r'전:NNG;에:JKB', repl=r'전에:PRP',
-    basePOS="JKB", descr="Adverbial phrase",
+    basePOS="MAG", descr="Adverbial phrase",
     rename="PrepositionalPhrase:Before",
     wikiKey='전',
     refs={"ttmik": "/lessons/level-3-lesson-10", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/#242"},
@@ -374,7 +352,7 @@ tm( # 전 "before X-ing" prepositional suffix
 
 tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
     tagPat=r'(후|다음|뒤):NNG;에:JKB', repl=r'\1에:PRP',
-    basePOS="JKB", descr="Adverbial phrase",
+    basePOS="MAG", descr="Adverbial phrase",
     rename="PrepositionalPhrase:After",
     wikiKey='후',
     refs={"ttmik": "/lessons/level-3-lesson-19;ticket=153893", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/"},
@@ -382,7 +360,7 @@ tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
 
 tm( # 때문에 "because X" prepositional suffix
     tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
-    basePOS="JKB", descr="Adverbial phrase",
+    basePOS="MAG", descr="Adverbial phrase",
     rename="PrepositionalPhrase:BecausePhrase",
     wikiKey='때문',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"},

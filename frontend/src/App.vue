@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.3.1 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.4.4 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -46,6 +46,7 @@
                             </template>
                         </div>
                     </div>
+                    <!-- the original root-down tree disply... -->
                     <!-- svg id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
                         <g v-for="node in nodes">
                             <line v-if="node.parent" :x1="node.xOffset + node.width / 2" :y1="node.yOffset - 15" class="link-line"
@@ -76,7 +77,7 @@
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
                             <line :x1="node.x + node.width / 2" :y1="node.y + 18" class="link-line"
-                                  :x2="node.x + node.width / 2" :y2="node.parent.y - 35"/>
+                                  :x2="node.x + node.width / 2" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
                         </g>
                         <g v-for="layer in layers">
                             <g v-for="node in layer">
@@ -98,7 +99,8 @@
             <div v-if="!parsing && debugOutput && debugging" id="debug-row" class="k-flexrow k-table">
                 <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{debugging.posList}}</pre></div>
                 <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
-                <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>
+                <div class="k-row"><div class="k-cell">MorphemeGroups</div><pre class="k-cell">{{debugging.morphemeGroups}}</pre></div>
+                <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>self.morphemeGroups
                 <div class="k-row"><div class="k-cell">Parse tree</div><pre class="k-cell">{{debugging.parseTree}}</pre></div>
                 <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{debugging.references}}</pre></div>
             </div>
@@ -146,7 +148,7 @@ export default {
 		    posList: null,
 		    phrases: null,
             debugging: null,
-		    sentence: "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: null, // "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
 		    nodes: [],
 		    answer: "Answer goes here",
@@ -157,7 +159,7 @@ export default {
                           {"title": "PNU spell-checker", "slug": "http://speller.cs.pusan.ac.kr"}],
 		    levelHeight: 50,
 		    minNodeWidth: 50,
-		    nodePadding: 20,
+		    nodePadding: 30,
             hangulCharWidth: 12,
 		    parseTreeWidth: 1200,
 		    parseTreeHeight: 600,
@@ -202,7 +204,7 @@ export default {
 	        self.parsing = true;
             $.ajax({
                 method: "POST",
-                url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
+                url: '/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
                 data: { sentence: this.sentence },
@@ -426,7 +428,7 @@ export default {
                 var word = self.references.wikiKeys[node.word];
                 $.ajax({
                     method: "GET",
-                    url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                    url: "/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
                     crossDomain: true,
                     cache: false,
                     success: function (response) {
@@ -559,6 +561,10 @@ document.onmouseup = function (e) {
     }
 
     #pos-list {
+        padding-left: 50px;
+    }
+
+    #parse-tree-2 {
         padding-left: 50px;
     }
 

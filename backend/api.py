@@ -39,7 +39,7 @@ parserApp.config.update(
 def run_dev_server():
     "launch Flask dev server"
     parserApp.run(host = '0.0.0.0',
-               port = 9000, #80, # 9000,
+               port = 80, #80, # 9000,
                debug = True)
 
 # -------- page request handlers --------
@@ -108,6 +108,7 @@ def parse():
     debugging = dict(posList=pformat(words),
                      mappedPosList=pformat(mappedPosList),
                      phrases=pformat(phrases),
+                     morphemeGroups=pformat(morphemeGroups),
                      parseTree=pformat(parseTree),
                      references=references)
 
@@ -244,6 +245,6 @@ if __name__ == "__main__":
 
 # 나는 저녁으로 빵과 물과 밥을 먹었어요.
 # 나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.
-
+# 나는 요리하는 것에 대해서 책을 쓸 거야.
 
 
