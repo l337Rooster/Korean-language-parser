@@ -46,7 +46,7 @@
                             </template>
                         </div>
                     </div>
-                    <svg id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
+                    <!-- svg id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
                         <g v-for="node in nodes">
                             <line v-if="node.parent" :x1="node.xOffset + node.width / 2" :y1="node.yOffset - 15" class="link-line"
                                   :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
@@ -58,7 +58,7 @@
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
                         </g>
-                    </svg>
+                    </svg -->
                     <svg id="parse-tree-2" class="tree-svg" :width="tree2Width" :height="tree2Height" style="background-color: rgba(0,0,0,0);">
                         <g v-for="word in words">
                             <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
@@ -76,7 +76,7 @@
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                             </text>
                             <line :x1="node.x + node.width / 2" :y1="node.y + 18" class="link-line"
-                                  :x2="node.x + node.width / 2" :y2="node.parent.y - 28"/>
+                                  :x2="node.x + node.width / 2" :y2="node.parent.y - 35"/>
                         </g>
                         <g v-for="layer in layers">
                             <g v-for="node in layer">
@@ -84,9 +84,10 @@
                                     <tspan class="node-tag" >{{ node.tag }}</tspan>
                                 </text>
                                 <line v-if="node.parent" :x1="node.x" :y1="node.y + 8" class="link-line"
-                                                         :x2="node.x" :y2="node.parent.y - 28"/>
-                                <line :x1="node.x0" :y1="node.y - 28" class="link-line"
-                                      :x2="node.xn" :y2="node.y - 28"/>
+                                                         :x2="node.x" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
+                                <!-- line :x1="node.x0" :y1="node.y - 28" class="link-line"
+                                      :x2="node.xn" :y2="node.y - 28"/ -->
+                                <path :d="childrenConnector(node)" class="link-line"></path>
                                 <line :x1="node.x" :y1="node.y - 14" class="link-line"
                                       :x2="node.x" :y2="node.y - 28"/>
                             </g>
@@ -291,7 +292,7 @@ export default {
             var self = this;
 
 	        // lay out word line based on morphemeGroup word-groupings
-            var x = self.treeMarginX, y = self.treeMarginY;
+            var x = self.treeMarginX, y = self.treeMarginY + 30;
             var words = [], height = 0, lastTag = '?';
             var spaceWidth = self.textBBox('x x', "leaf-word").width - self.textBBox('xx', "leaf-word").width;
             for (var i = 0; i < self.morphemeGroups.length; i++) {
@@ -379,6 +380,19 @@ export default {
             self.layers = layers;
 
 	        //console.log(layers);
+        },
+
+	    childrenConnector: function(node) {
+	        // return SVG path commands drawing connector spanning children nodes with rounded ends
+	        return "M " + node.x0 + " " + (node.y - 38) +
+                   " q 0 10 10 10" +
+                   " H " + (node.x0 + 10) + " " + (node.xn - 10) +
+                   " q 10 0 10 -10";
+	    },
+
+        endChild: function(node) {
+	        // return true if node is first or last child of parent
+            return node == node.parent.children[0] || node == node.parent.children[node.parent.children.length-1];
         },
 
         textBBox: function(text, cls) {
@@ -551,6 +565,7 @@ document.onmouseup = function (e) {
     .link-line {
         stroke: rgb(114, 194, 119);
         stroke-width: 0.8px;
+        fill: none;
     }
 
     .word-line {
