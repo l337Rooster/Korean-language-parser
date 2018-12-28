@@ -65,8 +65,8 @@
                             <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
                                 <tspan class="word-word">{{ word.word }}</tspan>
                             </text>
-                            <line :x1="word.x" :y1="word.y + 7" class="word-line"
-                                  :x2="word.x + word.width" :y2="word.y + 7"/>
+                            <line :x1="word.x + 4" :y1="word.y + 7" class="word-line"
+                                  :x2="word.x + word.width - 4" :y2="word.y + 7"/>
                             <!-- old layout line :x1="word.lineX" :y1="word.y + 7" class="word-line"
                                   :x2="word.lineX + word.lineWidth" :y2="word.y + 7"/ -->
                         </g>
@@ -318,33 +318,36 @@ export default {
             var words = [], height = 0;
             var wi = 0, wci = 0,  // word & word-char indexes
                 ti = 0, tci = 0;      // terminal & terminal-char indexes
-            var t = null, ttw, ttt, twidth;  // current terminal & its SVG laytout text elements for word & tag & terminal layout width
-            // run over words in morpheme-groupings, tracking start & end character positions in terminals
+            var t = null, ttw, ttt, ts, tcsx, tcex;  // current terminal & its SVG laytout text elements for word & terminal char start & end x positions
+            // run over words in morpheme-groupings, tracking character positions in terminals, picking up coords as original words are traversed
             for (wi = 0; wi < self.morphemeGroups.length; wi++) {
                 var g = self.morphemeGroups[wi];
                 var word = {word: g[0], y: y}, chars = g[1];
-                for (wci = 0; wci < chars.length; wci++) {
+                for (wci = 0; wci < chars.length; ) {
                     // track chars in terminal
                     if (!t || tci >= t.word.length) {
                         // end of terminal, grab next & update terminal layout vars
                         t = terminals[ti];
-                        ti += 1;
-                        tci = 0;
+                        ti += 1; tci = 0;
                         ttw = self.getLayoutElement(t.word, "leaf-word");
-                        ttt = self.getLayoutElement(t.tag, "leaf-tag");
-                        twidth = Math.max(ttw.getComputedTextLength(), ttt.getComputedTextLength());
-                        if (wi > 0)
-                            x += twidth + self.terminalGap;  // bump along terminal x pos
+                        ttt = self.getLayoutElement(self.tagDisplay(t.tag), "leaf-tag");
+                        var wWidth = ttw.getComputedTextLength(), tWidth = ttt.getComputedTextLength(),
+                            width = Math.max(wWidth, tWidth);
+                        var dw = (width - wWidth) / 2;  // word-start delta
+                        ts = x + dw;  // record this terminal's start & bump along for next terminal's pos
+                        x += width + self.terminalGap;  // bump along terminal x pos using prior terminals' width
                     }
-                    //
-                    if (wci == 0) // start of word, grab start x pos
-                        word.x = x;
+                    // update current terminal chars pos
+                    tcsx = ts + ttw.getStartPositionOfChar(tci).x; tcex = ts + ttw.getEndPositionOfChar(tci).x;
+                    if (wci == 0) // start of word
+                        word.x = tcsx;
                     if (wci == chars.length - 1) { // end of word, figure width, track max height
-                        word.width = x + ttw.getEndPositionOfChar(tci).x - word.x;
+                        word.width = tcex - word.x;
                         height = Math.max(height, self.textBBox(word.word, "word-word").height);
                     }
                     //
-                    tci += 1;  // bump along terminal
+                    tci += 1;  // bump along terminal & word characters
+                    wci += 1;
                 }
                 // collect layed-out words
                 words.push(word);

@@ -130,7 +130,43 @@ class TagMap(object):
         mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
         #
         # build simplified morpheme grouping table for original text layout in tree display
-        newGroups = [[word, ''.join(morphemes)] for word, morphemes in morphemeGroups]
+        newGroups = []; tic = 0; ti = 0; tchars = mappedPosList[0][0]
+        for word, morphemeList in morphemeGroups:
+            morphemes = ''.join(morphemeList)
+            newMorphemes = ''; mic = 0
+            while True:
+                if tic >= len(tchars):
+                    ti += 1
+                    tchars = mappedPosList[ti][0]
+                    tic = 0
+                if mic == len(morphemes):
+                    break
+                newMorphemes += tchars[tic]
+                if morphemes[mic] == tchars[tic]:
+                    mic += 1
+                tic += 1
+            newGroups.append([word, newMorphemes])
+
+        # [('나', 'NP'),
+        #  ('는', 'JX'),
+        #  ('요리하', 'VND_0'),
+        #  ('는 것', 'NOM_5'),
+        #  ('에 대하여서', 'PRP_11'),
+        #  ('책', 'NNG'),
+        #  ('을', 'JKO'),
+        #  ('쓰', 'VV'),
+        #  ('었', 'PSX_12'),
+        #  ('어요', 'EF'),
+        #  ('.', 'SF')]
+        #
+        # [['나는', ['나', '는']],
+        #  ['요리하는', ['요리', '하', '는']],
+        #  ['것에', ['것', '에']],
+        #  ['대해서', ['대하', '여서']],
+        #  ['책을', ['책', '을']],
+        #  ['썼어요.', ['쓰', '었', '어요']]]
+        #
+
 
         if cls.USE_OLD_MORPHEME_GROUPING:
             # build updated assignment of mapped morphemes to original words. (assumes first morpheme in words remain unmapped)
