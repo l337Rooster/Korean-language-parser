@@ -39,7 +39,7 @@ parserApp.config.update(
 def run_dev_server():
     "launch Flask dev server"
     parserApp.run(host = '0.0.0.0',
-               port = 80, #80, # 9000,
+               port = 9000, #80, # 9000,
                debug = True)
 
 # -------- page request handlers --------

@@ -77,6 +77,7 @@ class TagMap(object):
         # note that synthetic tags defined below include a mapping to one of the above basic POS
         # extra synthetic parts, mostly to label suffix phrases built from the mapping rules
         "AVS":      ("Suffix",      "Post-position",    "Adverbial suffix",                 ""),
+        "VMS":      ("Suffix",      "Post-position",    "Verb-modifying suffix",            ""),
     }
 
     def __init__(self, tagPat, repl, basePOS, descr, rename, wikiKey, refs, notes):
@@ -113,6 +114,8 @@ class TagMap(object):
         #
         pprint(cls.nodeNameMaps)
 
+    USE_OLD_MORPHEME_GROUPING = False
+
     @classmethod
     def mapTags(cls, posString, morphemeGroups):
         "generate a version of the parser's original word:POC string under the below-defined synthetic tag mappings"
@@ -126,66 +129,70 @@ class TagMap(object):
         #
         mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
         #
-        # build updated assignment of mapped morphemes to original words. (assumes first morpheme in words remain unmapped)
-        gi = mi = pi = 0; strippedMorph = None
-        word, morphemes = morphemeGroups[0]
-        newMorphemes = []
-        newGroups = [[word, newMorphemes]]
-        m, tag = mappedPosList[0]
-        # progress along original morpheme grouping elements & the mapped POS list, shifting morhpemes between words as needed to match the new mapping
-        while True:
-            if mi >= len(morphemes):
-                gi += 1; mi = 0
-                if gi >= len(morphemeGroups):
-                    while pi < len(mappedPosList)and mappedPosList[pi][1] != 'SF':
+        # build simplified morpheme grouping table for original text layout in tree display
+        newGroups = [[word, ''.join(morphemes)] for word, morphemes in morphemeGroups]
+
+        if cls.USE_OLD_MORPHEME_GROUPING:
+            # build updated assignment of mapped morphemes to original words. (assumes first morpheme in words remain unmapped)
+            gi = mi = pi = 0; strippedMorph = None
+            word, morphemes = morphemeGroups[0]
+            newMorphemes = []
+            newGroups = [[word, newMorphemes]]
+            m, tag = mappedPosList[0]
+            # progress along original morpheme grouping elements & the mapped POS list, shifting morhpemes between words as needed to match the new mapping
+            while True:
+                if mi >= len(morphemes):
+                    gi += 1; mi = 0
+                    if gi >= len(morphemeGroups):
+                        while pi < len(mappedPosList)and mappedPosList[pi][1] != 'SF':
+                            newMorphemes.append(mappedPosList[pi])
+                            pi += 1
+                        break
+                    word, morphemes = morphemeGroups[gi]
+                    newMorphemes = []
+                    newGroups.append([word, newMorphemes])
+                if m.strip() == morphemes[mi]:
+                    newMorphemes.append((m, tag))
+                    mi += 1
+                elif m.startswith(morphemes[mi]):
+                    # consume any additional morphemes that match
+                    mic = mi + 1; mc = morphemes[mi]
+                    while mic < len(morphemes):
+                        if m.startswith(mc + morphemes[mic]):
+                            mc += morphemes[mic]
+                            mi = mic
+                            mic += 1
+                        else:
+                            break
+                    newMorphemes.append((mc, '' if m != mc else tag))
+                    strippedMorph = mc
+                    m = m[len(mc):]
+                    mi += 1
+                    if m != '':
+                        continue
+                else:
+                    # no match, find start of next word & consume intervening mappedPOS morphemes in current word
+                    gis = gi + 1; pis = pi
+                    if gis < len(morphemeGroups):
+                        wordss, morphemess = morphemeGroups[gis]
+                        m0 = morphemess[0]
+                        while pis < len(mappedPosList) and mappedPosList[pis][0] != m0:
+                            pis += 1
+                    # found next word start in mappedPOS list, add intervening morphemes to last word & proceed
+                    if mappedPosList[pi][0].startswith(strippedMorph):
+                        # trim leading prior morpheme if present
+                        newMorphemes.append((mappedPosList[pi][0][len(strippedMorph):], mappedPosList[pi][1]))
+                        pi += 1
+                    while pi < pis:
                         newMorphemes.append(mappedPosList[pi])
                         pi += 1
-                    break
-                word, morphemes = morphemeGroups[gi]
-                newMorphemes = []
-                newGroups.append([word, newMorphemes])
-            if m.strip() == morphemes[mi]:
-                newMorphemes.append((m, tag))
-                mi += 1
-            elif m.startswith(morphemes[mi]):
-                # consume any additional morphemes that match
-                mic = mi + 1; mc = morphemes[mi]
-                while mic < len(morphemes):
-                    if m.startswith(mc + morphemes[mic]):
-                        mc += morphemes[mic]
-                        mi = mic
-                        mic += 1
-                    else:
-                        break
-                newMorphemes.append((mc, '' if m != mc else tag))
-                strippedMorph = mc
-                m = m[len(mc):]
-                mi += 1
-                if m != '':
+                    m, tag  = mappedPosList[pi]
+                    mi = len(morphemes)
                     continue
-            else:
-                # no match, find start of next word & consume intervening mappedPOS morphemes in current word
-                gis = gi + 1; pis = pi
-                if gis < len(morphemeGroups):
-                    wordss, morphemess = morphemeGroups[gis]
-                    m0 = morphemess[0]
-                    while pis < len(mappedPosList) and mappedPosList[pis][0] != m0:
-                        pis += 1
-                # found next word start in mappedPOS list, add intervening morphemes to last word & proceed
-                if mappedPosList[pi][0].startswith(strippedMorph):
-                    # trim leading prior morpheme if present
-                    newMorphemes.append((mappedPosList[pi][0][len(strippedMorph):], mappedPosList[pi][1]))
-                    pi += 1
-                while pi < pis:
-                    newMorphemes.append(mappedPosList[pi])
-                    pi += 1
-                m, tag  = mappedPosList[pi]
-                mi = len(morphemes)
-                continue
-            pi += 1
-            if pi >= len(mappedPosList):
-                break
-            m, tag = mappedPosList[pi]
+                pi += 1
+                if pi >= len(mappedPosList):
+                    break
+                m, tag = mappedPosList[pi]
 
         pprint(newGroups)
         return mappedPosList, newGroups
@@ -281,7 +288,7 @@ def tm(tagPat=r'', repl=r'', basePOS=None, descr=None, rename=None, wikiKey=None
 
 tm(  # noun-dervied verbs, N하다, N되다, N당하다, N시키다, etc. - combine XR|NN & VND suffix into a single NDV (noun-derived verb) verb
     tagPat=r'([^:]+):(XR|NNG);([^:]+):XSV', repl=r'\1\3:VND',
-    basePOS="NNG", descr="Verb derived from a noun",
+    basePOS="VV", descr="Verb derived from a noun",
     notes="Noun-derived verb - ${1} + ${3}",
 )
 
@@ -313,13 +320,13 @@ tm( # 에/에서 Location/Time marker
 
 tm( # 기/음 nominalizer
     tagPat=r'(기|음):(ETN|NNG)', repl=r'\1:NOM',
-    basePOS="NNG", descr="Noun derived from a verb",
+    basePOS="VMS", descr="Suffix transforming a verb into a noun",
     refs={"ttmik": "/lessons/level-2-lesson-19", "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-29"},
 )
 
 tm( # 는것 nominalizer
     tagPat=r'(ㄴ|는|ㄹ):ETM;것:NNB', repl=r'\1 것:NOM',
-    basePOS="NNG", descr="Noun derived from a verb",
+    basePOS="VMS", descr="Suffix transforming a verb into a noun",
     wikiKey='것',
     refs={"ttmik": "/lessons/level-2-lesson-19", "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-26/"},
     notes="",
@@ -367,8 +374,8 @@ tm( # 때문에 "because X" prepositional suffix
 )
 
 tm( # 에대해 "about X" prepositional suffix
-    tagPat=r'에:JKB;(대하|관하):VV;([^:]+):EC', repl=r'에 \1\2:PRP',
-    basePOS="EC", descr="Prepostional connecting suffix",
+    tagPat=r'에:JKB;(대하|관하):VV;([^:]+):(EC|ETM)', repl=r'에 \1\2:PRP',
+    basePOS="EC", descr="Prepositional connecting suffix",
     rename="PrepositionalPhrase:AboutPhrase",
     wikiKey='대하다',
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},

@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.4.4 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.4.5 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -65,8 +65,10 @@
                             <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
                                 <tspan class="word-word">{{ word.word }}</tspan>
                             </text>
-                            <line :x1="word.lineX" :y1="word.y + 7" class="word-line"
-                                  :x2="word.lineX + word.lineWidth" :y2="word.y + 7"/>
+                            <line :x1="word.x" :y1="word.y + 7" class="word-line"
+                                  :x2="word.x + word.width" :y2="word.y + 7"/>
+                            <!-- old layout line :x1="word.lineX" :y1="word.y + 7" class="word-line"
+                                  :x2="word.lineX + word.lineWidth" :y2="word.y + 7"/ -->
                         </g>
                         <g v-for="node in terminals">
                             <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
@@ -148,7 +150,7 @@ export default {
 		    posList: null,
 		    phrases: null,
             debugging: null,
-		    sentence: null, // "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: "나는 요리하는 것에 대해서 책을 썼어요.", // "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
 		    nodes: [],
 		    answer: "Answer goes here",
@@ -159,7 +161,7 @@ export default {
                           {"title": "PNU spell-checker", "slug": "http://speller.cs.pusan.ac.kr"}],
 		    levelHeight: 50,
 		    minNodeWidth: 50,
-		    nodePadding: 30,
+		    nodePadding: 25,
             hangulCharWidth: 12,
 		    parseTreeWidth: 1200,
 		    parseTreeHeight: 600,
@@ -177,7 +179,7 @@ export default {
             // second tree display layout test
             parseTree2: null,
             morphemeGroups: null,
-            terminalGap: 20, lineGap: 6,
+            terminalGap: 20, lineGap: 8,
             treeMarginX: 20, treeMarginY: 20,
             terminals: [],
             layers: [],
@@ -204,7 +206,7 @@ export default {
 	        self.parsing = true;
             $.ajax({
                 method: "POST",
-                url: '/parse/', // '/parse/', // 'http://localhost:9000/parse/',
+                url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
                 data: { sentence: this.sentence },
@@ -293,36 +295,6 @@ export default {
 	        // build display layout for 2nd test form
             var self = this;
 
-	        // lay out word line based on morphemeGroup word-groupings
-            var x = self.treeMarginX, y = self.treeMarginY + 30;
-            var words = [], height = 0, lastTag = '?';
-            var spaceWidth = self.textBBox('x x', "leaf-word").width - self.textBBox('xx', "leaf-word").width;
-            for (var i = 0; i < self.morphemeGroups.length; i++) {
-                var g = self.morphemeGroups[i];
-                var word = g[0], width = 0, lineDx0, lineDx1;
-                for (var j = 0; j < g[1].length; j++) {
-                    // compute bounds of morpheme group
-                    console.log(' ', j, g[1][j][0]);
-                    lastTag = g[1][j][1];
-                    var bbox1 = self.textBBox(g[1][j][0], "leaf-word"), bbox2 = self.textBBox(self.tagDisplay(g[1][j][1]), "leaf-tag");
-                    var wmax = Math.max(bbox1.width, bbox2.width);
-                    width += wmax + (j < g[1].length-1 ? self.terminalGap : 0);
-                    height = Math.max(height, bbox1.height, bbox2.height);
-                    // compute underline dx's form each end of the the word
-                    if (j == 0)
-                        lineDx0 = wmax / 2 - bbox1.width / 2 + (g[1][j][0][0] == ' ' ? spaceWidth : 0);
-                    if (j == g[1].length-1)
-                        lineDx1 = wmax / 2 - bbox1.width / 2 + (lastTag == '' ? spaceWidth : 0);
-                }
-                //
-                words.push({word: word, x: x, y: y, width: width, height: height, lineX: x + lineDx0, lineWidth: width - lineDx0 - lineDx1});
-                console.log(word, x, width);
-                // no terminal gap if we split prior terminal (tag == '')
-                x += width + (lastTag != '' ? self.terminalGap : 0);
-            }
-            self.words = words;
-            x = self.treeMarginX; y += height + self.lineGap;
-
             // build layer node-id lookup tables
             var nodes = {}
             function addID(n) {
@@ -333,15 +305,97 @@ export default {
             }
             addID(self.parseTree2.tree)
 
-	        // lay out terminals line
+            // grab terminals list
             var terminalIDs = self.parseTree2.layers[0],
                 terminals = [];
             for (var i = 0; i < terminalIDs.length; i++) {
                 var t = nodes[terminalIDs[i]];
                 terminals.push(t);
-                var bbox1 = self.textBBox(t.word, "leaf-word"), bbox2 = self.textBBox(self.tagDisplay(t.tag), "leaf-tag");
+            }
+
+	        // lay out original-text word line based on morphemeGroup word-groupings
+            var x = self.treeMarginX, y = self.treeMarginY + 30;
+            var words = [], height = 0;
+            var wi = 0, wci = 0,  // word & word-char indexes
+                ti = 0, tci = 0;      // terminal & terminal-char indexes
+            var t = null, ttw, ttt, twidth;  // current terminal & its SVG laytout text elements for word & tag & terminal layout width
+            // run over words in morpheme-groupings, tracking start & end character positions in terminals
+            for (wi = 0; wi < self.morphemeGroups.length; wi++) {
+                var g = self.morphemeGroups[wi];
+                var word = {word: g[0], y: y}, chars = g[1];
+                for (wci = 0; wci < chars.length; wci++) {
+                    // track chars in terminal
+                    if (!t || tci >= t.word.length) {
+                        // end of terminal, grab next & update terminal layout vars
+                        t = terminals[ti];
+                        ti += 1;
+                        tci = 0;
+                        ttw = self.getLayoutElement(t.word, "leaf-word");
+                        ttt = self.getLayoutElement(t.tag, "leaf-tag");
+                        twidth = Math.max(ttw.getComputedTextLength(), ttt.getComputedTextLength());
+                        if (wi > 0)
+                            x += twidth + self.terminalGap;  // bump along terminal x pos
+                    }
+                    //
+                    if (wci == 0) // start of word, grab start x pos
+                        word.x = x;
+                    if (wci == chars.length - 1) { // end of word, figure width, track max height
+                        word.width = x + ttw.getEndPositionOfChar(tci).x - word.x;
+                        height = Math.max(height, self.textBBox(word.word, "word-word").height);
+                    }
+                    //
+                    tci += 1;  // bump along terminal
+                }
+                // collect layed-out words
+                words.push(word);
+            }
+
+            // // old morphemegroup scheme
+            //     var x = self.treeMarginX, y = self.treeMarginY + 30;
+            //     var words = [], height = 0, lastTag = '?';
+            //     var spaceWidth = self.textBBox('생 일', "leaf-word").width - self.textBBox('생일', "leaf-word").width;
+            //     for (var i = 0; i < self.morphemeGroups.length; i++) {
+            //         var g = self.morphemeGroups[i];
+            //         var word = g[0], width = 0, lineDx0, lineDx1;
+            //         for (var j = 0; j < g[1].length; j++) {
+            //             // compute bounds of morpheme group
+            //             console.log(' ', j, g[1][j][0]);
+            //             lastTag = g[1][j][1];
+            //             var bbox1 = self.textBBox(g[1][j][0], "leaf-word"),
+            //                 bbox2 = self.textBBox(self.tagDisplay(g[1][j][1]), "leaf-tag");
+            //             var wmax = Math.max(bbox1.width, bbox2.width);
+            //             width += wmax + (j < g[1].length - 1 ? self.terminalGap : 0);
+            //             height = Math.max(height, bbox1.height, bbox2.height);
+            //             // compute underline dx's form each end of the the word
+            //             if (j == 0)
+            //                 lineDx0 = wmax / 2 - bbox1.width / 2 + (g[1][j][0][0] == ' ' ? spaceWidth : 0);
+            //             if (j == g[1].length - 1)
+            //                 lineDx1 = wmax / 2 - bbox1.width / 2 + (lastTag == '' ? spaceWidth : 0);
+            //         }
+            //         //
+            //         words.push({
+            //             word: word,
+            //             x: x,
+            //             y: y,
+            //             width: width,
+            //             height: height,
+            //             lineX: x + lineDx0,
+            //             lineWidth: width - lineDx0 - lineDx1
+            //         });
+            //         console.log(word, x, width);
+            //         // no terminal gap if we split prior terminal (tag == '')
+            //         x += width + (lastTag != '' ? self.terminalGap : 0);
+            //     }
+
+            self.words = words;
+            x = self.treeMarginX; y += height + self.lineGap;
+
+	        // lay out terminals line
+            for (var i = 0; i < terminals.length; i++) {
+                var t = terminals[i];
                 t.x = x; t.y = y;
-                t.width = Math.max(bbox1.width, bbox2.width); t.height = Math.max(bbox1.height, bbox2.height);
+                var tew = self.getLayoutElement(t.word, "leaf-word"), tet = self.getLayoutElement(self.tagDisplay(t.tag), "leaf-tag");
+                t.width = Math.max(tew.getComputedTextLength(), tet.getComputedTextLength());
                 console.log(t.word, t.x, t.width);
                 x += t.width + self.terminalGap;
             }
@@ -397,12 +451,18 @@ export default {
             return node == node.parent.children[0] || node == node.parent.children[node.parent.children.length-1];
         },
 
+        getLayoutElement: function(text, cls) {
+            // return SVG text element of given class containing given text
+            var t = $("#template ." + cls)[0];
+            t.textContent = text;
+            return t;
+        },
+
         textBBox: function(text, cls) {
             // return bounding box for text rendered in given class
             if (text == '')
                 return {width: 0, height: 0}
-            var t = $("#template ." + cls)[0];
-            t.textContent = text;
+            var t = this.getLayoutElement(text, cls);
             console.log('bbox', text, t.textContent, cls, t.getBBox().width);
             return t.getBBox();
         },
@@ -428,7 +488,7 @@ export default {
                 var word = self.references.wikiKeys[node.word];
                 $.ajax({
                     method: "GET",
-                    url: "/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                    url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
                     crossDomain: true,
                     cache: false,
                     success: function (response) {
@@ -500,6 +560,7 @@ document.onmouseup = function (e) {
 
     #app {
         font-family: Helvetica, simsun, nanumgothic, '나눔고딕', dotum, sans-serif;
+        font-size: 112%;
     }
 
     #input-row {
@@ -587,7 +648,7 @@ document.onmouseup = function (e) {
     .leaf-tag {
         fill: #8d8c86;
         color: #8d8c86;
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .leaf-word {
@@ -606,7 +667,7 @@ document.onmouseup = function (e) {
 
     .node-tag {
         fill: #ad47de;
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .wiktionary-iframe {
@@ -724,21 +785,3 @@ document.onmouseup = function (e) {
     }
 
 </style>
-
-
-function renderedTextSize(string, font, fontSize) {
-  var paper = Raphael(0, 0, 0, 0);
-  paper.canvas.style.visibility = 'hidden';
-
-  var el = paper.text(0, 0, string);
-  el.attr('font-family', font);
-  el.attr('font-size', fontSize);
-
-  var bBox = el.getBBox();
-  paper.remove();
-
-  return {
-    width: bBox.width,
-    height: bBox.height
-  };
-}
