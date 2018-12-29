@@ -50,6 +50,7 @@ class TagMap(object):
         "JKV":      ("Particle",    "Post-position",    "Vocative case marker",             "관계언: 호격 조사"),
         "JKQ":      ("Particle",    "Post-position",    "Quotation marker",                 "관계언: 인용격 조사"),
         "JX":       ("Particle",    "Post-position",    "Topic-marking particle",           "관계언: 보조사"),
+        "JC":       ("Particle",    "Post-position",    "Connecting particle",              "관계언: 보조사"),
         "EP":       ("Suffix",      "Dependent form",   "Suffix-head, e.g. 었 or 시",        "의존 형태	: 선어말 어미"),
         "EF":       ("Suffix",      "Dependent form",   "Predicate-closing suffix",         "의존 형태	: 종결 어미"),
         "EC":       ("Suffix",      "Dependent form",   "Verb/Auxiliary connecting suffix", "의존 형태	: 연결 어미"),
@@ -114,8 +115,6 @@ class TagMap(object):
         #
         pprint(cls.nodeNameMaps)
 
-    USE_OLD_MORPHEME_GROUPING = False
-
     @classmethod
     def mapTags(cls, posString, morphemeGroups):
         "generate a version of the parser's original word:POC string under the below-defined synthetic tag mappings"
@@ -125,7 +124,6 @@ class TagMap(object):
             def replTags(m):
                 return m.expand(';' + tm.repl + ';')
             tagString = re.sub(';' + tagPat + ';', replTags, tagString)
-        #print('=>', tagString)
         #
         mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
         #
@@ -146,89 +144,6 @@ class TagMap(object):
                     mic += 1
                 tic += 1
             newGroups.append([word, newMorphemes])
-
-        # [('나', 'NP'),
-        #  ('는', 'JX'),
-        #  ('요리하', 'VND_0'),
-        #  ('는 것', 'NOM_5'),
-        #  ('에 대하여서', 'PRP_11'),
-        #  ('책', 'NNG'),
-        #  ('을', 'JKO'),
-        #  ('쓰', 'VV'),
-        #  ('었', 'PSX_12'),
-        #  ('어요', 'EF'),
-        #  ('.', 'SF')]
-        #
-        # [['나는', ['나', '는']],
-        #  ['요리하는', ['요리', '하', '는']],
-        #  ['것에', ['것', '에']],
-        #  ['대해서', ['대하', '여서']],
-        #  ['책을', ['책', '을']],
-        #  ['썼어요.', ['쓰', '었', '어요']]]
-        #
-
-
-        if cls.USE_OLD_MORPHEME_GROUPING:
-            # build updated assignment of mapped morphemes to original words. (assumes first morpheme in words remain unmapped)
-            gi = mi = pi = 0; strippedMorph = None
-            word, morphemes = morphemeGroups[0]
-            newMorphemes = []
-            newGroups = [[word, newMorphemes]]
-            m, tag = mappedPosList[0]
-            # progress along original morpheme grouping elements & the mapped POS list, shifting morhpemes between words as needed to match the new mapping
-            while True:
-                if mi >= len(morphemes):
-                    gi += 1; mi = 0
-                    if gi >= len(morphemeGroups):
-                        while pi < len(mappedPosList)and mappedPosList[pi][1] != 'SF':
-                            newMorphemes.append(mappedPosList[pi])
-                            pi += 1
-                        break
-                    word, morphemes = morphemeGroups[gi]
-                    newMorphemes = []
-                    newGroups.append([word, newMorphemes])
-                if m.strip() == morphemes[mi]:
-                    newMorphemes.append((m, tag))
-                    mi += 1
-                elif m.startswith(morphemes[mi]):
-                    # consume any additional morphemes that match
-                    mic = mi + 1; mc = morphemes[mi]
-                    while mic < len(morphemes):
-                        if m.startswith(mc + morphemes[mic]):
-                            mc += morphemes[mic]
-                            mi = mic
-                            mic += 1
-                        else:
-                            break
-                    newMorphemes.append((mc, '' if m != mc else tag))
-                    strippedMorph = mc
-                    m = m[len(mc):]
-                    mi += 1
-                    if m != '':
-                        continue
-                else:
-                    # no match, find start of next word & consume intervening mappedPOS morphemes in current word
-                    gis = gi + 1; pis = pi
-                    if gis < len(morphemeGroups):
-                        wordss, morphemess = morphemeGroups[gis]
-                        m0 = morphemess[0]
-                        while pis < len(mappedPosList) and mappedPosList[pis][0] != m0:
-                            pis += 1
-                    # found next word start in mappedPOS list, add intervening morphemes to last word & proceed
-                    if mappedPosList[pi][0].startswith(strippedMorph):
-                        # trim leading prior morpheme if present
-                        newMorphemes.append((mappedPosList[pi][0][len(strippedMorph):], mappedPosList[pi][1]))
-                        pi += 1
-                    while pi < pis:
-                        newMorphemes.append(mappedPosList[pi])
-                        pi += 1
-                    m, tag  = mappedPosList[pi]
-                    mi = len(morphemes)
-                    continue
-                pi += 1
-                if pi >= len(mappedPosList):
-                    break
-                m, tag = mappedPosList[pi]
 
         pprint(newGroups)
         return mappedPosList, newGroups

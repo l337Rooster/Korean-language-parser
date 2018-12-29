@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.4.5 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.4.8 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -20,10 +20,6 @@
                                     <a :href="t.slug.replace('${sentence}', sentence)" target="_blank">{{t.title}}</a> ~
                                 </span>
                             </template>
-                        <!-- label id="parser-select-label" for="parser-select">Select parser: </label>
-                        <select id="parser-select" v-model="parserSelect" class="k-cell">
-                            <option v-for="p in parsers" >{{p}}</option>
-                        </select -->
                             <label for="debug">Debug output: </label>
                             <input class="" type="checkbox" id="debug" v-model="debugOutput">
                         </td>
@@ -46,29 +42,13 @@
                             </template>
                         </div>
                     </div>
-                    <!-- the original root-down tree disply... -->
-                    <!-- svg id="parse-tree" class="tree-svg" :width="parseTreeWidth" :height="parseTreeHeight" style="background-color: rgba(0,0,0,0);">
-                        <g v-for="node in nodes">
-                            <line v-if="node.parent" :x1="node.xOffset + node.width / 2" :y1="node.yOffset - 15" class="link-line"
-                                  :x2="node.parent.xOffset + node.parent.width / 2" :y2="node.parent.yOffset + 4"/>
-                            <text :x="node.xOffset + node.width / 2" :y="node.yOffset" text-anchor="middle" alignment-baseline="hanging">
-                                <template v-if="node.word">
-                                    <tspan class="leaf-word" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
-                                    <tspan :x="node.xOffset + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(node.tag) }}</tspan>
-                                </template>
-                                <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
-                            </text>
-                        </g>
-                    </svg -->
-                    <svg id="parse-tree-2" class="tree-svg" :width="tree2Width" :height="tree2Height" style="background-color: rgba(0,0,0,0);">
+                    <svg id="parse-tree-2" class="tree-svg" :width="treeWidth" :height="treeHeight" style="background-color: rgba(0,0,0,0);">
                         <g v-for="word in words">
                             <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
                                 <tspan class="word-word">{{ word.word }}</tspan>
                             </text>
                             <line :x1="word.x + 4" :y1="word.y + 7" class="word-line"
                                   :x2="word.x + word.width - 4" :y2="word.y + 7"/>
-                            <!-- old layout line :x1="word.lineX" :y1="word.y + 7" class="word-line"
-                                  :x2="word.lineX + word.lineWidth" :y2="word.y + 7"/ -->
                         </g>
                         <g v-for="node in terminals">
                             <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
@@ -88,8 +68,6 @@
                                 </text>
                                 <line v-if="node.parent" :x1="node.x" :y1="node.y + 8" class="link-line"
                                                          :x2="node.x" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
-                                <!-- line :x1="node.x0" :y1="node.y - 28" class="link-line"
-                                      :x2="node.xn" :y2="node.y - 28"/ -->
                                 <path :d="childrenConnector(node)" class="link-line"></path>
                                 <line :x1="node.x" :y1="node.y - 14" class="link-line"
                                       :x2="node.x" :y2="node.y - 28"/>
@@ -103,7 +81,6 @@
                 <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
                 <div class="k-row"><div class="k-cell">MorphemeGroups</div><pre class="k-cell">{{debugging.morphemeGroups}}</pre></div>
                 <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>self.morphemeGroups
-                <div class="k-row"><div class="k-cell">Parse tree</div><pre class="k-cell">{{debugging.parseTree}}</pre></div>
                 <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{debugging.references}}</pre></div>
             </div>
             <div v-if="wiktionaryUrl" class="k-row">
@@ -146,13 +123,11 @@ export default {
 		return {
 		    parsing: false,
             mappedPosList: null,
-		    parseTree: null,
 		    posList: null,
 		    phrases: null,
             debugging: null,
 		    sentence: "나는 요리하는 것에 대해서 책을 썼어요.", // "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
-		    nodes: [],
 		    answer: "Answer goes here",
 		    wiktionaryUrl: null,
 		    parseButtonText: "Parse",
@@ -160,15 +135,8 @@ export default {
                           {"title": "Naver Papago translator", "slug": "https://papago.naver.com/?sk=ko&tk=en&st=${sentence}"},
                           {"title": "PNU spell-checker", "slug": "http://speller.cs.pusan.ac.kr"}],
 		    levelHeight: 50,
-		    minNodeWidth: 50,
-		    nodePadding: 25,
-            hangulCharWidth: 12,
-		    parseTreeWidth: 1200,
-		    parseTreeHeight: 600,
-            parsers: ["JHannanum", "Kkma", "KOMORAN", "MeCab-ko", "Open Korean Text"], // supported parsers
-            defaultParser: "KOMORAN",
+            treeWidth: 0, treeHeight: 0,
             debugOutput: false,
-            parserSelect: "KOMORAN",
             definition: null,
             defPopup: null,
             mouseEnterX: null, mouseEnterY: null,
@@ -177,14 +145,13 @@ export default {
             wordRefs: null,
             POS: null,
             // second tree display layout test
-            parseTree2: null,
+            parseTree: null,
             morphemeGroups: null,
             terminalGap: 20, lineGap: 8,
             treeMarginX: 20, treeMarginY: 20,
             terminals: [],
             layers: [],
-            words: [],
-            tree2Width: 0, tree2Height: 0
+            words: []
 		};
 	},
 
@@ -217,14 +184,12 @@ export default {
 	                    self.mappedPosList = response.mappedPosList;
 	                    self.morphemeGroups = response.morphemeGroups;
                         self.parseTree = response.parseTree;
-                        self.parseTree2 = response.parseTree2;
                         self.posList = response.posList;
                         self.phrases = response.phrases;
                         self.references = response.references;
                         self.debugging = response.debugging;
                         //  console.log(JSON.stringify(self.debugging));
                         self.buildDisplay();
-                        self.buildDisplay2();
                     }
                     else {
                     }
@@ -237,61 +202,7 @@ export default {
             });
 	    },
 
-	    buildDisplay: function() {
-	        // recurse parse-tree, build display tree layers
-	        var idCounter = 0, maxY = 0;
-	        var text = [], links = [];
-	        var layers = [], nodes = [];
-            //
-	        function subtree(t, level) {
-	            if (layers.length < level+1)
-	                layers[level] = { count:0, width: 0, level: level, entries: [] };  // add new layer level;
-	            var width = 0;
-	            if (t.type == 'tree') {
-	                for (var i = 0; i < t.children.length; i++) {
-	                    var child = t.children[i];
-	                    child.parent = t;
-	                    width += subtree(t.children[i], level + 1);
-	                }
-	            }
-	            else
-	                width = Math.max(self.minNodeWidth, self.nodePadding + t.word.length * self.hangulCharWidth);
-	            //
-	            t.id = nodes.length;
-	            nodes.push(t);
-	            t.yOffset = level * self.levelHeight + 20;
-	            maxY = Math.max(maxY, t.yOffset);
-	            t.width = width;
-	            layers[level].entries.push(t)
-	            return width;
-	        }
-	        //
-	        subtree(self.parseTree, 0);
-
-	        // compute layout coords
-	        var maxX = 0;
-	        for (var i = 0; i < layers.length; i++) {
-	            var entries = layers[i].entries;
-	            //console.log('layer ' + i);
-	            var nodeOffset = 30;
-	            for (var j = 0; j < entries.length; j++) {
-                     var node = entries[j];
-                     nodeOffset = Math.max(nodeOffset, node.parent && node.parent.xOffset || 0);
-                     node.xOffset = nodeOffset;
-                     nodeOffset += node.width;
-                     maxX = Math.max(maxX, nodeOffset);
-                     //console.log('  tag = ' + node.tag + ' width = ' + node.width + ', xy = ' + [node.xOffset, node.yOffset].toString());
-	            }
-	        }
-	        //console.log(layers);
-
-	        // trigger graph draw
-	        self.parseTreeHeight = maxY + 20;
-	        self.parseTreeWidth = maxX + 20;
-	        self.nodes = nodes;
-	    },
-
-        buildDisplay2: function() {
+        buildDisplay: function() {
 	        // build display layout for 2nd test form
             var self = this;
 
@@ -303,10 +214,10 @@ export default {
                 for (var i = 0; i < n.children.length; i++)
                     addID(n.children[i]);
             }
-            addID(self.parseTree2.tree)
+            addID(self.parseTree.tree)
 
             // grab terminals list
-            var terminalIDs = self.parseTree2.layers[0],
+            var terminalIDs = self.parseTree.layers[0],
                 terminals = [];
             for (var i = 0; i < terminalIDs.length; i++) {
                 var t = nodes[terminalIDs[i]];
@@ -353,43 +264,6 @@ export default {
                 words.push(word);
             }
 
-            // // old morphemegroup scheme
-            //     var x = self.treeMarginX, y = self.treeMarginY + 30;
-            //     var words = [], height = 0, lastTag = '?';
-            //     var spaceWidth = self.textBBox('생 일', "leaf-word").width - self.textBBox('생일', "leaf-word").width;
-            //     for (var i = 0; i < self.morphemeGroups.length; i++) {
-            //         var g = self.morphemeGroups[i];
-            //         var word = g[0], width = 0, lineDx0, lineDx1;
-            //         for (var j = 0; j < g[1].length; j++) {
-            //             // compute bounds of morpheme group
-            //             console.log(' ', j, g[1][j][0]);
-            //             lastTag = g[1][j][1];
-            //             var bbox1 = self.textBBox(g[1][j][0], "leaf-word"),
-            //                 bbox2 = self.textBBox(self.tagDisplay(g[1][j][1]), "leaf-tag");
-            //             var wmax = Math.max(bbox1.width, bbox2.width);
-            //             width += wmax + (j < g[1].length - 1 ? self.terminalGap : 0);
-            //             height = Math.max(height, bbox1.height, bbox2.height);
-            //             // compute underline dx's form each end of the the word
-            //             if (j == 0)
-            //                 lineDx0 = wmax / 2 - bbox1.width / 2 + (g[1][j][0][0] == ' ' ? spaceWidth : 0);
-            //             if (j == g[1].length - 1)
-            //                 lineDx1 = wmax / 2 - bbox1.width / 2 + (lastTag == '' ? spaceWidth : 0);
-            //         }
-            //         //
-            //         words.push({
-            //             word: word,
-            //             x: x,
-            //             y: y,
-            //             width: width,
-            //             height: height,
-            //             lineX: x + lineDx0,
-            //             lineWidth: width - lineDx0 - lineDx1
-            //         });
-            //         console.log(word, x, width);
-            //         // no terminal gap if we split prior terminal (tag == '')
-            //         x += width + (lastTag != '' ? self.terminalGap : 0);
-            //     }
-
             self.words = words;
             x = self.treeMarginX; y += height + self.lineGap;
 
@@ -409,7 +283,7 @@ export default {
 	        y += self.lineGap + self.levelHeight;
 	        // draw an inverted tree from the terminal layer down; start at layer above terminals,
             //   find parent & siblings & layout parent midway between siblings
-            var layerIDs = self.parseTree2.layers,
+            var layerIDs = self.parseTree.layers,
                 layers = [];
  	        for (var i = 1; i < layerIDs.length; i++) {
  	            layers.push([]);
@@ -434,8 +308,8 @@ export default {
 
             // figure graph bounds
             var lt = terminals[terminals.length - 1];
-            self.tree2Width = self.treeMarginX * 2 + lt.x + lt.width;
-            self.tree2Height = y + layers.length * self.levelHeight + self.treeMarginY;
+            self.treeWidth = self.treeMarginX * 2 + lt.x + lt.width;
+            self.treeHeight = y + layers.length * self.levelHeight + self.treeMarginY;
             self.layers = layers;
 
 	        //console.log(layers);

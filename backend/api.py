@@ -92,18 +92,8 @@ def parse():
     # build descriptive phrase list
     phrases = Chunker.phraseList(chunkTree)
 
-    # recursively turn the chunk tree into a Python nested dict for the JSON response
-    def asDict(chunk):
-        while isinstance(chunk, nltk.Tree) and len(chunk) == 1:
-            # flatten degenerate tree nodes
-            chunk = chunk[0]
-        if isinstance(chunk, nltk.Tree):
-            return dict(type='tree', tag='Sentence' if chunk.label() == 'S' else chunk.label(), children=[asDict(t) for t in chunk])
-        else:
-            return dict(type='pos', word=chunk[0].strip(), tag=chunk[1])
     #
-    parseTree = asDict(chunkTree)
-    parseTree2 = buildParseTree(chunkTree)
+    parseTree = buildParseTree(chunkTree)
 
     debugging = dict(posList=pformat(words),
                      mappedPosList=pformat(mappedPosList),
@@ -118,7 +108,6 @@ def parse():
                    morphemeGroups=morphemeGroups,
                    phrases=phrases,
                    parseTree=parseTree,
-                   parseTree2=parseTree2,
                    references=references,
                    debugging=debugging)
 
@@ -241,10 +230,14 @@ if __name__ == "__main__":
 # 제 책을 좋다
 # 저는 친구들과 함께 집에 갔어요
 
-# 중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.
+# 중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.      한국 음식은 좋아하기 때문에 한국 음식을 많이 먹을 거예요.
 
 # 나는 저녁으로 빵과 물과 밥을 먹었어요.
 # 나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.
 # 나는 요리하는 것에 대해서 책을 쓸 거야.
+
+
+#  needs work...
+# 나는 매우 배가 고파서 김치를 많이 먹을 거야.
 
 
