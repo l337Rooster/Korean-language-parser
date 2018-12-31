@@ -10,6 +10,7 @@ import nltk
 class Chunker(object):
     "finds phrase chunks in the POS list produced by the KHaiii phoneme analyzer"
 
+    # the main NLTK chunking grammar
     grammar = r"""
     
          NounDerivedVerb:    {<VND.*>}
@@ -53,6 +54,12 @@ class Chunker(object):
     
          """
 
+    # annotations for above rules will appear in hover popups in displayedp arse tree
+    ruleAnnotations = {
+         "Adjective":   {"descr": "An adjective formed from a descriptive verb-stem and an adverbial particle",
+                         "refs": {"ttmik": "/lessons/level-3-lesson-13", "htsk": "/unit1/unit-1-lessons-1-8/unit-1-lesson-4/#ua"},},
+    }
+
     parser = None
 
     @classmethod
@@ -92,7 +99,7 @@ class Chunker(object):
                 if isinstance(st, nltk.Tree):
                     phrase = flattenPhrase(st, phrase)
                     if st.label() not in hiddenTags:
-                        phrase.append({"type": 'label', "word": st.label()})
+                        phrase.append({"type": 'tree', "tag": st.label()})
                 else:
                     phrase.append({"type": 'word', "word": st[0].strip(), "tag": st[1]}) # st[1][0] if st[1][0] in ('N', 'V') else st[0].strip()
             return phrase

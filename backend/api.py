@@ -132,7 +132,7 @@ def buildParseTree(chunkTree):
             allNodes.append(node)
             return node
         else:
-            node = dict(type='pos', word=chunk[0].strip(), tag=chunk[1], children=[], parent=parent, level=-1, layer=0)
+            node = dict(type='word', word=chunk[0].strip(), tag=chunk[1], children=[], parent=parent, level=-1, layer=0)
             node['id'] = id(node)
             terminals.append(node)
             allNodes.append(node)

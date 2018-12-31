@@ -39,9 +39,9 @@
                                 <template v-for="element, i in phrase">
                                     <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
                                     <span v-if="element.type == 'word'" class="leaf-word"
-                                          v-on:mouseenter="mouseEnterWord(element, $event)"
-                                          v-on:click="wordClick(element, $event)">{{ element.word }}</span>
-                                    <span v-if="element.type == 'label'" class="leaf-tag">({{ element.word }})</span>
+                                          v-on:mouseenter="mouseEnterNode(element, $event)"
+                                          v-on:click="nodeClick(element, $event)">{{ element.word }}</span>
+                                    <span v-if="element.type == 'tree'" class="leaf-tag">({{ element.tag }})</span>
                                 </template>
                             </div>
                         </div>
@@ -56,8 +56,8 @@
                             <g v-for="node in s.terminals">
                                 <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
                                     <template v-if="node.word">
-                                        <tspan class="leaf-word" v-on:mouseenter="mouseEnterWord(node, $event)"
-                                                                 v-on:click="wordClick(node, $event)">{{ node.word }}</tspan>
+                                        <tspan class="leaf-word" v-on:mouseenter="mouseEnterNode(node, $event)"
+                                                                 v-on:click="nodeClick(node, $event)">{{ node.word }}</tspan>
                                         <tspan :x="node.x + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(s, node.tag) }}</tspan>
                                     </template>
                                     <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
@@ -68,7 +68,8 @@
                             <g v-for="layer in s.layers">
                                 <g v-for="node in layer">
                                     <text :x="node.x" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
-                                        <tspan class="node-tag" >{{ node.tag }}</tspan>
+                                        <tspan class="node-tag" v-on:mouseenter="mouseEnterNode(node, $event)"
+                                                                v-on:click="nodeClick(node, $event)">{{ node.tag }}</tspan>
                                     </text>
                                     <line v-if="node.parent" :x1="node.x" :y1="node.y + 8" class="link-line"
                                                              :x2="node.x" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
@@ -94,17 +95,18 @@
             </div>
             <div id="definition" ref="defPopup" class="definition">
                 <div class="k-table">
-                    <div class="border-row k-row"><div v-if="POS" class="def-pos k-cell">{{POS.descr}}</div></div>
-                    <div class="def-row k-row"><div v-if="POS && POS.notes" class="def-notes k-cell">{{POS.notes}}</div></div>
+                    <div class="border-row k-row"><div v-if="references.annotation" class="def-pos k-cell">{{references.annotation}}</div></div>
+                    <div class="border-row k-row"><div v-if="references.POS" class="def-pos k-cell">{{references.POS.descr}}</div></div>
+                    <div class="def-row k-row"><div v-if="references.POS && references.POS.notes" class="def-notes k-cell">{{references.POS.notes}}</div></div>
                 </div>
                 <div class="k-table">
-                    <div v-for="(def, index) in definition" :class="{'border-row': index == definition.length-1}" class="k-row">
-                        <div class="k-cell">{{def.partOfSpeech}}:</div>
+                    <div v-for="(def, index) in references.definition" :class="{'border-row': index == references.definition.length-1}" class="k-row">
+                        <div class="k-cell def-label">{{def.partOfSpeech}}:</div>
                         <div class="k-cell"><ul><li v-for="w in def.text"><span>{{w}}</span></li></ul></div>
                     </div>
-                    <div class="k-row refs-row">
-                        <div class="k-cell">References:</div>
-                        <div class="k-cell"><ul><li  v-for="ref in wordRefs"><a :href=ref.slug target="_blank">{{ref.name}}</a></li></ul></div>
+                    <div v-if="references.wordRefs" class="k-row refs-row">
+                        <div class="k-cell def-label">References:</div>
+                        <div class="k-cell"><ul><li  v-for="ref in references.wordRefs"><a :href=ref.slug target="_blank">{{ref.name}}</a></li></ul></div>
                     </div>
                 </div>
             </div>
@@ -128,7 +130,7 @@ export default {
 	data: function() {
 		return {
 		    parsing: false,
-		    sentence: "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
             sentences: [],
 		    wiktionaryUrl: null,
@@ -139,13 +141,11 @@ export default {
 		    levelHeight: 50,
             treeWidth: 0, treeHeight: 0,
             debugOutput: false,
-            definition: null,
+            references: {},
             defPopup: null,
             nodeInDef: null,
             mouseEnterX: null, mouseEnterY: null,
             definitionTimeout: null,
-            POS: null,
-            wordRefs: null,
             terminalGap: 20, lineGap: 8,
             treeMarginX: 20, treeMarginY: 20
 		};
@@ -217,6 +217,11 @@ export default {
                     var t = nodes[terminalIDs[i]];
                     terminals.push(t);
                 }
+
+                // add owning-sentence object to phrase elements
+                for (var pi = 0; pi < s.phrases.length; pi++)
+                    for (var ei = 0; ei < s.phrases[pi].length; ei++)
+                        s.phrases[pi][ei].sentence = s;
 
                 // lay out original-text word line based on morphemeGroup word-groupings
                 var x = self.treeMarginX, y = self.treeMarginY + 30;
@@ -361,39 +366,59 @@ export default {
         },
 
         showReferences: function(node, event) {
+            // construct and show word/node reference popup
+            var self = this;
             var s = node.sentence;
             var references = s.references;
-            var word = references.wikiKeys[node.word];
-            $.ajax({
-                method: "GET",
-                url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
-                crossDomain: true,
-                cache: false,
-                success: function (response) {
-                    // set POS description & any synth-tag notes
-                    self.POS = references.posTable[node.tag];
-                    // display any non-empty useful result
-                    self.definition = response.length > 0 ? response : null;
-                    // add reference links
-                    self.wordRefs = references.references[node.word];
-                    // show referece popup if anything to show
-                    if (self.definition || self.wordRefs) {
-                        self.nodeInDef = node;
-                        var popup = self.$refs["defPopup"];
-                        var x = event.clientX,
-                            y = event.clientY;
-                        popup.style.top = (y + 12) + 'px';
-                        popup.style.left = (x + 12) + 'px';
-                        popup.classList.add("show");
+            var r = {};
+            if (node.type == 'word') {
+                // retrieve and pop word leaf word references
+                var word = references.wikiKeys[node.word];
+                $.ajax({
+                    method: "GET",
+                    url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                    crossDomain: true,
+                    cache: false,
+                    success: function (response) {
+                        // set POS description & any synth-tag notes
+                        r.POS = references.posTable[node.tag];
+                        // display any non-empty useful result
+                        r.definition = response.length > 0 ? response : null;
+                        // add reference links
+                        r.wordRefs = references.references[node.word];
+                        // show referece popup if anything to show
+                        if (r.definition || r.wordRefs) {
+                            self.popReferences(r, node, event);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        self.references = {};
                     }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    self.definition = self.wordRefs = null;
+                });
+            }
+            else {  // parse-tree rule node, pop-up any rule annotation
+                var annotation = references.ruleAnnotations[node.tag];
+                if (annotation) {
+                    r.annotation = annotation.descr;
+                    r.wordRefs = annotation.refList;
+                    self.popReferences(r, node, event);
                 }
-            });
+            }
         },
 
-        wordClick: function(node, event) {
+        popReferences: function(r, node, event) {
+            // display node reference popup
+            this.references = r;
+            this.nodeInDef = node;
+            var popup = self.$refs["defPopup"];
+            var x = event.clientX,
+                y = event.clientY;
+            popup.style.top = (y + 12) + 'px';
+            popup.style.left = (x + 12) + 'px';
+            popup.classList.add("show");
+        },
+
+        nodeClick: function(node, event) {
 	        // handle click on node word, open reference popup if not already
             if (this.definitionTimeout)
                 clearTimeout(self.definitionTimeout);
@@ -403,7 +428,7 @@ export default {
             }
         },
 
-        mouseEnterWord: function (node, event) {
+        mouseEnterNode: function (node, event) {
             var self = this;
             if (self.definitionTimeout)
                 clearTimeout(self.definitionTimeout);
@@ -563,6 +588,7 @@ document.onmouseup = function (e) {
     .node-tag {
         fill: #ad47de;
         font-size: 13px;
+        cursor: pointer;
     }
 
     .wiktionary-iframe {
@@ -585,10 +611,15 @@ document.onmouseup = function (e) {
         max-width: 500px;
     }
 
+    .definition .def-label {
+        width: 10%;
+    }
+
     .definition .def-pos {
         width: 100%;
         padding-bottom: 5px;
-       /* font-weight: bold; */
+        padding-top: 4px;
+        /* font-weight: bold; */
     }
 
     .definition .def-notes {

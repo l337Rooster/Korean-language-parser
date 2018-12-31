@@ -9,6 +9,8 @@ from pprint import pprint
 
 import nltk
 
+from chunker import Chunker
+
 class TagMap(object):
     "holds a tag-mapping spec"
 
@@ -114,7 +116,6 @@ class TagMap(object):
                 cls.refsMap[tm.newTag] = [dict(ref=cls.references[key]['title'],
                                                url="https://" + cls.references[key]['hostname'] + page) for key, page in tm.refs.items()]
         #
-        pprint(cls.nodeNameMaps)
 
     @classmethod
     def mapTags(cls, posString, morphemeGroups):
@@ -178,10 +179,20 @@ class TagMap(object):
         references = {}
         wikiKeys = {}
         posTable = {}
+        ruleAnnotations = {}
         def walkTree(t):
             # walk tree looking for terminal nodes with tags that are in the refMap or wikiKey tables & build reference items
             for i, st in enumerate(t):
                 if isinstance(st, nltk.Tree):
+                    # add any tree node grammar rule annotations & refs
+                    tag = st.label()
+                    annotation = Chunker.ruleAnnotations.get(tag)
+                    if annotation:
+                        ruleAnnotations[tag] = dict(descr=annotation['descr'],
+                                                    refList=[dict(name=cls.references[ref]['title'],
+                                                                  slug="https://" + cls.references[ref]['hostname'] + page) \
+                                                                     for ref, page in annotation['refs'].items()])
+                    # recurse down th etree
                     walkTree(st)
                 else:
                     refList = []
@@ -216,10 +227,10 @@ class TagMap(object):
         #
         walkTree(tree)
         #
-        return dict(references=references, wikiKeys=wikiKeys, posTable=posTable)
+        return dict(references=references, wikiKeys=wikiKeys, posTable=posTable, ruleAnnotations=ruleAnnotations, )
 
 
-
+# utility tag-mapping definition function
 def tm(tagPat=r'', repl=r'', basePOS=None, descr=None, rename=None, wikiKey=None, refs=(), notes=None):
     "build & store a tag-map entry"
     TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, descr, rename, wikiKey, refs, notes)
@@ -238,13 +249,13 @@ def tm(tagPat=r'', repl=r'', basePOS=None, descr=None, rename=None, wikiKey=None
 
 # ----- tag-sequence foldings --------
 
-tm(  # noun-dervied verbs, N하다, N되다, N당하다, N시키다, etc. - combine XR|NN & VND suffix into a single NDV (noun-derived verb) verb
+tm(  # noun-derived verbs, N하다, N되다, N당하다, N시키다, etc. - combine XR|NN & VND suffix into a single NDV (noun-derived verb) verb
     tagPat=r'([^:]+):(XR|NNG);([^:]+):XSV', repl=r'\1\3:VND',
     basePOS="VV", descr="Verb derived from a noun",
     notes="Noun-derived verb - ${1} + ${3}",
 )
 
-tm(  # noun-dervied adjective,  - combine XR|NN & XSA suffix into a single VAND (noun-derived adjective) adjective
+tm(  # noun-derived adjective,  - combine XR|NN & XSA suffix into a single VAND (noun-derived adjective) adjective
     tagPat=r'([^:]+):(XR|NNG);([^:]+):XSA', repl=r'\1\3:VAND',
     basePOS="VA", descr="Adjective derived from a noun",
     notes="Noun-derived adjective - ${1} + ${3}",
