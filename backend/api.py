@@ -5,7 +5,7 @@ __author__ = 'jwainwright'
 
 import re
 from pprint import pprint, pformat
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 from flask import (Flask, request, abort, render_template, Response, jsonify)
 from flask_cors import CORS
@@ -66,50 +66,54 @@ def parse():
     if sentence.strip()[-1] not in ['.', '?', '!']:
         sentence += '.'
 
-    # run Khaiii
-    words = []; morphemeGroups = []
+    # run Khaiii, grab the parts-of-speech list it generates (morphemes + POS tags) and extract original word-to-morpheme groupings
+    sentences = []  # handle possible multiple sentences
+    posList = []; morphemeGroups = []
     for w in khaiiiAPI.analyze(sentence):
-        #print('===>', w, '|', w.lex, '|',  w.begin, w.length)
         morphemeGroups.append([w.lex, [m.lex for m in w.morphs if m.tag != 'SF']])
         for m in w.morphs:
-            #print('  ->', m, '|', m.lex, '|', m.tag, m.begin, m.length)
-            words.append('{0}:{1}'.format(m.lex.strip(), m.tag))
-    posString = ';'.join(words)
-    pprint(morphemeGroups)
+            posList.append('{0}:{1}'.format(m.lex.strip(), m.tag))
+            if m.tag == 'SF':
+                # sentence end, store extractions & reset for possible next sentence
+                sentences.append(dict(posList=posList, morphemeGroups=morphemeGroups, posString=';'.join(posList)))
+                posList = []; morphemeGroups = []
 
-    # map POS through synthetic tag mapper & extract word groupings
-    mappedPosList, morphemeGroups = TagMap.mapTags(posString, morphemeGroups)
+    for s in sentences:
+        # map POS through synthetic tag mapper & extract word groupings
+        mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups'])
 
-    # perform chunk parsing
-    chunkTree = Chunker.parse(mappedPosList)
+        # perform chunk parsing
+        chunkTree = Chunker.parse(mappedPosList)
 
-    # apply any synthetic-tag-related node renamings
-    TagMap.mapNodeNames(chunkTree)
+        # apply any synthetic-tag-related node renamings
+        TagMap.mapNodeNames(chunkTree)
 
-    # extract popup wiki definitions & references links & notes for implicated nodes
-    references = TagMap.getReferences(chunkTree)
+        # extract popup wiki definitions & references links & notes for implicated nodes
+        references = TagMap.getReferences(chunkTree)
 
-    # build descriptive phrase list
-    phrases = Chunker.phraseList(chunkTree)
+        # build descriptive phrase list
+        phrases = Chunker.phraseList(chunkTree)
 
-    #
-    parseTree = buildParseTree(chunkTree)
+        #
+        parseTree = buildParseTree(chunkTree)
 
-    debugging = dict(posList=pformat(words),
-                     mappedPosList=pformat(mappedPosList),
-                     phrases=pformat(phrases),
-                     morphemeGroups=pformat(morphemeGroups),
-                     parseTree=pformat(parseTree),
-                     references=references)
+        debugging = dict(posList=pformat(s['posList']),
+                         mappedPosList=pformat(mappedPosList),
+                         phrases=pformat(phrases),
+                         morphemeGroups=pformat(morphemeGroups),
+                         parseTree=pformat(parseTree),
+                         references=references)
+
+        s.update(dict(mappedPosList=mappedPosList,
+                      morphemeGroups=morphemeGroups,
+                      parseTree=parseTree,
+                      references=references,
+                      phrases=phrases,
+                      debugging=debugging
+                      ))
 
     return jsonify(result="OK",
-                   posList=words,
-                   mappedPosList=mappedPosList,
-                   morphemeGroups=morphemeGroups,
-                   phrases=phrases,
-                   parseTree=parseTree,
-                   references=references,
-                   debugging=debugging)
+                   sentences=sentences)
 
 def buildParseTree(chunkTree):
     "constructs display structures from NLTK chunk-tree"
