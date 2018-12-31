@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.4.8 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.4.9 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -37,7 +37,8 @@
                             <template v-for="element, i in phrase">
                                 <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
                                 <span v-if="element.type == 'word'" class="leaf-word"
-                                      v-on:mouseenter="mouseEnterWord(element, $event)">{{ element.word }}</span>
+                                      v-on:mouseenter="mouseEnterWord(element, $event)"
+                                      v-on:click="wordClick(element, $event)">{{ element.word }}</span>
                                 <span v-if="element.type == 'label'" class="leaf-tag">({{ element.word }})</span>
                             </template>
                         </div>
@@ -53,7 +54,8 @@
                         <g v-for="node in terminals">
                             <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
                                 <template v-if="node.word">
-                                    <tspan class="leaf-word" v-on:mouseenter="mouseEnterWord(node, $event)">{{ node.word }}</tspan>
+                                    <tspan class="leaf-word" v-on:mouseenter="mouseEnterWord(node, $event)"
+                                                             v-on:click="wordClick(node, $event)">{{ node.word }}</tspan>
                                     <tspan :x="node.x + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(node.tag) }}</tspan>
                                 </template>
                                 <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
@@ -126,7 +128,7 @@ export default {
 		    posList: null,
 		    phrases: null,
             debugging: null,
-		    sentence: "나는 요리하는 것에 대해서 책을 썼어요.", // "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: null, // "나는 요리하는 것에 대해서 책을 썼어요.", // "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
 		    answer: "Answer goes here",
 		    wiktionaryUrl: null,
@@ -139,6 +141,7 @@ export default {
             debugOutput: false,
             definition: null,
             defPopup: null,
+            nodeInDef: null,
             mouseEnterX: null, mouseEnterY: null,
             definitionTimeout: null,
             references: null,
@@ -173,7 +176,7 @@ export default {
 	        self.parsing = true;
             $.ajax({
                 method: "POST",
-                url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
+                url: '/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
                 data: { sentence: this.sentence },
@@ -359,36 +362,43 @@ export default {
         },
 
         showReferences: function(node, event) {
-            // only show if mouse has hovered over node for 500ms
-            //console.log(self.mouseEnterX, window.screenX, self.mouseEnterY, window.screenY);
-            if (Math.abs(self.mouseEnterX - window.screenX) < 20 && Math.abs(self.mouseEnterY - window.screenY) < 20) {
-                var word = self.references.wikiKeys[node.word];
-                $.ajax({
-                    method: "GET",
-                    url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
-                    crossDomain: true,
-                    cache: false,
-                    success: function (response) {
-                        // set POS description & any synth-tag notes
-                        self.POS = self.references.posTable[node.tag];
-                        // display any non-empty useful result
-                        self.definition = response.length > 0 ? response : null;
-                        // add reference links
-                        self.wordRefs = self.references.references[node.word];
-                        // show referece popup if anything to show
-                        if (self.definition || self.wordRefs) {
-                            var popup = self.$refs["defPopup"];
-                            var x = event.clientX,
-                                y = event.clientY;
-                            popup.style.top = (y + 12) + 'px';
-                            popup.style.left = (x + 12) + 'px';
-                            popup.classList.add("show");
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        self.definition = self.wordRefs = null;
+            var word = self.references.wikiKeys[node.word];
+            $.ajax({
+                method: "GET",
+                url: "/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                crossDomain: true,
+                cache: false,
+                success: function (response) {
+                    // set POS description & any synth-tag notes
+                    self.POS = self.references.posTable[node.tag];
+                    // display any non-empty useful result
+                    self.definition = response.length > 0 ? response : null;
+                    // add reference links
+                    self.wordRefs = self.references.references[node.word];
+                    // show referece popup if anything to show
+                    if (self.definition || self.wordRefs) {
+                        self.nodeInDef = node;
+                        var popup = self.$refs["defPopup"];
+                        var x = event.clientX,
+                            y = event.clientY;
+                        popup.style.top = (y + 12) + 'px';
+                        popup.style.left = (x + 12) + 'px';
+                        popup.classList.add("show");
                     }
-                });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    self.definition = self.wordRefs = null;
+                }
+            });
+        },
+
+        wordClick: function(node, event) {
+	        // handle click on node word, open reference popup if not already
+            if (this.definitionTimeout)
+                clearTimeout(self.definitionTimeout);
+            var popup = $("#definition")[0];
+            if (!popup.classList.contains("show") || this.nodeInDef != node) {
+                this.showReferences(node, event);
             }
         },
 
@@ -398,7 +408,11 @@ export default {
                 clearTimeout(self.definitionTimeout);
 	        // handle mouse enter, note entering mouse-pos & show refs if (roughly) still after 250ms
 	        self.mouseEnterX = event.screenX; self.mouseEnterY = event.screenY;
-	        self.definitionTimeout = setTimeout(self.showReferences, 250, node, event);
+	        self.definitionTimeout = setTimeout(function() {
+                if (Math.abs(self.mouseEnterX - window.screenX) < 20 && Math.abs(self.mouseEnterY - window.screenY) < 20)
+                    // only show if mouse has hovered over node for 500ms
+	                self.showReferences(node, event);
+            }, 250);
         },
 
         // deprecated, now def popup is sticky, dismissed with outside click
