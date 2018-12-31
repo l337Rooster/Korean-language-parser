@@ -51,7 +51,7 @@ class TagMap(object):
         "JKB":      ("Particle",    "Post-position",    "Adverbial particle",               "관계언: 부사격 조사"),
         "JKV":      ("Particle",    "Post-position",    "Vocative case marker",             "관계언: 호격 조사"),
         "JKQ":      ("Particle",    "Post-position",    "Quotation marker",                 "관계언: 인용격 조사"),
-        "JX":       ("Particle",    "Post-position",    "Topic-marking particle",           "관계언: 보조사"),
+        "JX":       ("Particle",    "Post-position",    "Auxiliary particle",               "관계언: 보조사"),
         "JC":       ("Particle",    "Post-position",    "Connecting particle",              "관계언: 보조사"),
         "EP":       ("Suffix",      "Dependent form",   "Suffix-head, e.g. 었 or 시",        "의존 형태	: 선어말 어미"),
         "EF":       ("Suffix",      "Dependent form",   "Predicate-closing suffix",         "의존 형태	: 종결 어미"),
@@ -84,12 +84,12 @@ class TagMap(object):
         "VMS":      ("Suffix",      "Post-position",    "Verb-modifying suffix",            ""),
     }
 
-    def __init__(self, tagPat, repl, basePOS, descr, rename, wikiKey, refs, notes):
+    def __init__(self, tagPat, repl, basePOS, descr, rename, annotation, wikiKey, refs, notes):
         self.tagPat = tagPat
         # uniquify synthetic tag & record it if this mapping includes a chunktree node renaming
         self.repl = repl + ("_%d" % TagMap.tagOrdinal); TagMap.tagOrdinal += 1
         self.newTag = self.repl.split(':')[1] # extract this pattern's synthetic tag
-        self.rename = rename
+        self.rename = rename; self.annotation = annotation
         self.wikiKey = wikiKey
         self.refs = refs
         self.notes = notes
@@ -98,6 +98,9 @@ class TagMap(object):
         # add POS definition for synthetic tag, based on basePOS overriding detail descriptor
         baseDef = TagMap.partsOfSpeech[basePOS]
         TagMap.partsOfSpeech[self.newTag] = (baseDef[0], baseDef[1], descr or baseDef[2], baseDef[3])
+        # add any renamed rule annotation
+        if ':' in rename and annotation:
+            Chunker.ruleAnnotations[rename.split(':')[1]] = dict(descr=annotation, refs=refs)
 
     @classmethod
     def completeInit(cls):
@@ -231,9 +234,9 @@ class TagMap(object):
 
 
 # utility tag-mapping definition function
-def tm(tagPat=r'', repl=r'', basePOS=None, descr=None, rename=None, wikiKey=None, refs=(), notes=None):
+def tm(tagPat=r'', repl=r'', basePOS=None, descr=None, rename="", annotation="", wikiKey=None, refs=(), notes=None):
     "build & store a tag-map entry"
-    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, descr, rename, wikiKey, refs, notes)
+    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, descr, rename, annotation, wikiKey, refs, notes)
 
 # ================================== tag-mapping specs ==============================
 
@@ -265,6 +268,12 @@ tm(  # noun-derived adjective,  - combine XR|NN & XSA suffix into a single VAND 
 
 # ----- particles --------  map to PRT.* + NounPhrase node rename
 
+tm( # 은/는 topic marker
+    tagPat=r'(은|는):JX', repl=r'\1:TOP',
+    basePOS="JX", descr="Topic-marker",
+    rename="NounPhrase:Topic",
+)
+
 tm( # 들 pluralizer
     tagPat=r'들:(TM|XSN)', repl=r'들:PRT',
     basePOS="VA", descr="Pluralizer",
@@ -277,6 +286,13 @@ tm( # 에/에서 Location/Time marker
     basePOS="JKB",
     rename="NounPhrase:Location/Time",
     refs={"ttmik": "/lessons/l1l18", "htsk": "/unit-1-lessons-9-16/lesson-12/#kp3", },
+)
+
+tm( # 밖에 other-than particle
+    tagPat=r'밖에:JX', repl=r'밖에:PRT',
+    basePOS="JX",
+    rename="NounPhrase:OtherThan", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
+    refs={"htsk": "/unit-3-intermediate-korean-grammar/lessons-67-75/lesson-69/#691", },
 )
 
 # ----- nominal forms -- transforming verbs & adjectives to nouns ---------  mapping (usually) to NOM.*

@@ -27,7 +27,7 @@ class Chunker(object):
          Location:           {<JKB>}
          Title:              {<XSN>}
          Preposition:        {<PRPxx>}
-         Particle:           {<PRT.*>}
+         Particle:           {<JX|PRT.*>}
     
          Noun:               {<NN.*|NR|SL>}       
          Pronoun:            {<NP>}
@@ -47,7 +47,7 @@ class Chunker(object):
          Complement:         {<Constituent><JKC>} 
          Object:             {<Constituent|PrepositionalPhrase><JKO>}  
          Subject:            {<Constituent|PrepositionalPhrase><JKS>}
-         Topic:              {<Constituent|PrepositionalPhrase><JX>}
+         Topic:              {<Constituent|PrepositionalPhrase><TOP.*>}
     
          Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
          Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}

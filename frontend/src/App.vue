@@ -82,11 +82,11 @@
                     </template>
                 </div>
                 <div v-if="!parsing && debugOutput && s.debugging" class="debug-row k-flexrow k-table">
-                    <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{debugging.posList}}</pre></div>
-                    <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{debugging.mappedPosList}}</pre></div>
-                    <div class="k-row"><div class="k-cell">MorphemeGroups</div><pre class="k-cell">{{debugging.morphemeGroups}}</pre></div>
-                    <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{debugging.phrases}}</pre></div>self.morphemeGroups
-                    <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{debugging.references}}</pre></div>
+                    <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{s.debugging.posList}}</pre></div>
+                    <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{s.debugging.mappedPosList}}</pre></div>
+                    <div class="k-row"><div class="k-cell">MorphemeGroups</div><pre class="k-cell">{{s.debugging.morphemeGroups}}</pre></div>
+                    <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{s.debugging.phrases}}</pre></div>
+                    <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{s.debugging.references}}</pre></div>
                 </div>
             </div>
 
