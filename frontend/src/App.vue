@@ -1,7 +1,7 @@
 <!-- main KoNLPy parser    -->
 
 <template>
-    <div id="app">
+    <div id="app" v-on:mouseup="appMouseUp($event)">
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
@@ -128,7 +128,7 @@ export default {
 		    posList: null,
 		    phrases: null,
             debugging: null,
-		    sentence: null, // "나는 요리하는 것에 대해서 책을 썼어요.", // "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
 		    answer: "Answer goes here",
 		    wiktionaryUrl: null,
@@ -168,24 +168,24 @@ export default {
 
 	methods: {
 
-	    requestParse: function() {
-	        // send sentence to parser API
-	        self = this;
-	        self.parseButtonText = "Parsing...";
-	        self.error = self.wiktionaryUrl = "";
-	        self.parsing = true;
+        requestParse: function () {
+            // send sentence to parser API
+            self = this;
+            self.parseButtonText = "Parsing...";
+            self.error = self.wiktionaryUrl = "";
+            self.parsing = true;
             $.ajax({
                 method: "POST",
-                url: '/parse/', // '/parse/', // 'http://localhost:9000/parse/',
+                url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
-                data: { sentence: this.sentence },
-                success: function(response) {
+                data: {sentence: this.sentence},
+                success: function (response) {
                     self.parsing = false;
-	                self.parseButtonText = "Parse";
-	                if (response.result == 'OK') {
-	                    self.mappedPosList = response.mappedPosList;
-	                    self.morphemeGroups = response.morphemeGroups;
+                    self.parseButtonText = "Parse";
+                    if (response.result == 'OK') {
+                        self.mappedPosList = response.mappedPosList;
+                        self.morphemeGroups = response.morphemeGroups;
                         self.parseTree = response.parseTree;
                         self.posList = response.posList;
                         self.phrases = response.phrases;
@@ -197,26 +197,28 @@ export default {
                     else {
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     self.parsing = false;
-	                self.parseButtonText = "Parse";
+                    self.parseButtonText = "Parse";
                     self.error = "Parsing failed - " + textStatus + ", " + errorThrown;
                 }
             });
-	    },
+        },
 
-        buildDisplay: function() {
-	        // build display layout for 2nd test form
+        buildDisplay: function () {
+            // build display layout for 2nd test form
             var self = this;
 
             // build layer node-id lookup tables
             var nodes = {}
+
             function addID(n) {
                 nodes[n.id] = n;
                 n.parent = nodes[n.parent];
                 for (var i = 0; i < n.children.length; i++)
                     addID(n.children[i]);
             }
+
             addID(self.parseTree.tree)
 
             // grab terminals list
@@ -227,7 +229,7 @@ export default {
                 terminals.push(t);
             }
 
-	        // lay out original-text word line based on morphemeGroup word-groupings
+            // lay out original-text word line based on morphemeGroup word-groupings
             var x = self.treeMarginX, y = self.treeMarginY + 30;
             var words = [], height = 0;
             var wi = 0, wci = 0,  // word & word-char indexes
@@ -237,12 +239,13 @@ export default {
             for (wi = 0; wi < self.morphemeGroups.length; wi++) {
                 var g = self.morphemeGroups[wi];
                 var word = {word: g[0], y: y}, chars = g[1];
-                for (wci = 0; wci < chars.length; ) {
+                for (wci = 0; wci < chars.length;) {
                     // track chars in terminal
                     if (!t || tci >= t.word.length) {
                         // end of terminal, grab next & update terminal layout vars
                         t = terminals[ti];
-                        ti += 1; tci = 0;
+                        ti += 1;
+                        tci = 0;
                         ttw = self.getLayoutElement(t.word, "leaf-word");
                         ttt = self.getLayoutElement(self.tagDisplay(t.tag), "leaf-tag");
                         var wWidth = ttw.getComputedTextLength(), tWidth = ttt.getComputedTextLength(),
@@ -252,7 +255,8 @@ export default {
                         x += width + self.terminalGap;  // bump along terminal x pos using prior terminals' width
                     }
                     // update current terminal chars pos
-                    tcsx = ts + ttw.getStartPositionOfChar(tci).x; tcex = ts + ttw.getEndPositionOfChar(tci).x;
+                    tcsx = ts + ttw.getStartPositionOfChar(tci).x;
+                    tcex = ts + ttw.getEndPositionOfChar(tci).x;
                     if (wci == 0) // start of word
                         word.x = tcsx;
                     if (wci == chars.length - 1) { // end of word, figure width, track max height
@@ -268,13 +272,16 @@ export default {
             }
 
             self.words = words;
-            x = self.treeMarginX; y += height + self.lineGap;
+            x = self.treeMarginX;
+            y += height + self.lineGap;
 
-	        // lay out terminals line
+            // lay out terminals line
             for (var i = 0; i < terminals.length; i++) {
                 var t = terminals[i];
-                t.x = x; t.y = y;
-                var tew = self.getLayoutElement(t.word, "leaf-word"), tet = self.getLayoutElement(self.tagDisplay(t.tag), "leaf-tag");
+                t.x = x;
+                t.y = y;
+                var tew = self.getLayoutElement(t.word, "leaf-word"),
+                    tet = self.getLayoutElement(self.tagDisplay(t.tag), "leaf-tag");
                 t.width = Math.max(tew.getComputedTextLength(), tet.getComputedTextLength());
                 console.log(t.word, t.x, t.width);
                 x += t.width + self.terminalGap;
@@ -282,19 +289,19 @@ export default {
             //
             self.terminals = terminals;
 
-	        // compute tree layout coords
-	        y += self.lineGap + self.levelHeight;
-	        // draw an inverted tree from the terminal layer down; start at layer above terminals,
+            // compute tree layout coords
+            y += self.lineGap + self.levelHeight;
+            // draw an inverted tree from the terminal layer down; start at layer above terminals,
             //   find parent & siblings & layout parent midway between siblings
             var layerIDs = self.parseTree.layers,
                 layers = [];
- 	        for (var i = 1; i < layerIDs.length; i++) {
- 	            layers.push([]);
+            for (var i = 1; i < layerIDs.length; i++) {
+                layers.push([]);
                 var entryIDs = layerIDs[i];
                 for (var j = 0; j < entryIDs.length; j++) {
                     var node = nodes[entryIDs[j]];
                     layers[i - 1].push(node);
-                    node.y = y + (i - 1)* self.levelHeight;
+                    node.y = y + (i - 1) * self.levelHeight;
                     // get children bounds & center me within that
                     var c0 = node.children[0], cn = node.children[node.children.length - 1],
                         x0, xn = 0;
@@ -305,7 +312,8 @@ export default {
                     else
                         x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
                     node.x = (x0 + xn) / 2;
-                    node.x0 = x0; node.xn = xn;
+                    node.x0 = x0;
+                    node.xn = xn;
                 }
             }
 
@@ -315,30 +323,30 @@ export default {
             self.treeHeight = y + layers.length * self.levelHeight + self.treeMarginY;
             self.layers = layers;
 
-	        //console.log(layers);
+            //console.log(layers);
         },
 
-	    childrenConnector: function(node) {
-	        // return SVG path commands drawing connector spanning children nodes with rounded ends
-	        return "M " + node.x0 + " " + (node.y - 38) +
-                   " q 0 10 10 10" +
-                   " H " + (node.x0 + 10) + " " + (node.xn - 10) +
-                   " q 10 0 10 -10";
-	    },
-
-        endChild: function(node) {
-	        // return true if node is first or last child of parent
-            return node == node.parent.children[0] || node == node.parent.children[node.parent.children.length-1];
+        childrenConnector: function (node) {
+            // return SVG path commands drawing connector spanning children nodes with rounded ends
+            return "M " + node.x0 + " " + (node.y - 38) +
+                " q 0 10 10 10" +
+                " H " + (node.x0 + 10) + " " + (node.xn - 10) +
+                " q 10 0 10 -10";
         },
 
-        getLayoutElement: function(text, cls) {
+        endChild: function (node) {
+            // return true if node is first or last child of parent
+            return node == node.parent.children[0] || node == node.parent.children[node.parent.children.length - 1];
+        },
+
+        getLayoutElement: function (text, cls) {
             // return SVG text element of given class containing given text
             var t = $("#template ." + cls)[0];
             t.textContent = text;
             return t;
         },
 
-        textBBox: function(text, cls) {
+        textBBox: function (text, cls) {
             // return bounding box for text rendered in given class
             if (text == '')
                 return {width: 0, height: 0}
@@ -348,24 +356,24 @@ export default {
         },
 
         // deprecated. now wiki link is in def popup
-	    lookupWord: function(node) {
-	        // lookup word in wiktionary, open in iframe
-	        //  construct dictionary form of verb if needed
-	        var word = node.tag[0] == 'V' && node.word[node.word.length-1] != '다' ? node.word + '다' : node.word;
-	        this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
-	    },
+        lookupWord: function (node) {
+            // lookup word in wiktionary, open in iframe
+            //  construct dictionary form of verb if needed
+            var word = node.tag[0] == 'V' && node.word[node.word.length - 1] != '다' ? node.word + '다' : node.word;
+            this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
+        },
 
-        tagDisplay: function(tag) {
-	        // return displayable
+        tagDisplay: function (tag) {
+            // return displayable
             return tag != '' ? this.references.posTable[tag].wikiPOS : '';
-	        // return tag.split("_")[0];
+            // return tag.split("_")[0];
         },
 
         showReferences: function(node, event) {
             var word = self.references.wikiKeys[node.word];
             $.ajax({
                 method: "GET",
-                url: "/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
                 crossDomain: true,
                 cache: false,
                 success: function (response) {
@@ -402,7 +410,7 @@ export default {
             }
         },
 
-        mouseEnterWord: function(node, event) {
+        mouseEnterWord: function (node, event) {
             var self = this;
             if (self.definitionTimeout)
                 clearTimeout(self.definitionTimeout);
@@ -416,14 +424,25 @@ export default {
         },
 
         // deprecated, now def popup is sticky, dismissed with outside click
-        mouseLeaveWord: function() {
+        mouseLeaveWord: function () {
             if (self.definitionTimeout)
                 clearTimeout(self.definitionTimeout);
             this.definition = this.wordRefs = null;
             this.$refs["defPopup"].classList.remove("show");
             this.mouseEnterLoc = null;
+        },
+
+        appMouseUp: function (event) {
+            // this is for MobileSafari which doesn't send mouse events unless on explictly clickable elements
+            var popup = $("#definition");
+            if (popup.length > 0 &&
+                !popup.is(event.target) // if the target of the click isn't the container...
+                && popup.has(event.target).length === 0) // ... nor a descendant of the container
+            {
+                popup[0].classList.remove("show");
+            }
         }
-	}
+    }
 }
 
 //# register for mouse-move events
@@ -452,6 +471,7 @@ document.onmouseup = function (e) {
     #app {
         font-family: Helvetica, simsun, nanumgothic, '나눔고딕', dotum, sans-serif;
         font-size: 112%;
+        -webkit-tap-highlight-color: transparent;
     }
 
     #input-row {

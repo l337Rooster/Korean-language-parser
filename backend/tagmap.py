@@ -75,8 +75,9 @@ class TagMap(object):
         "ZV":       ("Guess",       "Guess",            "Unknown, guessing possessive",     "추정: 분석 불능(용언 추정)"),
         "ZZ":       ("Unknown",     "Guess",            "Unknown",                          "추정: 분석 불능(기타)"),
         #
-        # note that synthetic tags defined below include a mapping to one of the above basic POS
-        # extra synthetic parts, mostly to label suffix phrases built from the mapping rules
+        # note that synthetic tags defined below include a mapping to one of the above basic POS or the additional labeling tags below
+
+        # extra synthetic POS, mostly to label suffix phrases built from the mapping rules
         "AVS":      ("Suffix",      "Post-position",    "Adverbial suffix",                 ""),
         "VMS":      ("Suffix",      "Post-position",    "Verb-modifying suffix",            ""),
     }
