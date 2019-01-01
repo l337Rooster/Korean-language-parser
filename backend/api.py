@@ -242,9 +242,20 @@ if __name__ == "__main__":
 # 나는 요리하는 것에 대해서 책을 쓸 거야.
 # 냉장고에 우유밖에 없어요
 
+# 민수가 미나에게 선물을 주었어요.
+# 미나에게 민수가 선물을 주었어요.
+# 선물을 민수가 미나에게 주었어요.
+# 민수 씨가 미나  씨에게 선물을 주었어요.
+# 미나  씨에게 민수  씨가 선물을 주었어요.
+# 선물을 민수  씨가 미나  씨에게 주었어요.
+
+#  this OK: 김의 큰 집에서 파티가 있었어   or  김의 큰 집에서도 음식과 음료가 있었어   or 김의 새로운 집에서도 음식과 음료가 있을 거예요.
+#   but multiple particles in a noun-phrase mess: 김의 큰 집에서도 파티가 있었어
 
 #  need work...
 # 나는 매우 배가 고파서 김치를 많이 먹을 거야.
 # 나의 딸도 행복해. 저의 딸도 행복해요 - the possessive should nest inside the as-well??  are them some particles that are always last ina anoun-phrase?
 # 선생님 이에요. - no tree!
 # 김의 큰 집에서도 파티가 있어. - how to notate all the particles/suffixes in one noun-phrase, and can we fold it into the possessive phrase?
+#     김의 큰 집에서도 파티가 있었어
+# 음식과 음료가 있는 파티가 있을 것이다. - has two subjects, both because they are associated with 있다 ??  how to annotate?

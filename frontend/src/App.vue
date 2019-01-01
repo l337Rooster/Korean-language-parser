@@ -314,7 +314,7 @@ export default {
                 // figure graph bounds
                 var lt = terminals[terminals.length - 1];
                 s.treeWidth = self.treeMarginX * 2 + lt.x + lt.width;
-                s.treeHeight = y + layers.length * self.levelHeight + self.treeMarginY;
+                s.treeHeight = y + (layers.length - 1) * self.levelHeight + self.treeMarginY;
                 s.layers = layers;
 
                 //console.log(layers);

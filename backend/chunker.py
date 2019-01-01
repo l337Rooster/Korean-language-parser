@@ -29,16 +29,12 @@ class Chunker(object):
          Substantive:        {<Noun><Noun>*}
                              {<Pronoun>}
                              {<NominalizedVerb>}            
-         NounPhrase:     {<MM>*<XPN>*<MAG>*<Adjective>*<Substantive>}
-                            {<Location_|Possessive_|Title_|NounWithParticle_>}
-         Title_:                  {<NounPhrase><XSN>}
-         Possessive_:                   {<NounPhrase><JKG>}
-          Location_:                   {<NounPhrase><JKB>}
-          NounWithParticle_: {<NounPhrase><JX|PRT.*><JX|PRT.*>*}
+         NounPhrase:         {<MM>*<XPN>*<MAG>*<Adjective>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
     
          Component:          {<NounPhrase|Possessive><JC|CON.*>}
          Connection:         {<Component><Component>*<NounPhrase|Possessive>}
     
+         Possessive:         {<NounPhrase><JKG><NounPhrase>}
          Constituent:        {<NounPhrase|Possessive|Connection>}
     
          PrepositionalPhrase: {<Constituent|Object|Adjective>*<Constituent|Object|Adjective><PRP.*>}
@@ -57,6 +53,14 @@ class Chunker(object):
     # Title:              {<XSN>}
     # Possessive:         {<JKG>}
     # Particle:           {<JX|PRT.*>}
+
+    # NounPhrase:     {<MM>*<XPN>*<MAG>*<Adjective>*<Substantive>}
+    #                    {<Location_|Possessive_|Title_|NounWithParticle_>}
+    # Title_:                  {<NounPhrase><XSN>}
+    # Possessive_:                   {<NounPhrase><JKG>}
+    #  Location_:                   {<NounPhrase><JKB>}
+    #  NounWithParticle_: {<NounPhrase><JX|PRT.*><JX|PRT.*>*}
+
 
     #         Possessive:         {<NounPhrase><JKG><NounPhrase>}
 
@@ -119,9 +123,9 @@ class Chunker(object):
             if isinstance(t, nltk.Tree):
                 phrase = flattenPhrase(t, [])
                 if t.label() not in hiddenTags:
-                    phrase.append({"type": 'label', "word": t.label()})
+                    phrase.append({"type": 'tree', "tag": t.label()})
                 phrases.append(phrase)
             else:
-                phrases.append({"type": 'word', "word": t[0].strip()})
+                phrases.append({"type": 'word', "word": t[0].strip(), "tag": t[1]})
         #
         return phrases
