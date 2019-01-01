@@ -291,9 +291,17 @@ tm( # 에/에서 Location/Time marker
 tm( # 밖에 other-than particle
     tagPat=r'밖에:JX', repl=r'밖에:PRT',
     basePOS="JX",
-    rename="NounPhrase:OtherThan", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
-    refs={"htsk": "/unit-3-intermediate-korean-grammar/lessons-67-75/lesson-69/#691", },
+    rename="NounPhrase:Other Than", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
+    refs={"ttmik": "/lessons/level-2-lesson-13", "htsk": "/unit-3-intermediate-korean-grammar/lessons-67-75/lesson-69/#691", },
 )
+
+tm( # ~도 as-well/also/too particle
+    tagPat=r'도:JX', repl=r'도:PRT',
+    basePOS="JX",
+    rename="NounPhrase:As Well", annotation='Noun + 도 is similar to the English noun-qualifying phrases "in addition", "as well" and "too".',
+    refs={"htsk": "/unit-1-lessons-1-8/unit-1-lesson-4/#do", },
+)
+
 
 # ----- nominal forms -- transforming verbs & adjectives to nouns ---------  mapping (usually) to NOM.*
 
@@ -347,7 +355,7 @@ tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
 tm( # 때문에 "because X" prepositional suffix
     tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
     basePOS="MAG", descr="Adverbial phrase",
-    rename="PrepositionalPhrase:BecausePhrase",
+    rename="PrepositionalPhrase:Because Phrase",
     wikiKey='때문',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"},
 )
@@ -355,7 +363,7 @@ tm( # 때문에 "because X" prepositional suffix
 tm( # 에대해 "about X" prepositional suffix
     tagPat=r'에:JKB;(대하|관하):VV;([^:]+):(EC|ETM)', repl=r'에 \1\2:PRP',
     basePOS="EC", descr="Prepositional connecting suffix",
-    rename="PrepositionalPhrase:AboutPhrase",
+    rename="PrepositionalPhrase:About Phrase",
     wikiKey='대하다',
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
 )
@@ -364,7 +372,7 @@ tm( # 에대해 "about X" prepositional suffix
 tm( # 었 past-tense suffix
     tagPat=r'(았|었):EP', repl=r'\1:PSX',
     basePOS="EP", descr="Past-tense particle",
-    rename="VerbSuffix:PastTense",
+    rename="VerbSuffix:Past Tense",
     refs={"ttmik": "/lessons/l1l17", "htsk": "/unit1/unit-1-lessons-1-8/unit-1-lesson-5/#vpast"},
     notes="",
 )
@@ -372,7 +380,7 @@ tm( # 었 past-tense suffix
 tm( # ㄹ/를 거 이다 future-tense suffix pattern
     tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:PSX',
     basePOS="VX", descr="Future-tense predicate suffix",
-    rename="VerbSuffix:FutureTense",
+    rename="VerbSuffix:Future Tense",
     wikiKey="none",
     refs={"ttmik": "/lessons/level-2-lesson-1-future-tense", "htsk": "/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"},
     notes="",

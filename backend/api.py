@@ -84,6 +84,7 @@ def parse():
 
         # perform chunk parsing
         chunkTree = Chunker.parse(mappedPosList)
+        chunkTree.pprint()
 
         # apply any synthetic-tag-related node renamings
         TagMap.mapNodeNames(chunkTree)
@@ -242,7 +243,8 @@ if __name__ == "__main__":
 # 냉장고에 우유밖에 없어요
 
 
-#  needs work...
+#  need work...
 # 나는 매우 배가 고파서 김치를 많이 먹을 거야.
-
-
+# 나의 딸도 행복해. 저의 딸도 행복해요 - the possessive should nest inside the as-well??  are them some particles that are always last ina anoun-phrase?
+# 선생님 이에요. - no tree!
+# 김의 큰 집에서도 파티가 있어. - how to notate all the particles/suffixes in one noun-phrase, and can we fold it into the possessive phrase?

@@ -24,19 +24,18 @@ class Chunker(object):
        
          VerbSuffix:         {<EP|PSX.*>*<EF|EC>}
     
-         Location:           {<JKB>}
-         Title:              {<XSN>}
-         Preposition:        {<PRPxx>}
-         Particle:           {<JX|PRT.*>}
-    
          Noun:               {<NN.*|NR|SL>}       
          Pronoun:            {<NP>}
          Substantive:        {<Noun><Noun>*}
                              {<Pronoun>}
                              {<NominalizedVerb>}            
-         NounPhrase:         {<MM>*<XPN>*<MAG>*<Adjective>*<Substantive><Title>*<Location>*<Particle>*<Preposition>*}
+         NounPhrase:     {<MM>*<XPN>*<MAG>*<Adjective>*<Substantive>}
+                            {<Location_|Possessive_|Title_|NounWithParticle_>}
+         Title_:                  {<NounPhrase><XSN>}
+         Possessive_:                   {<NounPhrase><JKG>}
+          Location_:                   {<NounPhrase><JKB>}
+          NounWithParticle_: {<NounPhrase><JX|PRT.*><JX|PRT.*>*}
     
-         Possessive:         {<NounPhrase><JKG><NounPhrase>}
          Component:          {<NounPhrase|Possessive><JC|CON.*>}
          Connection:         {<Component><Component>*<NounPhrase|Possessive>}
     
@@ -54,10 +53,21 @@ class Chunker(object):
     
          """
 
+    # Location:           {<JKB>}
+    # Title:              {<XSN>}
+    # Possessive:         {<JKG>}
+    # Particle:           {<JX|PRT.*>}
+
+    #         Possessive:         {<NounPhrase><JKG><NounPhrase>}
+
     # annotations for above rules will appear in hover popups in displayedp arse tree
     ruleAnnotations = {
-         "Adjective":   {"descr": "An adjective formed from a descriptive verb-stem and an adverbial particle",
-                         "refs": {"ttmik": "/lessons/level-3-lesson-13", "htsk": "/unit1/unit-1-lessons-1-8/unit-1-lesson-4/#ua"},},
+        "Adjective":    {"descr": "An adjective formed from a descriptive verb-stem and an adverbial particle",
+                         "refs": {"ttmik": "/lessons/level-3-lesson-13",
+                                  "htsk": "/unit1/unit-1-lessons-1-8/unit-1-lesson-4/#ua"},},
+        "Possessive":    {"descr": "A noun followed by the '의' particle indicates possession, similar to 's in English",
+                         "refs": { "ttmik": "/lessons/l6l3",
+                                   "htsk": "unit1/unit-1-lessons-1-8/unit-1-lesson-3/#의" }, },
     }
 
     parser = None
@@ -112,6 +122,6 @@ class Chunker(object):
                     phrase.append({"type": 'label', "word": t.label()})
                 phrases.append(phrase)
             else:
-                phrases.append(('word', t[0].strip()))
+                phrases.append({"type": 'word', "word": t[0].strip()})
         #
         return phrases
