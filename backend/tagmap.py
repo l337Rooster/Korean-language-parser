@@ -87,6 +87,9 @@ class TagMap(object):
     # explicit labels for select individual phonemes:tag pairs
     POS_labels = {
         "의:JKG":    "Possessive\nParticle",
+        "겠:EP":     "Intension\nMarker",
+        "을:JKO":    "Object\nMarker",
+        "를:JKO":    "Object\nMarker",
     }
 
     def __init__(self, tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes):
@@ -102,7 +105,7 @@ class TagMap(object):
         self.descr = descr
         # add POS definition for synthetic tag, based on basePOS overriding detail descriptor
         baseDef = TagMap.partsOfSpeech[basePOS]
-        TagMap.partsOfSpeech[self.newTag] = (baseDef[0], posLabel or baseDef[1], descr or baseDef[2], baseDef[3])
+        TagMap.partsOfSpeech[self.newTag] = (posLabel or baseDef[0], baseDef[1], descr or baseDef[2], baseDef[3])
         # add any renamed rule annotation
         if ':' in nodeRename and annotation:
             Chunker.ruleAnnotations[nodeRename.split(':')[1]] = dict(descr=annotation, refs=refs)
@@ -383,7 +386,7 @@ tm( # 에대해 "about X" prepositional suffix
 
 tm( # 었 past-tense suffix
     tagPat=r'(았|었):EP', repl=r'\1:PSX',
-    basePOS="EP", descr="Past-tense particle",
+    basePOS="EP", posLabel="Past tense\nMarker", descr="Past-tense particle",
     nodeRename="VerbSuffix:Past Tense",
     refs={"ttmik": "/lessons/l1l17", "htsk": "/unit1/unit-1-lessons-1-8/unit-1-lesson-5/#vpast"},
     notes="",

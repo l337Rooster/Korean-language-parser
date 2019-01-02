@@ -193,7 +193,18 @@ if __name__ == "__main__":
     #
     run_dev_server()
 
-#  test phrases
+
+# Naver/Papago NMT API:
+# curl "https://openapi.naver.com/v1/papago/n2mt" \
+# -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" \
+# -H "X-Naver-Client-Id: P3YGzu2suEI1diX0DarY" \
+# -H "X-Naver-Client-Secret: 9yhV2ea0wC" \
+# -d "source=ko&target=en&text=만나서 반갑습니다." -v
+
+
+
+
+# #  test phrases
 #  저는 친구들과 함께 집에 갔어요  via Kormoran yields:
 
 # 그:NP;가:JKS;규칙:NNG;을:JKO;어기:VV;었:EP;기:ETN;때문:NNB;에:JKB;규칙:NNG;에:JKB;따라서:MAJ;그:NP;를:JKO;
@@ -233,7 +244,7 @@ if __name__ == "__main__":
 #
 #  그가 웜을 먹었기 때문에 아팠다.
 #  아침 겸 점심 맛있어요
-# 자네 덕분에 잘 놀았#
+# 자네 덕분에 잘 놀았어요
 # 학생 때 돈을 없었어요.
 # 제 책을 좋다
 # 저는 친구들과 함께 집에 갔어요
