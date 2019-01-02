@@ -93,6 +93,7 @@ class TagMap(object):
         "은:JKO":    "Subject\nMarker",
         "는:JKO":    "Subject\nMarker",
         "어요:EF":    "Polite\nEnding",
+        "습니다:EF":   "Formal\nEnding",
         "ㄴ:ETM":    "Adjectival\nSuffix",
         "는:ETM":    "Adjectival\nSuffix",
         "ㄹ:ETM":    "Adjectival\nSuffix",
@@ -358,6 +359,15 @@ tm( # 또는 "alternatives" connecting adverb(??)
     nodeRename="Connection:Alternatives",
 )
 
+# ----- adverbial predicate-phrase connectors --------  mapping to ADVEC.* & renaming AdverbialPhrase
+
+tm( # 어서 "reason" adverbial verb-phrase suffix
+    tagPat=r'어서:EC', repl=r'어서:ADVEC',
+    basePOS="EC", posLabel="Reason-giving\nSuffix", descr="Reason-giving connecting suffix",
+    nodeRename="AdverbialPhrase:Reason",
+    refs={},
+)
+
 # ----- prepositional phrase suffix patterns -------  mapping to PRP.* & renaming PrepositionalPhrase
 
 tm( # 전 "before X-ing" prepositional suffix
@@ -392,6 +402,8 @@ tm( # 에대해 "about X" prepositional suffix
     wikiKey='대하다',
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
 )
+
+
 # ------ predicate ending forms ------  mapping to PSX.* & renaming VerbSuffix
 
 tm( # 었 past-tense suffix

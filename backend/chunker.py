@@ -38,6 +38,7 @@ class Chunker(object):
          Constituent:        {<NounPhrase|Possessive|Connection>}
     
          PrepositionalPhrase: {<Constituent|Object|Adjective>*<Constituent|Object|Adjective><PRP.*>}
+         AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<ADVEC.*>}
     
          Complement:         {<Constituent><JKC>} 
          Object:             {<Constituent|PrepositionalPhrase><JKO>}  
@@ -45,7 +46,7 @@ class Chunker(object):
          Topic:              {<Constituent|PrepositionalPhrase><TOP.*>}
     
          Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
-         Predicate:          {<Adverb>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
+         Predicate:          {<Adverb|AdverbialPhrase>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
     
          """
 

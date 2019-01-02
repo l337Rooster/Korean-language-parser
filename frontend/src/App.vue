@@ -27,6 +27,9 @@
                     </tr>
                 </table>
             </div>
+            <div class="k-flexrow">
+                <div id="naver-translation" v-if="naverTranslation"><span>Naver/Papago translation: </span>{{naverTranslation}}</div>
+            </div>
 
             <div v-for="s in sentences">
                 <div v-if="!parsing" class="output-row k-flexrow k-table">
@@ -135,6 +138,7 @@ export default {
 		    parsing: false,
 		    sentence: "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
+            naverTranslation: "",
             sentences: [],
 		    wiktionaryUrl: null,
 		    parseButtonText: "Parse",
@@ -176,7 +180,7 @@ export default {
                 url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
-                data: {sentence: this.sentence},
+                data: {sentence: self.sentence},
                 success: function (response) {
                     self.parsing = false;
                     self.parseButtonText = "Parse";
@@ -193,6 +197,8 @@ export default {
                     self.error = "Parsing failed - " + textStatus + ", " + errorThrown;
                 }
             });
+            // and request translation
+            self.getNaverTranslation(self.sentence);
         },
 
         buildDisplay: function () {
@@ -412,6 +418,22 @@ export default {
             }
         },
 
+        getNaverTranslation: function(sentence) {
+            // call for Naver/Papago NMT translation into English
+            var self = this;
+            self.naverTranslation = "";
+            $.ajax({
+                method: "POST",
+                url: "http://localhost:9000/translate/", // http://localhost:9000
+                crossDomain: true,
+                data: {source: "ko", target: "en", text: sentence},
+                success: function (response) {
+                    if (response.result == "OK")
+                        self.naverTranslation = response.translatedText;
+                }
+            });
+        },
+
         popReferences: function(r, node, event) {
             // display node reference popup
             this.references = r;
@@ -545,6 +567,20 @@ document.onmouseup = function (e) {
     .output-row {
         width: 1200px;
         overflow: scroll;
+    }
+
+    #naver-translation {
+        padding-left: 50px;
+        padding-bottom: 20px;
+        padding-top: 8px;
+        color: #ab5405;
+        font-size: 14px;
+    }
+
+    #naver-translation span {
+        color: #696863;
+        font-size: 13px;
+        padding-right: 6px;
     }
 
     .pos-list {

@@ -3,9 +3,10 @@
 #
 __author__ = 'jwainwright'
 
-import re
+import re, json
 from pprint import pprint, pformat
 from collections import defaultdict, namedtuple
+import http.client, urllib.parse
 
 from flask import (Flask, request, abort, render_template, Response, jsonify)
 from flask_cors import CORS
@@ -187,6 +188,44 @@ def definition(word):
                                     text = [t for t in d['text'] if isHangulOrEnglish(t)]))
     #
     return jsonify(definitions)
+
+# ------------ Naver NMT translation request --------------
+
+@parserApp.route('/translate/', methods=['POST'])
+def tranlsate():
+    "call the Naver/Papago NMT API for a translation of the given text"
+    #
+    sentence = request.form.get('text')
+    if not sentence:
+        return jsonify(result="FAIL", msg="Missing text")
+    # make Naver API call
+    data = urllib.parse.urlencode({"source": "ko", "target": "en", "text": sentence, })
+    headers = {"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+               "X-Naver-Client-Id": "P3YGzu2suEI1diX0DarY",
+               "X-Naver-Client-Secret": "9yhV2ea0wC"}
+    conn = http.client.HTTPSConnection("openapi.naver.com")
+    conn.request("POST", "/v1/papago/n2mt", data, headers)
+    response = conn.getresponse()
+    #
+    if response.status != 200:
+        failReason = response.reason
+    else:
+        try:
+            data = response.read()
+            result = json.loads(data).get("message", {}).get("result")
+            if result:
+                translatedText = result.get('translatedText')
+                if translatedText:
+                    return jsonify(dict(result="OK", translatedText=translatedText))
+                else:
+                    failReason = "Naver result missing translateText"
+            else:
+                failReason = "Naver response missing result"
+        except:
+            failReason = "Ill-formed JSON response from Naver API"
+    conn.close()
+    # fall through to failure response
+    return jsonify(dict(result="FAIL", reason=failReason))
 
 #
 if __name__ == "__main__":
