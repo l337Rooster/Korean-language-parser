@@ -36,7 +36,7 @@ class TagMap(object):
         "NP":       ("Pronoun",     "Substantive",      "Pronoun",                          "체언	: 대명사"),
         "NR":       ("Noun",        "Substantive",      "Number",                           "체언	: 수사"),
         "VV":       ("Verb",        "Inflectional",     "Verb",                             "용언	: 동사"),
-        "VA":       ("Adjective",   "Inflectional",     "Descriptive verb / Adjective",     "용언	: 형용사"),
+        "VA":       ("Descriptive\nVerb", "Inflectional", "Descriptive verb / Adjective",   "용언	: 형용사"),
         "VX":       ("Verb",        "Inflectional",     "Auxiliary or supplimental verb",   "용언: 보조 용언"),
         "VCP":      ("Adjective",   "Inflectional",     "The positive copula - 이다",        "용언: 긍정 지정사"),
         "VCN":      ("Adjective",   "Inflectional",     "The negative copula - 아니다",       "용언: 부정 지정사"),
@@ -90,6 +90,15 @@ class TagMap(object):
         "겠:EP":     "Intension\nMarker",
         "을:JKO":    "Object\nMarker",
         "를:JKO":    "Object\nMarker",
+        "은:JKO":    "Subject\nMarker",
+        "는:JKO":    "Subject\nMarker",
+        "어요:EF":    "Polite\nEnding",
+        "ㄴ:ETM":    "Adjectival\nSuffix",
+        "는:ETM":    "Adjectival\nSuffix",
+        "ㄹ:ETM":    "Adjectival\nSuffix",
+        "과:JC":     "And/With\nParticle",
+        "이:JKS":    "Subject\nMarker",
+        "가:JKS":    "Subject\nMarker",
     }
 
     def __init__(self, tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes):
@@ -292,7 +301,7 @@ tm( # 들 pluralizer
 tm( # 에/에서 Location/Time marker
     tagPat=r'(에|에서):JKB', repl=r'\1:PRT',
     basePOS="JKB", posLabel="Time/Place\nMarker",
-    nodeRename="NounPhrase:Location/Time",
+    # nodeRename="NounPhrase:Location/Time",
     refs={"ttmik": "/lessons/l1l18", "htsk": "/unit-1-lessons-9-16/lesson-12/#kp3", },
 )
 
@@ -312,8 +321,9 @@ tm( # 밖에 other-than particle
 
 tm( # ~도 as-well/also/too particle
     tagPat=r'도:JX', repl=r'도:PRT',
-    basePOS="JX",
-    nodeRename="NounPhrase:As Well", annotation='Noun + 도 is similar to the English noun-qualifying phrases "in addition", "as well" and "too".',
+    basePOS="JX", posLabel="Also/Too\nSuffix",
+    #nodeRename="NounPhrase:As Well",
+    annotation='Noun + 도 is similar to the English noun-qualifying phrases "in addition", "as well" and "too".',
     refs={"htsk": "/unit-1-lessons-1-8/unit-1-lesson-4/#do", },
 )
 
@@ -344,7 +354,7 @@ tm( # 및 "also" connecting adverb(??)
 
 tm( # 또는 "alternatives" connecting adverb(??)
     tagPat=r'또는:MAG', repl=r'또는:CON',
-    basePOS="MAG", descr="Adverb connecting alternatives",
+    basePOS="MAG", posLabel="Alternates\nAdverb", descr="Adverb connecting alternatives",
     nodeRename="Connection:Alternatives",
 )
 
