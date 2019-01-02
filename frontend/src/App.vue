@@ -135,8 +135,9 @@ export default {
     // ------------ component local data ------------
 	data: function() {
 		return {
+		    APIHost: "http://localhost:9000", // ""
 		    parsing: false,
-		    sentence: "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: "나는 요리하는 것에 대해서 책을 썼어요.", // "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
             naverTranslation: "",
             sentences: [],
@@ -177,7 +178,7 @@ export default {
             self.parsing = true;
             $.ajax({
                 method: "POST",
-                url: 'http://localhost:9000/parse/', // '/parse/', // 'http://localhost:9000/parse/',
+                url: self.APIHost + '/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
                 data: {sentence: self.sentence},
@@ -388,7 +389,7 @@ export default {
                 var word = references.wikiKeys[node.word];
                 $.ajax({
                     method: "GET",
-                    url: "http://localhost:9000/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
+                    url: self.APIHost + "/definition/" + word, // "/definition/" + word, // "http://localhost:9000/definition/" + word,
                     crossDomain: true,
                     cache: false,
                     success: function (response) {
@@ -424,7 +425,7 @@ export default {
             self.naverTranslation = "";
             $.ajax({
                 method: "POST",
-                url: "http://localhost:9000/translate/", // http://localhost:9000
+                url: self.APIHost + "/translate/", // http://localhost:9000
                 crossDomain: true,
                 data: {source: "ko", target: "en", text: sentence},
                 success: function (response) {
