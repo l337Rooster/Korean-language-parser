@@ -58,11 +58,13 @@
                                     <template v-if="node.word">
                                         <tspan class="leaf-word" v-on:mouseenter="mouseEnterNode(node, $event)"
                                                                  v-on:click="nodeClick(node, $event)">{{ node.word }}</tspan>
-                                        <tspan :x="node.x + node.width / 2" dy="1.3em" class="leaf-tag">{{ tagDisplay(s, node.tag) }}</tspan>
+                                        <tspan :x="node.x + node.width / 2" :dy="terminalHeight - 4" class="leaf-tag">{{ node.tagLabel[0] }}</tspan>
+                                        <tspan v-if="node.tagLabel.length > 1"
+                                               :x="node.x + node.width / 2" :dy="tagLabelHeight" class="leaf-tag">{{ node.tagLabel[1] }}</tspan>
                                     </template>
                                     <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                                 </text>
-                                <line :x1="node.x + node.width / 2" :y1="node.y + 18" class="link-line"
+                                <line :x1="node.x + node.width / 2" :y1="node.y + tagLabelHeight * node.tagLabel.length + 6" class="link-line"
                                       :x2="node.x + node.width / 2" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
                             </g>
                             <g v-for="layer in s.layers">
@@ -86,6 +88,7 @@
                     <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{s.debugging.mappedPosList}}</pre></div>
                     <div class="k-row"><div class="k-cell">MorphemeGroups</div><pre class="k-cell">{{s.debugging.morphemeGroups}}</pre></div>
                     <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{s.debugging.phrases}}</pre></div>
+                    <div class="k-row"><div class="k-cell">ParseTree</div><pre class="k-cell">{{s.debugging.parseTree}}</pre></div>
                     <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{s.debugging.references}}</pre></div>
                 </div>
             </div>
@@ -130,7 +133,7 @@ export default {
 	data: function() {
 		return {
 		    parsing: false,
-		    sentence: "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
             sentences: [],
 		    wiktionaryUrl: null,
@@ -139,6 +142,7 @@ export default {
                           {"title": "Naver Papago translator", "slug": "https://papago.naver.com/?sk=ko&tk=en&st=${sentence}"},
                           {"title": "PNU spell-checker", "slug": "http://speller.cs.pusan.ac.kr"}],
 		    levelHeight: 50,
+            terminalHeight: 0, tagLabelHeight: 0,
             treeWidth: 0, treeHeight: 0,
             debugOutput: false,
             references: {},
@@ -241,7 +245,7 @@ export default {
                             ti += 1;
                             tci = 0;
                             ttw = self.getLayoutElement(t.word, "leaf-word");
-                            ttt = self.getLayoutElement(self.tagDisplay(s, t.tag), "leaf-tag");
+                            ttt = self.getLayoutElement(self.longestLabel(t.tagLabel), "leaf-tag");
                             var wWidth = ttw.getComputedTextLength(), tWidth = ttt.getComputedTextLength(),
                                 width = Math.max(wWidth, tWidth);
                             var dw = (width - wWidth) / 2;  // word-start delta
@@ -270,21 +274,24 @@ export default {
                 y += height + self.lineGap;
 
                 // lay out terminals line
+                self.terminalHeight = self.tagLabelHeight = height = 0;
                 for (var i = 0; i < terminals.length; i++) {
                     var t = terminals[i];
                     t.x = x;
                     t.y = y;
                     var tew = self.getLayoutElement(t.word, "leaf-word"),
-                        tet = self.getLayoutElement(self.tagDisplay(s, t.tag), "leaf-tag");
+                        tet = self.getLayoutElement(self.longestLabel(t.tagLabel), "leaf-tag");
                     t.width = Math.max(tew.getComputedTextLength(), tet.getComputedTextLength());
-                    console.log(t.word, t.x, t.width);
+                    self.terminalHeight = Math.max(self.terminalHeight, self.textBBox(t.word, "leaf-word").height)
+                    self.tagLabelHeight = Math.max(self.tagLabelHeight, self.textBBox(t.tagLabel[0], "leaf-tag").height)
+                    height = Math.max(height, self.terminalHeight + 4 + self.tagLabelHeight * (t.tagLabel.length + 1));
                     x += t.width + self.terminalGap;
                 }
                 //
                 s.terminals = terminals;
 
                 // compute tree layout coords
-                y += self.lineGap + self.levelHeight;
+                y += self.lineGap + height;
                 // draw an inverted tree from the terminal layer down; start at layer above terminals,
                 //   find parent & siblings & layout parent midway between siblings
                 var layerIDs = s.parseTree.layers,
@@ -342,6 +349,11 @@ export default {
             return t;
         },
 
+        longestLabel: function(tagLabel) {
+            // tag labels are one or two lines, in an array of lines, return longest label line (for layout computations)
+            return tagLabel.length == 1 || tagLabel[0].length > tagLabel[1].length ? tagLabel[0] : tagLabel[1];
+        },
+
         textBBox: function (text, cls) {
             // return bounding box for text rendered in given class
             if (text == '')
@@ -357,12 +369,6 @@ export default {
             //  construct dictionary form of verb if needed
             var word = node.tag[0] == 'V' && node.word[node.word.length - 1] != '다' ? node.word + '다' : node.word;
             this.wiktionaryUrl = "https://en.wiktionary.org/wiki/" + word;
-        },
-
-        tagDisplay: function (s, tag) {
-            // return displayable
-            return tag != '' ? s.references.posTable[tag].wikiPOS : '';
-            // return tag.split("_")[0];
         },
 
         showReferences: function(node, event) {

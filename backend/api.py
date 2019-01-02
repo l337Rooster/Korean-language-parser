@@ -133,7 +133,10 @@ def buildParseTree(chunkTree):
             allNodes.append(node)
             return node
         else:
-            node = dict(type='word', word=chunk[0].strip(), tag=chunk[1], children=[], parent=parent, level=-1, layer=0)
+            word = chunk[0].strip()
+            tag = chunk[1]
+            tagLabel = TagMap.POS_labels.get(word + ":" + tag, TagMap.partsOfSpeech.get(tag)[0]).split('\n')
+            node = dict(type='word', word=word, tag=tag, tagLabel=tagLabel, children=[], parent=parent, level=-1, layer=0)
             node['id'] = id(node)
             terminals.append(node)
             allNodes.append(node)
@@ -259,3 +262,4 @@ if __name__ == "__main__":
 # 김의 큰 집에서도 파티가 있어. - how to notate all the particles/suffixes in one noun-phrase, and can we fold it into the possessive phrase?
 #     김의 큰 집에서도 파티가 있었어
 # 음식과 음료가 있는 파티가 있을 것이다. - has two subjects, both because they are associated with 있다 ??  how to annotate?
+# 성함이 어떻게 되세요? - the 게 되 are label together as an aixialiay verb

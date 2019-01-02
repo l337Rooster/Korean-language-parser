@@ -80,27 +80,32 @@ class TagMap(object):
         # note that synthetic tags defined below include a mapping to one of the above basic POS or the additional labeling tags below
 
         # extra synthetic POS, mostly to label suffix phrases built from the mapping rules
-        "AVS":      ("Suffix",      "Post-position",    "Adverbial suffix",                 ""),
-        "VMS":      ("Suffix",      "Post-position",    "Verb-modifying suffix",            ""),
+        "AVS":      ("Adverbial\nsuffix",       "Post-position",    "Adverbial suffix",                 ""),
+        "VMS":      ("Verb-modifying\nsuffix",  "Post-position",    "Verb-modifying suffix",            ""),
     }
 
-    def __init__(self, tagPat, repl, basePOS, descr, rename, annotation, wikiKey, refs, notes):
+    # explicit labels for select individual phonemes:tag pairs
+    POS_labels = {
+        "의:JKG":    "Possessive\nParticle",
+    }
+
+    def __init__(self, tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes):
         self.tagPat = tagPat
         # uniquify synthetic tag & record it if this mapping includes a chunktree node renaming
         self.repl = repl + ("_%d" % TagMap.tagOrdinal); TagMap.tagOrdinal += 1
         self.newTag = self.repl.split(':')[1] # extract this pattern's synthetic tag
-        self.rename = rename; self.annotation = annotation
+        self.nodeRename = nodeRename; self.annotation = annotation
         self.wikiKey = wikiKey
         self.refs = refs
         self.notes = notes
-        self.basePos = basePOS
+        self.basePos = basePOS; self.posLabel = posLabel
         self.descr = descr
         # add POS definition for synthetic tag, based on basePOS overriding detail descriptor
         baseDef = TagMap.partsOfSpeech[basePOS]
-        TagMap.partsOfSpeech[self.newTag] = (baseDef[0], baseDef[1], descr or baseDef[2], baseDef[3])
+        TagMap.partsOfSpeech[self.newTag] = (baseDef[0], posLabel or baseDef[1], descr or baseDef[2], baseDef[3])
         # add any renamed rule annotation
-        if ':' in rename and annotation:
-            Chunker.ruleAnnotations[rename.split(':')[1]] = dict(descr=annotation, refs=refs)
+        if ':' in nodeRename and annotation:
+            Chunker.ruleAnnotations[nodeRename.split(':')[1]] = dict(descr=annotation, refs=refs)
 
     @classmethod
     def completeInit(cls):
@@ -110,8 +115,8 @@ class TagMap(object):
         # build node-name mapping table & extract any refs & wikiKeys
         #   maps uniquified synthetic tag to tables that map ancestor node label to renamed label
         for tm in cls.tagMappings.values():
-            if tm.rename and ':' in tm.rename:
-                old, new = tm.rename.split(':')
+            if tm.nodeRename and ':' in tm.nodeRename:
+                old, new = tm.nodeRename.split(':')
                 cls.nodeNameMaps[tm.newTag][old] = new
             if tm.wikiKey:
                 cls.wikiKeyMap[tm.newTag] = tm.wikiKey
@@ -155,7 +160,7 @@ class TagMap(object):
 
     @classmethod
     def mapNodeNames(cls, tree):
-        "maps NLTK ChunkTree node names under tag-mapping 'rename' definitions"
+        "maps NLTK ChunkTree node names under tag-mapping 'nodeRename' definitions"
         #
         def walkTree(t, parentList):
             # walk tree looking for terminal nodes with tags that are in the nodeNameMap table
@@ -234,9 +239,9 @@ class TagMap(object):
 
 
 # utility tag-mapping definition function
-def tm(tagPat=r'', repl=r'', basePOS=None, descr=None, rename="", annotation="", wikiKey=None, refs=(), notes=None):
+def tm(tagPat=r'', repl=r'', basePOS=None, posLabel=None, descr=None, nodeRename="", annotation="", wikiKey=None, refs=(), notes=None):
     "build & store a tag-map entry"
-    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, descr, rename, annotation, wikiKey, refs, notes)
+    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes)
 
 # ================================== tag-mapping specs ==============================
 
@@ -266,39 +271,46 @@ tm(  # noun-derived adjective,  - combine XR|NN & XSA suffix into a single VAND 
 
 # ----- dependent (aka bound) noun forms --------  map to DNF.* + DependentNounForm node rename
 
-# ----- particles --------  map to PRT.* + NounPhrase node rename
+# ----- particles --------  usually map to PRT.* + NounPhrase node rename
 
 tm( # 은/는 topic marker
     tagPat=r'(은|는):JX', repl=r'\1:TOP',
-    basePOS="JX", descr="Topic-marker",
-    rename="NounPhrase:Topic",
+    basePOS="JX", posLabel="Topic\nMarker",
+    nodeRename="NounPhrase:Topic", descr="Topic-marker",
 )
 
 tm( # 들 pluralizer
     tagPat=r'들:(TM|XSN)', repl=r'들:PRT',
-    basePOS="VA", descr="Pluralizer",
-    rename="NounPhrase:Plural",
+    basePOS="VA", posLabel="Plural\nParticle", descr="Pluralizer",
+    nodeRename="NounPhrase:Plural",
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-12/#kp1", },
 )
 
 tm( # 에/에서 Location/Time marker
     tagPat=r'(에|에서):JKB', repl=r'\1:PRT',
-    basePOS="JKB",
-    rename="NounPhrase:Location/Time",
+    basePOS="JKB", posLabel="Time/Place\nMarker",
+    nodeRename="NounPhrase:Location/Time",
     refs={"ttmik": "/lessons/l1l18", "htsk": "/unit-1-lessons-9-16/lesson-12/#kp3", },
+)
+
+tm( # 에게:JKB "to/at/for" particle
+    tagPat=r'(에게|한테|께):JKB', repl=r'\1:PRT',
+    basePOS="JKB",
+    nodeRename="NounPhrase:To/for/at",
+    refs={"ttmik": "/lessons/level-2-lesson-7", "htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp3", },
 )
 
 tm( # 밖에 other-than particle
     tagPat=r'밖에:JX', repl=r'밖에:PRT',
     basePOS="JX",
-    rename="NounPhrase:Other Than", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
+    nodeRename="NounPhrase:Other Than", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
     refs={"ttmik": "/lessons/level-2-lesson-13", "htsk": "/unit-3-intermediate-korean-grammar/lessons-67-75/lesson-69/#691", },
 )
 
 tm( # ~도 as-well/also/too particle
     tagPat=r'도:JX', repl=r'도:PRT',
     basePOS="JX",
-    rename="NounPhrase:As Well", annotation='Noun + 도 is similar to the English noun-qualifying phrases "in addition", "as well" and "too".',
+    nodeRename="NounPhrase:As Well", annotation='Noun + 도 is similar to the English noun-qualifying phrases "in addition", "as well" and "too".',
     refs={"htsk": "/unit-1-lessons-1-8/unit-1-lesson-4/#do", },
 )
 
@@ -324,13 +336,13 @@ tm( # 는것 nominalizer
 tm( # 및 "also" connecting adverb(??)
     tagPat=r'및:MAG', repl=r'및:CON',
     basePOS="MAG", descr="Connecting adverb",
-    rename="Connection:Also",
+    nodeRename="Connection:Also",
 )
 
 tm( # 또는 "alternatives" connecting adverb(??)
     tagPat=r'또는:MAG', repl=r'또는:CON',
     basePOS="MAG", descr="Adverb connecting alternatives",
-    rename="Connection:Alternatives",
+    nodeRename="Connection:Alternatives",
 )
 
 # ----- prepositional phrase suffix patterns -------  mapping to PRP.* & renaming PrepositionalPhrase
@@ -338,7 +350,7 @@ tm( # 또는 "alternatives" connecting adverb(??)
 tm( # 전 "before X-ing" prepositional suffix
     tagPat=r'전:NNG;에:JKB', repl=r'전에:PRP',
     basePOS="MAG", descr="Adverbial phrase",
-    rename="PrepositionalPhrase:Before",
+    nodeRename="PrepositionalPhrase:Before",
     wikiKey='전',
     refs={"ttmik": "/lessons/level-3-lesson-10", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/#242"},
     notes="a time prepositional phrase suffix attached to a series of noun forms to indicate a time before that implied associated with the noun sequence",
@@ -347,7 +359,7 @@ tm( # 전 "before X-ing" prepositional suffix
 tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
     tagPat=r'(후|다음|뒤):NNG;에:JKB', repl=r'\1에:PRP',
     basePOS="MAG", descr="Adverbial phrase",
-    rename="PrepositionalPhrase:After",
+    nodeRename="PrepositionalPhrase:After",
     wikiKey='후',
     refs={"ttmik": "/lessons/level-3-lesson-19;ticket=153893", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/"},
 )
@@ -355,7 +367,7 @@ tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
 tm( # 때문에 "because X" prepositional suffix
     tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
     basePOS="MAG", descr="Adverbial phrase",
-    rename="PrepositionalPhrase:Because Phrase",
+    nodeRename="PrepositionalPhrase:Because Phrase",
     wikiKey='때문',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"},
 )
@@ -363,7 +375,7 @@ tm( # 때문에 "because X" prepositional suffix
 tm( # 에대해 "about X" prepositional suffix
     tagPat=r'에:JKB;(대하|관하):VV;([^:]+):(EC|ETM)', repl=r'에 \1\2:PRP',
     basePOS="EC", descr="Prepositional connecting suffix",
-    rename="PrepositionalPhrase:About Phrase",
+    nodeRename="PrepositionalPhrase:About Phrase",
     wikiKey='대하다',
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
 )
@@ -372,7 +384,7 @@ tm( # 에대해 "about X" prepositional suffix
 tm( # 었 past-tense suffix
     tagPat=r'(았|었):EP', repl=r'\1:PSX',
     basePOS="EP", descr="Past-tense particle",
-    rename="VerbSuffix:Past Tense",
+    nodeRename="VerbSuffix:Past Tense",
     refs={"ttmik": "/lessons/l1l17", "htsk": "/unit1/unit-1-lessons-1-8/unit-1-lesson-5/#vpast"},
     notes="",
 )
@@ -380,7 +392,7 @@ tm( # 었 past-tense suffix
 tm( # ㄹ/를 거 이다 future-tense suffix pattern
     tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:PSX',
     basePOS="VX", descr="Future-tense predicate suffix",
-    rename="VerbSuffix:Future Tense",
+    nodeRename="VerbSuffix:Future Tense",
     wikiKey="none",
     refs={"ttmik": "/lessons/level-2-lesson-1-future-tense", "htsk": "/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"},
     notes="",
@@ -389,7 +401,7 @@ tm( # ㄹ/를 거 이다 future-tense suffix pattern
 tm( # 고 싶다 want-to suffix pattern
     tagPat=r'고:EC;싶:VX', repl=r'고 싶:PSX',
     basePOS="VX", descr="Want-to predicate suffix",
-    rename="VerbSuffix:WantTo",
+    nodeRename="VerbSuffix:WantTo",
     wikiKey="싶다",
     refs={"ttmik": "/lessons/l1l13", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-17/#co5"},
     notes="",
@@ -401,7 +413,7 @@ TagMap.completeInit()
 
 # tm(  #
 #     tagPat=r'', repl=r':NSX',
-#     rename="NounSuffix:",
+#     nodeRename="NounSuffix:",
 #     wikiKey='',
 #     refs=("ttmik:", "htsk:"),
 #     notes="",
