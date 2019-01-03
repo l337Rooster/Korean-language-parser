@@ -306,6 +306,7 @@ if __name__ == "__main__":
 #   but multiple particles in a noun-phrase mess: 김의 큰 집에서도 파티가 있었어
 
 #  need work...
+# 말포이는 해리와 론이 조금 피곤해 보이기는 했다.
 # 나는 매우 배가 고파서 김치를 많이 먹을 거야.
 # 나의 딸도 행복해. 저의 딸도 행복해요 - the possessive should nest inside the as-well??  are them some particles that are always last ina anoun-phrase?
 # 선생이에요. - no tree!
