@@ -86,6 +86,7 @@ class TagMap(object):
 
     # explicit labels for select individual phonemes:tag pairs
     POS_labels = {
+        "이:VCP":    "Verb\nTo be",
         "의:JKG":    "Possessive\nParticle",
         "겠:EP":     "Intension\nMarker",
         "을:JKO":    "Object\nMarker",
@@ -93,6 +94,11 @@ class TagMap(object):
         "은:JKO":    "Subject\nMarker",
         "는:JKO":    "Subject\nMarker",
         "어요:EF":    "Polite\nEnding",
+        "아요:EF":    "Polite\nEnding",
+        "에요:EF":    "Polite\nEnding",
+        "야:EF":     "Informal\nEnding",
+        "아:EF":     "Informal\nEnding",
+        "다:EF":     "Plain-style\nEnding",
         "습니다:EF":   "Formal\nEnding",
         "ㄴ:ETM":    "Adjectival\nSuffix",
         "는:ETM":    "Adjectival\nSuffix",
@@ -100,6 +106,8 @@ class TagMap(object):
         "과:JC":     "And/With\nParticle",
         "이:JKS":    "Subject\nMarker",
         "가:JKS":    "Subject\nMarker",
+        "으시:EP":    "Honorific\nMarker",
+        "시:EP":     "Honorific\nMarker",
     }
 
     def __init__(self, tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes):
@@ -416,7 +424,7 @@ tm( # 었 past-tense suffix
 
 tm( # ㄹ/를 거 이다 future-tense suffix pattern
     tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:PSX',
-    basePOS="VX", descr="Future-tense predicate suffix",
+    basePOS="VX", posLabel="Future tense\nAuxiliary", descr="Future-tense predicate suffix",
     nodeRename="VerbSuffix:Future Tense",
     wikiKey="none",
     refs={"ttmik": "/lessons/level-2-lesson-1-future-tense", "htsk": "/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"},

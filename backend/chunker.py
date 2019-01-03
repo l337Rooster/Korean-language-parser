@@ -18,7 +18,7 @@ class Chunker(object):
          Adverb:             {<MAG>}
          NounDerivedAdjective: {<VAND.*>}
          Adjective:          {<Adverb>*<VA|VV|NounDerivedAdjective|NounDerivedVerb><ETM>}
-         DescriptiveVerb:    {<VA>}
+         DescriptiveVerb:    {<VA|NounDerivedAdjective>}
          Verb:               {<VV|VCN|NounDerivedVerb|DescriptiveVerb>}
          NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
        
