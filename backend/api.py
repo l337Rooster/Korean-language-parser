@@ -170,7 +170,7 @@ def buildParseTree(chunkTree):
 
 wiktionary = WiktionaryParser()
 # include Korean parts-of-speech
-for pos in ('suffix', 'particle', 'determiners', 'counters', 'morphemes', ):
+for pos in ('suffix', 'particle', 'determiners', 'counters', 'morphemes', 'prefix', ):
     wiktionary.include_part_of_speech(pos)
 
 # hangul & english unicode ranges
