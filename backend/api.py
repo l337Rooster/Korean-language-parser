@@ -314,3 +314,4 @@ if __name__ == "__main__":
 #     김의 새로운 집에서도 음식과 음료가 있을 거예요.
 # 음식과 음료가 있는 파티가 있을 것이다. - has two subjects, both because they are associated with 있다 ??  how to annotate?
 # 성함이 어떻게 되세요? - the 게 되 are label together as an aixialiay verb
+# 병아리나 물고기도 키워 본 적 없어요?  - gets 키워 본 intermixed wrongly
