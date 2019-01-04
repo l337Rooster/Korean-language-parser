@@ -136,7 +136,8 @@ def buildParseTree(chunkTree):
         else:
             word = chunk[0].strip()
             tag = chunk[1]
-            tagLabel = TagMap.POS_labels.get(word + ":" + tag, TagMap.partsOfSpeech.get(tag)[0]).split('\n')
+            tm = TagMap.POS_labels.get(word + ":" + tag)
+            tagLabel = (tm.posLabel if tm else TagMap.partsOfSpeech.get(tag)[0]).split('\n')
             node = dict(type='word', word=word, tag=tag, tagLabel=tagLabel, children=[], parent=parent, level=-1, layer=0)
             node['id'] = id(node)
             terminals.append(node)
@@ -182,7 +183,9 @@ def definition(word):
     "return the wiktionary definition(s) for the given word"
     definitions = []
     # fetch defs, reformat layout & filter out hanja (for now)
+    print("sending def request to wiktionary for ", word)
     for defs in wiktionary.fetch(word, 'korean'):
+        print("   received wiktionary response for ", word)
         for d in defs['definitions']:
             definitions.append(dict(partOfSpeech = d['partOfSpeech'].capitalize(),
                                     text = [t for t in d['text'] if isHangulOrEnglish(t)]))

@@ -84,32 +84,8 @@ class TagMap(object):
         "VMS":      ("Verb-modifying\nsuffix",  "Post-position",    "Verb-modifying suffix",            ""),
     }
 
-    # explicit labels for select individual phoneme:tag pairs
-    POS_labels = {
-        "이:VCP":    "Verb\nTo be",
-        "의:JKG":    "Possessive\nParticle",
-        "겠:EP":     "Intension\nMarker",
-        "을:JKO":    "Object\nMarker",
-        "를:JKO":    "Object\nMarker",
-        "은:JKO":    "Subject\nMarker",
-        "는:JKO":    "Subject\nMarker",
-        "어요:EF":    "Polite\nEnding",
-        "아요:EF":    "Polite\nEnding",
-        "에요:EF":    "Polite\nEnding",
-        "야:EF":     "Informal\nEnding",
-        "아:EF":     "Informal\nEnding",
-        "다:EF":     "Plain-style\nEnding",
-        "습니다:EF":   "Formal\nEnding",
-        "ㄴ:ETM":    "Adjectival\nSuffix",
-        "는:ETM":    "Adjectival\nSuffix",
-        "ㄹ:ETM":    "Adjectival\nSuffix",
-        "과:JC":     "And/With\nParticle",
-        "이:JKS":    "Subject\nMarker",
-        "가:JKS":    "Subject\nMarker",
-        "으시:EP":    "Honorific\nMarker",
-        "시:EP":     "Honorific\nMarker",
-        "네요:EF":    "Surprise\nEnding",
-    }
+    # explicit labels for select individual phoneme:tag pairs, filled in by TagMap::__init__ for un-mapped definitions
+    POS_labels = { }
 
     def __init__(self, tagPat=r'', repl=r'', basePOS=None, posLabel=None, descr=None, nodeRename="", annotation="", wikiKey=None, refs=(), notes=None):
         self.tagPat = tagPat
@@ -124,7 +100,10 @@ class TagMap(object):
         else:
             # a simple morpheme:tag metadata definition, add to POS_label table
             self.repl = self.newTag = self.nodeRename = self.basePos = None
-            TagMap.POS_labels[tagPat] = self
+            # allow alternate morpheme patterns in this case - (m1|m2|..|mn):TAG, splitting them into separate singleton morpheme:TAG entries
+            morphemes, tag = tagPat.split(':')
+            for m in morphemes.strip('(').strip(')').split('|'):
+                TagMap.POS_labels[m + ':' + tag] = self
         self.wikiKey = wikiKey
         self.refs = refs
         self.notes = notes
@@ -195,11 +174,16 @@ class TagMap(object):
     def mapNodeNames(cls, tree):
         "maps NLTK ChunkTree node names under tag-mapping 'nodeRename' definitions"
         #
+        def camelCaseSpacer(label):
+            matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', label)
+            return ' '.join(m.group(0) for m in matches)
+        #
         def walkTree(t, parentList):
             # walk tree looking for terminal nodes with tags that are in the nodeNameMap table
             #   search up for ancestor node with label in the above-selected nodeNameMap entry, taking label rename
             for i, st in enumerate(t):
                 if isinstance(st, nltk.Tree):
+                    st.set_label(camelCaseSpacer(st.label()))
                     walkTree(st, [st] + parentList)
                 else:
                     nm = cls.nodeNameMaps.get(st[1])
@@ -271,16 +255,29 @@ class TagMap(object):
         return dict(references=references, wikiKeys=wikiKeys, posTable=posTable, ruleAnnotations=ruleAnnotations, )
 
 
-# utility tag-mapping definition function
-# def tm(tagPat=r'', repl=r'', basePOS=None, posLabel=None, descr=None, nodeRename="", annotation="", wikiKey=None, refs=(), notes=None):
-#     "build & store a tag-map entry"
-#     TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes)
+# ================================== Custom POS tag definitions ==============================
 
 tm = TagMap
 
-# ================================== tag-mapping specs ==============================
+# ---------- labeling & reference metadata for specific, un-mapped morpheme:TAG pairs ----------
 
-# synthetic tag patterns -
+tm(tagPat="이:VCP",          posLabel="Verb\nTo be", notes="The positive copula, to be. Always attached directly to the equated noun form")
+tm(tagPat="의:JKG",          posLabel="Possessive\nParticle", notes="The possessive suffix, attached to the owning entity, indicates ownership of the following entity")
+tm(tagPat="겠:EP",           posLabel="Intension\nMarker", refs={})
+tm(tagPat="(을|를):JKO",      posLabel="Object\nMarker", refs={})
+tm(tagPat="(은|는):JKO",      posLabel="Subject\nMarker", )
+tm(tagPat="(아요|어요|에요):EF", posLabel="Polite\nEnding", )
+tm(tagPat="(야|아):EF",       posLabel="Informal\nEnding", )
+tm(tagPat="다:EF",           posLabel="Plain-form\nEnding", )
+tm(tagPat="습니다:EF",        posLabel="Formal\nEnding", )
+tm(tagPat="(ㄴ|은|는|ㄹ):ETM", posLabel="Adjectival\nSuffix", )
+tm(tagPat="(와|과):JC",       posLabel="And/With\nParticle", )
+tm(tagPat="(이|가):JKS",      posLabel="Subject\nMarker", )
+tm(tagPat="(으시|시):EP",      posLabel="Honorific\nMarker", )
+tm(tagPat="네요:EF",          posLabel="Surprised\nEnding", )
+
+# -------------- synthetic tag patterns ----------------
+
 #    patterns of these word:POC strings are preprocessed to define new
 #    synthetic word:POC tags used in the chunking grammar below
 #  at present, these are applied in the order longest-to-shortest pattern, we should probably make this a listfor explicit ordering
@@ -289,10 +286,6 @@ tm = TagMap
 # assist in unambiguous mapping to the associated metadata in chuck-tree post-processing.  So, any references to these
 # new tags in the chunking grammar MUST be included with a trailing ".*" in the chunking grammar so that it
 #  matches all generated integer-suffixed variations of the base synthetic tag
-
-
-# tm(tagPat="이:VCP", posLabel="Verb\nTo be", descr="The positive copula, to be. Always attached directly to the equated noun form")
-# tm(tagPat="의:JKG", posLabel="Possessive\nParticle", descr="The possessive suffix, attached to the owning entity, indicates ownership of the following entity")
 
 # ----- tag-sequence foldings --------
 
@@ -407,7 +400,7 @@ tm( # 전 "before X-ing" prepositional suffix
 
 tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
     tagPat=r'(후|다음|뒤):NNG;에:JKB', repl=r'\1에:PRP',
-    basePOS="MAG", descr="Adverbial phrase",
+    basePOS="MAG", descr="Adverbial phrase", posLabel="After\nSuffix",
     nodeRename="PrepositionalPhrase:After",
     wikiKey='후',
     refs={"ttmik": "/lessons/level-3-lesson-19;ticket=153893", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/"},
@@ -429,7 +422,7 @@ tm( # 에대해 "about X" prepositional suffix
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
 )
 
-# ------ specific auxiliary verb forms ---------  usually mapping to EC + AUX.*
+# ------ auxiliary verb forms ---------  usually mapping to AUX.*
 
 tm( # ~아/어 보이다 to seem/look like
     tagPat=r'(아|어|여):EC;보이:(VV|VX)', repl=r'\1 보이:AUX',
@@ -447,7 +440,7 @@ tm( # ~아/어 보다 to try
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-32/#323"},
 )
 
-# ------ specific nominal verb forms V 기 ... ---------  usually mapping to NMF.*
+# ------ nominal verb forms V 기 ... ---------  usually mapping to NMF.*
 
 tm( # ~기는 하- indeed
     tagPat=r'기:ETN;는:JX;하:VX', repl=r'기는 하:NMF',
@@ -494,68 +487,6 @@ tm( # 고 싶다 want-to suffix pattern
 # ------------
 
 TagMap.completeInit()
-
-# tm(  #
-#     tagPat=r'', repl=r':NSX',
-#     nodeRename="NounSuffix:",
-#     wikiKey='',
-#     refs=("ttmik:", "htsk:"),
-#     notes="",
-# )
-#
-
-# # -------- parts-of-speech descriptors ---------------
-#
-# partsOfSpeech = {
-#   #  POS-tag    (Wiktionary POS, Khaiii class,         Detail,                          Korean class:POS)
-#     "NNG":      ("Noun",        "Substantive",      "General noun",                     "체언: 일반 명사"),
-#     "NNP":      ("Proper Noun", "Substantive",      "Proper noun",                      "체언: 고유 명사"),
-#     "NNB":      ("Noun",        "Substantive",      "Bound noun, e.g. 것",               "체언: 의존 명사"),
-#     "NP":       ("Pronoun",     "Substantive",      "Pronoun",                          "체언	: 대명사"),
-#     "NR":       ("Noun",        "Substantive",      "Number",                           "체언	: 수사"),
-#     "VV":       ("Verb",        "Inflectional",     "Verb",                             "용언	: 동사"),
-#     "VA":       ("Adjective",   "Inflectional",     "Descriptive verb / Adjective",     "용언	: 형용사"),
-#     "VX":       ("Verb",        "Inflectional",     "Auxiliary or supplimental verb",   "용언: 보조 용언"),
-#     "VCP":      ("Adjective",   "Inflectional",     "The positive copula - 이다",        "용언: 긍정 지정사"),
-#     "VCN":      ("Adjective",   "Inflectional",     "The negative copula - 아니다",       "용언: 부정 지정사"),
-#     "MM":       ("Determiner",  "Modifier",         "Determiner",                       "수식언: 관형사"),
-#     "MAG":      ("Adverb",      "Modifier",         "General adverb",                   "수식언: 일반 부사"),
-#     "MAJ":      ("Adverb",      "Modifier",         "Joining adverb, e.g. 그래서",        "수식언: 접속 부사"),
-#     "IC":       ("Interjection","Independent",      "Interjection e.g. 야!",             "독립언: 감탄사"),
-#     "JKS":      ("Particle",    "Post-position",    "Subject-marking particle",         "관계언: 주격 조사"),
-#     "JKC":      ("Particle",    "Post-position",    "Subject-marker for complement words", "관계언: 보격 조사"),
-#     "JKG":      ("Particle",    "Post-position",    "Possessive-marker 의",              "관계언: 관형격 조사"),
-#     "JKO":      ("Particle",    "Post-position",    "Object-marking particle",          "관계언: 목적격 조사"),
-#     "JKB":      ("Particle",    "Post-position",    "Adverbial particle",               "관계언: 부사격 조사"),
-#     "JKV":      ("Particle",    "Post-position",    "Vocative case marker",             "관계언: 호격 조사"),
-#     "JKQ":      ("Particle",    "Post-position",    "Quotation marker",                 "관계언: 인용격 조사"),
-#     "JX":       ("Particle",    "Post-position",    "Topic-marking particle",           "관계언: 보조사"),
-#     "EP":       ("Suffix",      "Dependent form",   "Suffix-head, e.g. 었 or 시",        "의존 형태	: 선어말 어미"),
-#     "EF":       ("Suffix",      "Dependent form",   "Predicate-closing suffix",         "의존 형태	: 종결 어미"),
-#     "EC":       ("Suffix",      "Dependent form",   "Verb/Auxiliary connecting suffix", "의존 형태	: 연결 어미"),
-#     "ETN":      ("Suffix",      "Dependent form",   "Verb-nominalizing suffix, e.g. 기", "의존 형태: 명사형 전성 어미"),
-#     "ETM":      ("Suffix",      "Dependent form",   "Verb-to-adjective transforming suffix, e.g. 은", "의존 형태: 관형형 전성 어미"),
-#     "XPN":      ("Prefix",      "Dependent form",   "Substantive prefix",               "의존 형태	: 체언 접두사"),
-#     "XSN":      ("Suffix",      "Dependent form",   "Noun-modifying suffix, e.g. 들, 님", "의존 형태: 명사 파생 접미사"),
-#     "XSV":      ("Suffix",      "Dependent form",   "Verb-forming suffix, e.g. ~하다",    "의존 형태: 동사 파생 접미사"),
-#     "XSA":      ("Suffix",      "Dependent form",   "Adjective-forming suffix",         "의존 형태: 형용사 파생 접미사"),
-#     "XR":       ("Noun",        "Dependent form",   "Noun root for formed verb or adjective", "의존 형태: 어근"),
-#     "SF":       ("Punctuation", "Mark",             "Period, question mark, exclamation mark", "기호; 마침표, 물음표, 느낌표"),
-#     "SP":       ("Punctuation", "Mark",             "Comma, colon, semicolon, slash",   "기호: 쉼표, 가운뎃점, 콜론, 빗금"),
-#     "SS":       ("Punctuation", "Mark",             "Quotes, parentheses, dash",        "기호: 따옴표, 괄호표, 줄표"),
-#     "SE":       ("Punctuation", "Mark",             "Ellipsis",                         "기호: 줄임표"),
-#     "SO":       ("Punctuation", "Mark",             "Hyphen, tilde",                    "기호: 붙임표(물결, 숨김, 빠짐)"),
-#     "SL":       ("Foreign",     "Mark",             "Word in foreign language (non-Hangul)", "기호: 외국어"),
-#     "SH":       ("Chinese",     "Mark",             "Chinese characters",               "기호: 한자"),
-#     "SW":       ("Symbol",      "Mark",             "Other symbols (logics, math symbols, currency symbols, etc.)", "기호: 기타 기호(논리, 수학 기호, 화폐 기호 등)"),
-#     "SWK":      ("Letter",      "Mark",             "Hangul character (자모)",            "기호: 한글 자소"),
-#     "SN":       ("Numeral",     "Mark",             "Numeral",                          "기호: 숫자"),
-#     "ZN":       ("Guess",       "Guess",            "Unknown, guessing noun",           "추정: 분석 불능(명사 추정)"),
-#     "ZV":       ("Guess",       "Guess",            "Unknown, guessing possessive",     "추정: 분석 불능(용언 추정)"),
-#     "ZZ":       ("Unknown",     "Guess",            "Unknown",                          "추정: 분석 불능(기타)"),
-#     #
-#     # note that synthetic tags defined above include a mapping to one of the above basic POS
-# }
 
 ##  Questions
 #
