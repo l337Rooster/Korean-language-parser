@@ -84,7 +84,7 @@ class TagMap(object):
         "VMS":      ("Verb-modifying\nsuffix",  "Post-position",    "Verb-modifying suffix",            ""),
     }
 
-    # explicit labels for select individual phonemes:tag pairs
+    # explicit labels for select individual phoneme:tag pairs
     POS_labels = {
         "이:VCP":    "Verb\nTo be",
         "의:JKG":    "Possessive\nParticle",
@@ -111,23 +111,33 @@ class TagMap(object):
         "네요:EF":    "Surprise\nEnding",
     }
 
-    def __init__(self, tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes):
+    def __init__(self, tagPat=r'', repl=r'', basePOS=None, posLabel=None, descr=None, nodeRename="", annotation="", wikiKey=None, refs=(), notes=None):
         self.tagPat = tagPat
-        # uniquify synthetic tag & record it if this mapping includes a chunktree node renaming
-        self.repl = repl + ("_%d" % TagMap.tagOrdinal); TagMap.tagOrdinal += 1
-        self.newTag = self.repl.split(':')[-1] # extract this pattern's synthetic tag
-        self.nodeRename = nodeRename; self.annotation = annotation
+        if repl:
+            # uniquify synthetic tag & record it if this mapping includes a chunktree node renaming
+            self.repl = repl + ("_%d" % TagMap.tagOrdinal); TagMap.tagOrdinal += 1
+            self.newTag = self.repl.split(':')[-1] # extract this pattern's synthetic tag
+            self.nodeRename = nodeRename; self.annotation = annotation
+            self.basePos = basePOS
+            # add TM's with replacement tags to the tagMappings table
+            TagMap.tagMappings[tagPat] = self
+        else:
+            # a simple morpheme:tag metadata definition, add to POS_label table
+            self.repl = self.newTag = self.nodeRename = self.basePos = None
+            TagMap.POS_labels[tagPat] = self
         self.wikiKey = wikiKey
         self.refs = refs
         self.notes = notes
-        self.basePos = basePOS; self.posLabel = posLabel
+        self.posLabel = posLabel
         self.descr = descr
-        # add POS definition for synthetic tag, based on basePOS overriding detail descriptor
-        baseDef = TagMap.partsOfSpeech[basePOS]
-        TagMap.partsOfSpeech[self.newTag] = (posLabel or baseDef[0], baseDef[1], descr or baseDef[2], baseDef[3])
-        # add any renamed rule annotation
-        if ':' in nodeRename and annotation:
-            Chunker.ruleAnnotations[nodeRename.split(':')[1]] = dict(descr=annotation, refs=refs)
+        if basePOS:
+            # add POS definition for synthetic tag, based on basePOS overriding detail descriptor
+            baseDef = TagMap.partsOfSpeech[basePOS]
+            TagMap.partsOfSpeech[self.newTag] = (posLabel or baseDef[0], baseDef[1], descr or baseDef[2], baseDef[3])
+        if nodeRename:
+            # add any renamed rule annotation
+            if ':' in nodeRename and annotation:
+                Chunker.ruleAnnotations[nodeRename.split(':')[1]] = dict(descr=annotation, refs=refs)
 
     @classmethod
     def completeInit(cls):
@@ -262,9 +272,11 @@ class TagMap(object):
 
 
 # utility tag-mapping definition function
-def tm(tagPat=r'', repl=r'', basePOS=None, posLabel=None, descr=None, nodeRename="", annotation="", wikiKey=None, refs=(), notes=None):
-    "build & store a tag-map entry"
-    TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes)
+# def tm(tagPat=r'', repl=r'', basePOS=None, posLabel=None, descr=None, nodeRename="", annotation="", wikiKey=None, refs=(), notes=None):
+#     "build & store a tag-map entry"
+#     TagMap.tagMappings[tagPat] = TagMap(tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes)
+
+tm = TagMap
 
 # ================================== tag-mapping specs ==============================
 
@@ -276,7 +288,11 @@ def tm(tagPat=r'', repl=r'', basePOS=None, posLabel=None, descr=None, nodeRename
 # note that in the in the processing of the defs below, all new tags will have a "_nnn" appended to make them unique and
 # assist in unambiguous mapping to the associated metadata in chuck-tree post-processing.  So, any references to these
 # new tags in the chunking grammar MUST be included with a trailing ".*" in the chunking grammar so that it
-#  matches all gnerated integer-suffixed variations of the base synthetic tag
+#  matches all generated integer-suffixed variations of the base synthetic tag
+
+
+# tm(tagPat="이:VCP", posLabel="Verb\nTo be", descr="The positive copula, to be. Always attached directly to the equated noun form")
+# tm(tagPat="의:JKG", posLabel="Possessive\nParticle", descr="The possessive suffix, attached to the owning entity, indicates ownership of the following entity")
 
 # ----- tag-sequence foldings --------
 
@@ -417,7 +433,7 @@ tm( # 에대해 "about X" prepositional suffix
 
 tm( # ~아/어 보이다 to seem/look like
     tagPat=r'(아|어|여):EC;보이:(VV|VX)', repl=r'\1 보이:AUX',
-    basePOS="VX", posLabel="Seems Like\nLooks Like", descr="To seem or look like auxiliary verb form",
+    basePOS="VX", posLabel="Seems Like\nLooks Like", descr="Auxiliary verb pattern: to seem like or look like",
     #nodeRename="AuxiliaryVerbForm:Seems/Looks",
     wikiKey='보이다',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-36/#363", "ttmik": "/lessons/ttmik-l9l12"},
@@ -425,7 +441,7 @@ tm( # ~아/어 보이다 to seem/look like
 
 tm( # ~아/어 보다 to try
     tagPat=r'(아|어|여):EC;보:(VV|VX)', repl=r'\1 보:AUX',
-    basePOS="VX", posLabel="Try/Attempt", descr="'To try' or 'to attempt' auxiliary verb form",
+    basePOS="VX", posLabel="Try/Attempt", descr="Auxiliary verb pattern: to try or to attempt",
     #nodeRename="AuxiliaryVerbForm:Seems/Looks",
     wikiKey='보다',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-32/#323"},
@@ -435,7 +451,7 @@ tm( # ~아/어 보다 to try
 
 tm( # ~기는 하- indeed
     tagPat=r'기:ETN;는:JX;하:VX', repl=r'기는 하:NMF',
-    basePOS="VX", posLabel="Indeed", descr="This pattern has an emphatic feeling and is used when the speaker realizes, accepts or concedes that a piece of information (often provided by the interlocutor) is indeed correct.",
+    basePOS="VX", posLabel="Indeed", descr="Nominal verb pattern: indicates an emphatic feeling and is used when the speaker realizes, accepts or concedes that a piece of information (often provided by the interlocutor) is indeed correct.",
     wikiKey='',
     refs={ },
 )
