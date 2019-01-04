@@ -108,6 +108,7 @@ class TagMap(object):
         "가:JKS":    "Subject\nMarker",
         "으시:EP":    "Honorific\nMarker",
         "시:EP":     "Honorific\nMarker",
+        "네요:EF":    "Surprise\nEnding",
     }
 
     def __init__(self, tagPat, repl, basePOS, posLabel, descr, nodeRename, annotation, wikiKey, refs, notes):
@@ -131,8 +132,9 @@ class TagMap(object):
     @classmethod
     def completeInit(cls):
         "complete tag-mapping setup"
-        # build mapping pattern list sorted in reducing pattern length to control transform ordering (todo: might need explicit ordering)
-        cls.tagMapPatterns = sorted(((tm.tagPat, tm) for tm in cls.tagMappings.values()), key=lambda x: len(x[0]), reverse=True)
+        # build mapping pattern list sorted in reducing pattern length (# semis, then char length) to control transform ordering (todo: might need explicit ordering)
+        cls.tagMapPatterns = sorted(((tm.tagPat, tm) for tm in cls.tagMappings.values()), key=lambda x: (len(x[0].split(';')), len(x[0])), reverse=True)
+        pprint(cls.tagMapPatterns)
         # build node-name mapping table & extract any refs & wikiKeys
         #   maps uniquified synthetic tag to tables that map ancestor node label to renamed label
         for tm in cls.tagMappings.values():
@@ -419,6 +421,30 @@ tm( # ~아/어 보이다 to seem/look like
     #nodeRename="AuxiliaryVerbForm:Seems/Looks",
     wikiKey='보이다',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-36/#363", "ttmik": "/lessons/ttmik-l9l12"},
+)
+
+tm( # ~아/어 보다 to try
+    tagPat=r'(아|어|여):EC;보:(VV|VX)', repl=r'\1 보:AUX',
+    basePOS="VX", posLabel="Try/Attempt", descr="'To try' or 'to attempt' auxiliary verb form",
+    #nodeRename="AuxiliaryVerbForm:Seems/Looks",
+    wikiKey='보다',
+    refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-32/#323"},
+)
+
+# ------ specific nominal verb forms V 기 ... ---------  usually mapping to NMF.*
+
+tm( # ~기는 하- indeed
+    tagPat=r'기:ETN;는:JX;하:VX', repl=r'기는 하:NMF',
+    basePOS="VX", posLabel="Indeed", descr="This pattern has an emphatic feeling and is used when the speaker realizes, accepts or concedes that a piece of information (often provided by the interlocutor) is indeed correct.",
+    wikiKey='',
+    refs={ },
+)
+
+tm( # ~기나 하-  just
+    tagPat=r'기:ETN;나:JX;하:VX', repl=r'기나 하:NMF',
+    basePOS="VX", posLabel="Just",
+    wikiKey='',
+    refs={ },
 )
 
 # ------ predicate ending forms ------  mapping to PSX.* & renaming VerbSuffix

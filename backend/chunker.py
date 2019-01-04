@@ -49,7 +49,8 @@ class Chunker(object):
     
          Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
          AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
-         Predicate:          {<Adverb|AdverbialPhrase>*<Verb|AuxiliaryVerbForm>*<VerbSuffix>}
+         NominalVerbForm:    {<Verb|AuxiliaryVerbForm><NMF.*>}
+         Predicate:          {<Adverb|AdverbialPhrase>*<Verb|AuxiliaryVerbForm|NominalVerbForm>*<VerbSuffix>}
     
          """
 
