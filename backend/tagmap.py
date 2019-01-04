@@ -25,7 +25,8 @@ class TagMap(object):
                     {"title": "Naver dictionary", "slug": "https://endic.naver.com/search.nhn?sLn=en&searchOption=all&query=${word}" },]
 
     references = {"ttmik": {"title": "Talk to me in Korean", "hostname": "talktomeinkorean.com"},
-                  "htsk":  {"title": "How to study Korean",  "hostname": "www.howtostudykorean.com"}, }
+                  "htsk":  {"title": "How to study Korean",  "hostname": "www.howtostudykorean.com"},
+                  "kacg":  {"title": "Korean: A Comprehensive Grammar"}}
 
     #  parts-of-speech descriptors
     partsOfSpeech = {
@@ -133,9 +134,22 @@ class TagMap(object):
             if tm.wikiKey:
                 cls.wikiKeyMap[tm.newTag] = tm.wikiKey
             if tm.refs:
-                cls.refsMap[tm.newTag] = [dict(ref=cls.references[key]['title'],
-                                               url="https://" + cls.references[key]['hostname'] + page) for key, page in tm.refs.items()]
+                cls.refsMap[tm.newTag] = cls.getRefsMapEntries(tm.refs)
         #
+
+    @classmethod
+    def getRefsMapEntries(cls, refs):
+        "build full reference entries from definition ref spec"
+        fullRefs = []
+        for key, page in refs.items():
+            fr = dict(title=cls.references[key]['title'])
+            hostname = cls.references[key].get('hostname')
+            if hostname:
+                fr['slug'] = "https://" + cls.references[key]['hostname'] + page
+            else:
+                fr['page'] = page
+            fullRefs.append(fr)
+        return fullRefs
 
     @classmethod
     def mapTags(cls, posString, morphemeGroups):
@@ -214,9 +228,7 @@ class TagMap(object):
                     annotation = Chunker.ruleAnnotations.get(tag)
                     if annotation:
                         ruleAnnotations[tag] = dict(descr=annotation['descr'],
-                                                    refList=[dict(name=cls.references[ref]['title'],
-                                                                  slug="https://" + cls.references[ref]['hostname'] + page) \
-                                                                     for ref, page in annotation['refs'].items()])
+                                                    refList=cls.getRefsMapEntries(annotation['refs']))
                     # recurse down th etree
                     walkTree(st)
                 else:
@@ -229,14 +241,13 @@ class TagMap(object):
                             word = (st[0] + '다') if st[1][0] == 'V' and st[1][-1] != '다' else st[0]
                         # add dictionary links
                         for d in cls.dictionaries:
-                            refList.append(dict(name=d['title'], slug=d['slug'].replace("${word}", word)))
+                            refList.append(dict(title=d['title'], slug=d['slug'].replace("${word}", word)))
                         #
                         wikiKeys[st[0]] = word
                     #
                     refs = cls.refsMap.get(st[1])
                     if refs:
-                        for ref in refs:
-                            refList.append(dict(name=ref['ref'], slug=ref['url']))
+                        refList.extend(refs)
                     if refList:
                         references[st[0]] = refList
                     # add POS reference table entries
@@ -446,7 +457,7 @@ tm( # ~기는 하- indeed
     tagPat=r'기:ETN;는:JX;하:VX', repl=r'기는 하:NMF',
     basePOS="VX", posLabel="Indeed", descr="Nominal verb pattern: indicates an emphatic feeling and is used when the speaker realizes, accepts or concedes that a piece of information (often provided by the interlocutor) is indeed correct.",
     wikiKey='',
-    refs={ },
+    refs={"kacg": "Section 2.2.4.12, pp 64" },
 )
 
 tm( # ~기나 하-  just

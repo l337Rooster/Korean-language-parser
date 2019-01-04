@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.5.1 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.5.2 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -112,7 +112,11 @@
                     </div>
                     <div v-if="references.wordRefs" class="k-row refs-row">
                         <div class="k-cell def-label">References:</div>
-                        <div class="k-cell"><ul><li  v-for="ref in references.wordRefs"><a :href=ref.slug target="_blank">{{ref.name}}</a></li></ul></div>
+                        <div class="k-cell"><ul>
+                            <li  v-for="ref in references.wordRefs">
+                                <a v-if="ref.slug" :href=ref.slug target="_blank">{{ref.title}}</a>
+                                <div v-else >{{ref.title}}: {{ref.page}}</div>
+                            </li></ul></div>
                     </div>
                 </div>
             </div>
@@ -705,6 +709,9 @@ document.onmouseup = function (e) {
     .definition li a {
         font-size: 200%;
         vertical-align:middle;
+    }
+    .definition li div {
+        font-size: 200%;
     }
 
     /* toggle this class - hide and show the popup */
