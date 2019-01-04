@@ -15,12 +15,14 @@ class Chunker(object):
     
          NounDerivedVerb:    {<VND.*>}
          AuxiliaryVerb:      {<EC><VX|VV>}
+                             {<AUX.*>}
          Adverb:             {<MAG>}
          NounDerivedAdjective: {<VAND.*>}
          Adjective:          {<Adverb>*<VA|VV|NounDerivedAdjective|NounDerivedVerb><ETM>}
          DescriptiveVerb:    {<VA|NounDerivedAdjective>}
          Verb:               {<VV|VCN|VX|NounDerivedVerb|DescriptiveVerb>}
          NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
+                             {<AuxiliaryVerbForm><NOM.*>}
        
          VerbSuffix:         {<EP|PSX.*>*<EF|EC>}
     
@@ -46,7 +48,8 @@ class Chunker(object):
          Topic:              {<Constituent|PrepositionalPhrase><TOP.*>}
     
          Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
-         Predicate:          {<Adverb|AdverbialPhrase>*<Verb><AuxiliaryVerb>*<VerbSuffix>}
+         AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
+         Predicate:          {<Adverb|AdverbialPhrase>*<Verb|AuxiliaryVerbForm>*<VerbSuffix>}
     
          """
 
@@ -81,9 +84,10 @@ class Chunker(object):
     def parse(cls, posList, trace=1):
         "apply the NLTK chunking parser under above grammar"
         if not cls.parser:
-            cls.parser = nltk.RegexpParser(cls.grammar, trace=trace)
+            cls.parser = nltk.RegexpParser(cls.grammar, loop=2)
         #
-        chunkTree = cls.parser.parse(posList)
+        print(cls.parser)
+        chunkTree = cls.parser.parse(posList, trace=trace)
 
         # heuristic subtree simplifications
         # toss sentence end node

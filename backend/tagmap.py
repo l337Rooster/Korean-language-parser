@@ -114,7 +114,7 @@ class TagMap(object):
         self.tagPat = tagPat
         # uniquify synthetic tag & record it if this mapping includes a chunktree node renaming
         self.repl = repl + ("_%d" % TagMap.tagOrdinal); TagMap.tagOrdinal += 1
-        self.newTag = self.repl.split(':')[1] # extract this pattern's synthetic tag
+        self.newTag = self.repl.split(':')[-1] # extract this pattern's synthetic tag
         self.nodeRename = nodeRename; self.annotation = annotation
         self.wikiKey = wikiKey
         self.refs = refs
@@ -411,6 +411,15 @@ tm( # 에대해 "about X" prepositional suffix
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
 )
 
+# ------ specific auxiliary verb forms ---------  usually mapping to EC + AUX.*
+
+tm( # ~아/어 보이다 to seem/look like
+    tagPat=r'(아|어|여):EC;보이:(VV|VX)', repl=r'\1 보이:AUX',
+    basePOS="VX", posLabel="Seems Like\nLooks Like", descr="To seem or look like auxiliary verb form",
+    #nodeRename="AuxiliaryVerbForm:Seems/Looks",
+    wikiKey='보이다',
+    refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-36/#363", "ttmik": "/lessons/ttmik-l9l12"},
+)
 
 # ------ predicate ending forms ------  mapping to PSX.* & renaming VerbSuffix
 

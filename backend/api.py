@@ -84,7 +84,7 @@ def parse():
         mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups'])
 
         # perform chunk parsing
-        chunkTree = Chunker.parse(mappedPosList)
+        chunkTree = Chunker.parse(mappedPosList, trace=1)
         chunkTree.pprint()
 
         # apply any synthetic-tag-related node renamings
@@ -295,12 +295,18 @@ if __name__ == "__main__":
 # 나는 요리하는 것에 대해서 책을 쓸 거야.
 # 냉장고에 우유밖에 없어요
 
+# nominal forms
+# 비가 오기 시작했어요.  to start
+# 인호가 착하기는 해요.  indeed
+
 # 민수가 미나에게 선물을 주었어요.
 # 미나에게 민수가 선물을 주었어요.
 # 선물을 민수가 미나에게 주었어요.
 # 민수 씨가 미나  씨에게 선물을 주었어요.
 # 미나  씨에게 민수  씨가 선물을 주었어요.
 # 선물을 민수  씨가 미나  씨에게 주었어요.
+# 왜 그렇게 행복해 보여요?
+
 
 #  this OK: 김의 큰 집에서 파티가 있었어   or  김의 큰 집에서도 음식과 음료가 있었어   or 김의 새로운 집에서도 음식과 음료가 있을 거예요.
 #   but multiple particles in a noun-phrase mess: 김의 큰 집에서도 파티가 있었어
