@@ -287,6 +287,8 @@ tm(tagPat="(와|과):JC",       posLabel="And/With\nParticle", )
 tm(tagPat="(이|가):JKS",      posLabel="Subject\nMarker", )
 tm(tagPat="(으시|시):EP",      posLabel="Honorific\nMarker", )
 tm(tagPat="네요:EF",          posLabel="Surprised\nEnding", )
+tm(tagPat="만약:NNG",         posLabel="If\nPrefix", )
+tm(tagPat="면:EC",           posLabel="If\nSuffix", )
 
 # -------------- synthetic tag patterns ----------------
 
@@ -299,7 +301,7 @@ tm(tagPat="네요:EF",          posLabel="Surprised\nEnding", )
 # new tags in the chunking grammar MUST be included with a trailing ".*" in the chunking grammar so that it
 #  matches all generated integer-suffixed variations of the base synthetic tag
 
-# ----- tag-sequence foldings --------
+# ------------ tag-sequence foldings ---------------
 
 tm(  # noun-derived verbs, N하다, N되다, N당하다, N시키다, etc. - combine XR|NN & VND suffix into a single NDV (noun-derived verb) verb
     tagPat=r'([^:]+):(XR|NNG);([^:]+):XSV', repl=r'\1\3:VND',
@@ -307,7 +309,7 @@ tm(  # noun-derived verbs, N하다, N되다, N당하다, N시키다, etc. - comb
     notes="Noun-derived verb - ${1} + ${3}",
 )
 
-tm(  # noun-derived adjective,  - combine XR|NN & XSA suffix into a single VAND (noun-derived adjective) adjective
+tm(  # noun-derived adjectives,  - combine XR|NN & XSA suffix into a single VAND (noun-derived adjective) adjective
     tagPat=r'([^:]+):(XR|NNG);([^:]+):XSA', repl=r'\1\3:VAND',
     basePOS="VA", descr="Adjective derived from a noun",
     notes="Noun-derived adjective - ${1} + ${3}",
@@ -318,15 +320,15 @@ tm(  # noun-derived adjective,  - combine XR|NN & XSA suffix into a single VAND 
 # ----- particles --------  usually map to PRT.* + NounPhrase node rename
 
 tm( # 은/는 topic marker
-    tagPat=r'(은|는):JX', repl=r'\1:TOP',
+    tagPat=r'(ㄴ|은|는):JX', repl=r'\1:TOP',
     basePOS="JX", posLabel="Topic\nMarker",
-    nodeRename="NounPhrase:Topic", descr="Topic-marker",
+    nodeRename="Noun Phrase:Topic", descr="Topic-marker",
 )
 
 tm( # 들 pluralizer
     tagPat=r'들:(TM|XSN)', repl=r'들:PRT',
     basePOS="VA", posLabel="Plural\nParticle", descr="Pluralizer",
-    nodeRename="NounPhrase:Plural",
+    nodeRename="Noun Phrase:Plural",
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-12/#kp1", },
 )
 
@@ -340,14 +342,14 @@ tm( # 에/에서 Location/Time marker
 tm( # 에게:JKB "to/at/for" particle
     tagPat=r'(에게|한테|께):JKB', repl=r'\1:PRT',
     basePOS="JKB",
-    nodeRename="NounPhrase:To/for/at",
+    nodeRename="Noun Phrase:To/for/at",
     refs={"ttmik": "/lessons/level-2-lesson-7", "htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp3", },
 )
 
 tm( # 밖에 other-than particle
     tagPat=r'밖에:JX', repl=r'밖에:PRT',
     basePOS="JX",
-    nodeRename="NounPhrase:Other Than", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
+    nodeRename="Noun Phrase:Other Than", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
     refs={"ttmik": "/lessons/level-2-lesson-13", "htsk": "/unit-3-intermediate-korean-grammar/lessons-67-75/lesson-69/#691", },
 )
 
@@ -395,7 +397,7 @@ tm( # 또는 "alternatives" connecting adverb(??)
 tm( # 어서 "reason" adverbial verb-phrase suffix
     tagPat=r'어서:EC', repl=r'어서:ADVEC',
     basePOS="EC", posLabel="Reason-giving\nSuffix", descr="Reason-giving connecting suffix",
-    nodeRename="AdverbialPhrase:Reason",
+    nodeRename="Adverbial Phrase:Reason",
     refs={},
 )
 
@@ -403,8 +405,8 @@ tm( # 어서 "reason" adverbial verb-phrase suffix
 
 tm( # 전 "before X-ing" prepositional suffix
     tagPat=r'전:NNG;에:JKB', repl=r'전에:PRP',
-    basePOS="MAG", descr="Adverbial phrase",
-    nodeRename="PrepositionalPhrase:Before",
+    basePOS="MAG", descr="Adverbial phrase", posLabel="Before\nSuffix",
+    nodeRename="Prepositional Phrase:Before Phrase",
     wikiKey='전',
     refs={"ttmik": "/lessons/level-3-lesson-10", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/#242"},
     notes="a time prepositional phrase suffix attached to a series of noun forms to indicate a time before that implied associated with the noun sequence",
@@ -413,7 +415,7 @@ tm( # 전 "before X-ing" prepositional suffix
 tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
     tagPat=r'(후|다음|뒤):NNG;에:JKB', repl=r'\1에:PRP',
     basePOS="MAG", descr="Adverbial phrase", posLabel="After\nSuffix",
-    nodeRename="PrepositionalPhrase:After",
+    nodeRename="Prepositional Phrase:After Phrase",
     wikiKey='후',
     refs={"ttmik": "/lessons/level-3-lesson-19;ticket=153893", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/"},
 )
@@ -421,7 +423,7 @@ tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
 tm( # 때문에 "because X" prepositional suffix
     tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
     basePOS="MAG", descr="Adverbial phrase",
-    nodeRename="PrepositionalPhrase:Because Phrase",
+    nodeRename="Prepositional Phrase:Because Phrase",
     wikiKey='때문',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"},
 )
@@ -429,7 +431,7 @@ tm( # 때문에 "because X" prepositional suffix
 tm( # 에대해 "about X" prepositional suffix
     tagPat=r'에:JKB;(대하|관하):VV;([^:]+):(EC|ETM)', repl=r'에 \1\2:PRP',
     basePOS="EC", descr="Prepositional connecting suffix",
-    nodeRename="PrepositionalPhrase:About Phrase",
+    nodeRename="Prepositional Phrase:About Phrase",
     wikiKey='대하다',
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
 )
@@ -473,7 +475,7 @@ tm( # ~기나 하-  just
 tm( # 었 past-tense suffix
     tagPat=r'(았|었):EP', repl=r'\1:PSX',
     basePOS="EP", posLabel="Past tense\nMarker", descr="Past-tense particle",
-    nodeRename="VerbSuffix:Past Tense",
+    nodeRename="Verb Suffix:Past Tense",
     refs={"ttmik": "/lessons/l1l17", "htsk": "/unit1/unit-1-lessons-1-8/unit-1-lesson-5/#vpast"},
     notes="",
 )
@@ -481,7 +483,7 @@ tm( # 었 past-tense suffix
 tm( # ㄹ/를 거 이다 future-tense suffix pattern
     tagPat=r'(ㄹ|을|를):ETM;거:NNB;이:VCP', repl=r'\1 거 이:PSX',
     basePOS="VX", posLabel="Future tense\nAuxiliary", descr="Future-tense predicate suffix",
-    nodeRename="VerbSuffix:Future Tense",
+    nodeRename="Verb Suffix:Future Tense",
     wikiKey="none",
     refs={"ttmik": "/lessons/level-2-lesson-1-future-tense", "htsk": "/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"},
     notes="",
@@ -490,7 +492,7 @@ tm( # ㄹ/를 거 이다 future-tense suffix pattern
 tm( # 고 싶다 want-to suffix pattern
     tagPat=r'고:EC;싶:VX', repl=r'고 싶:PSX',
     basePOS="VX", descr="Want-to predicate suffix",
-    nodeRename="VerbSuffix:WantTo",
+    nodeRename="Verb Suffix:WantTo",
     wikiKey="싶다",
     refs={"ttmik": "/lessons/l1l13", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-17/#co5"},
     notes="",

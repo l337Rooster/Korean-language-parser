@@ -31,7 +31,7 @@ class Chunker(object):
          Substantive:        {<Noun><Noun>*}
                              {<Pronoun>}
                              {<NominalizedVerb>}            
-         NounPhrase:         {<MM>*<XPN>*<MAG>*<Adjective>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
+         NounPhrase:         {<MM>*<XPN>*<Adverb>*<Adjective>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
     
          Component:          {<NounPhrase|Possessive><JC|CON.*>}
          Connection:         {<Component><Component>*<NounPhrase|Possessive>}

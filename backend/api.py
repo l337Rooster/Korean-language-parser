@@ -40,7 +40,7 @@ parserApp.config.update(
 def run_dev_server():
     "launch Flask dev server"
     parserApp.run(host = '0.0.0.0',
-               port = 80, #80, # 9000,
+               port = 9000, #80, # 9000,
                debug = True)
 
 # -------- page request handlers --------
@@ -66,6 +66,7 @@ def parse():
     # build a string for the KHaiii phoneme analyzer
     if sentence.strip()[-1] not in ['.', '?', '!']:
         sentence += '.'
+    sentence = sentence.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ')
 
     # run Khaiii, grab the parts-of-speech list it generates (morphemes + POS tags) and extract original word-to-morpheme groupings
     sentences = []  # handle possible multiple sentences
