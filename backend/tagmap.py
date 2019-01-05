@@ -26,7 +26,8 @@ class TagMap(object):
 
     references = {"ttmik": {"title": "Talk to me in Korean", "hostname": "talktomeinkorean.com"},
                   "htsk":  {"title": "How to study Korean",  "hostname": "www.howtostudykorean.com"},
-                  "kacg":  {"title": "Korean: A Comprehensive Grammar"}}
+                  "kacg":  {"title": "Korean: A Comprehensive Grammar"},
+                  "itlk":  {"title": "italki.com answers", "hostname": "www.italki.com"}}
 
     #  parts-of-speech descriptors
     partsOfSpeech = {
@@ -278,7 +279,7 @@ tm(tagPat="겠:EP",           posLabel="Intension\nMarker", refs={})
 tm(tagPat="(을|를):JKO",      posLabel="Object\nMarker", refs={})
 tm(tagPat="(은|는):JKO",      posLabel="Subject\nMarker", )
 tm(tagPat="(아요|어요|에요):EF", posLabel="Polite\nEnding", )
-tm(tagPat="(야|아):EF",       posLabel="Informal\nEnding", )
+tm(tagPat="(아|어|야):EF",    posLabel="Informal\nEnding", )
 tm(tagPat="다:EF",           posLabel="Plain-form\nEnding", )
 tm(tagPat="습니다:EF",        posLabel="Formal\nEnding", )
 tm(tagPat="(ㄴ|은|는|ㄹ):ETM", posLabel="Adjectival\nSuffix", )
@@ -493,6 +494,15 @@ tm( # 고 싶다 want-to suffix pattern
     wikiKey="싶다",
     refs={"ttmik": "/lessons/l1l13", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-17/#co5"},
     notes="",
+)
+
+tm( # ~ㄴ/은가(요) question-ending descriptive-verb suffix
+    tagPat=r'(ㄴ가|은가|은가요):(EC|EF)', repl=r'\1:PSX',
+    basePOS="EF", posLabel="Question\nSuffix", descr="Question-forming suffix, used after descriptive verbs or the copula (이다); a softer form than ~(으)냐",
+    #nodeRename="AuxiliaryVerbForm:Seems/Looks",
+    wikiKey='',
+    refs={"htsk": "/unit1/unit-1-lessons-17-25-2/lesson-21-asking-questions-in-korean-why-when-where-and-who/#214",
+          "itlk": "/question/457643" },
 )
 
 # ------------

@@ -40,7 +40,7 @@ parserApp.config.update(
 def run_dev_server():
     "launch Flask dev server"
     parserApp.run(host = '0.0.0.0',
-               port = 9000, #80, # 9000,
+               port = 80, #80, # 9000,
                debug = True)
 
 # -------- page request handlers --------
@@ -310,8 +310,10 @@ if __name__ == "__main__":
 # 미나  씨에게 민수  씨가 선물을 주었어요.
 # 선물을 민수  씨가 미나  씨에게 주었어요.
 # 왜 그렇게 행복해 보여요?
-# 뭔가 (무엇인가) 잘못괸 게 트림없어
-
+# 뭔가 잘못괸 게 트림없어     - 뭔가 = 무엇인가 = 무엇이다 (is something) + -ㄴ가 (phrase and sentence ending raising a question/doubt). from https://www.italki.com/question/457643
+#   친구는 어딘가 (어디인가) 슬퍼 보였다
+# 이것은 너무 작은가요?  그 학교가 좋은가?  그 사람이 우리 엄마인가?
+#    뭔가 제가 모르는 일이 있었어요?
 
 # 말포이는 해리와 론이 조금 피곤해 보이기는 했지만 그다음 날에도 아주 기분 좋은 얼굴로 여전히 호그와트에 있는 걸 보자, 자신의 눈을 믿을 수가 없었다.   H.P.
 

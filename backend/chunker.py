@@ -24,7 +24,7 @@ class Chunker(object):
          NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
                              {<AuxiliaryVerbForm><NOM.*>}
        
-         VerbSuffix:         {<EP|PSX.*>*<EF|EC>}
+         VerbSuffix:         {<EP|PSX.*>*<EF|EC>*}
     
          Noun:               {<NN.*|NR|SL>}       
          Pronoun:            {<NP>}
