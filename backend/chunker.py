@@ -40,7 +40,7 @@ class Chunker(object):
          Constituent:        {<NounPhrase|Possessive|Connection>}
     
          PrepositionalPhrase: {<Constituent|Object|Adjective>*<Constituent|Object|Adjective><PRP.*>}
-         AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<ADVEC.*>}
+         AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<VerbSuffix>*<ADVEC.*>}
     
          Complement:         {<Constituent><JKC>} 
          Object:             {<Constituent|PrepositionalPhrase><JKO>}  

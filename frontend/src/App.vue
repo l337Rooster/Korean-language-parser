@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.5.2 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.5.3 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -53,7 +53,7 @@
                                 <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
                                     <tspan class="word-word">{{ word.word }}</tspan>
                                 </text>
-                                <line :x1="word.x + 4" :y1="word.y + 7" class="word-line"
+                                <line :x1="word.x + 2" :y1="word.y + 7" class="word-line"
                                       :x2="word.x + word.width - 4" :y2="word.y + 7"/>
                             </g>
                             <g v-for="node in s.terminals">

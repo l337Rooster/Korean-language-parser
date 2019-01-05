@@ -153,14 +153,15 @@ class TagMap(object):
         return fullRefs
 
     @classmethod
-    def mapTags(cls, posString, morphemeGroups):
+    def mapTags(cls, posString, morphemeGroups, disableMapping=False):
         "generate a version of the parser's original word:POC string under the below-defined synthetic tag mappings"
         # returns a list of (tag,word) tuples
         tagString = ';' + posString + ';'
-        for tagPat, tm in cls.tagMapPatterns:
-            def replTags(m):
-                return m.expand(';' + tm.repl + ';')
-            tagString = re.sub(';' + tagPat + ';', replTags, tagString)
+        if not disableMapping:
+            for tagPat, tm in cls.tagMapPatterns:
+                def replTags(m):
+                    return m.expand(';' + tm.repl + ';')
+                tagString = re.sub(';' + tagPat + ';', replTags, tagString)
         #
         mappedPosList = [tuple(pos.split(':')) for pos in tagString.strip(';').split(';')]
         #
@@ -289,6 +290,9 @@ tm(tagPat="(으시|시):EP",      posLabel="Honorific\nMarker", )
 tm(tagPat="네요:EF",          posLabel="Surprised\nEnding", )
 tm(tagPat="만약:NNG",         posLabel="If\nPrefix", )
 tm(tagPat="면:EC",           posLabel="If\nSuffix", )
+tm(tagPat="보다:JKB",         posLabel="Comparison\nParticle", )
+tm(tagPat="부터:JX",         posLabel="Since\nParticle", )
+
 
 # -------------- synthetic tag patterns ----------------
 
@@ -398,6 +402,21 @@ tm( # 어서 "reason" adverbial verb-phrase suffix
     tagPat=r'어서:EC', repl=r'어서:ADVEC',
     basePOS="EC", posLabel="Reason-giving\nSuffix", descr="Reason-giving connecting suffix",
     nodeRename="Adverbial Phrase:Reason",
+    refs={},
+)
+
+tm( # ~ㄹ/을 때 "when/during the time" adverbial verb-phrase suffix
+    tagPat=r'(ㄹ|을):ETM;때:NNG', repl=r'\1 때:ADVEC',
+    basePOS="EC", posLabel="When\nSuffix", descr="At-a-time-when connecting suffix",
+    nodeRename="Adverbial Phrase:When",
+    refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-42-50/lesson-42/#422",
+          "kacg": "Section 7.2.1, pp 346"},
+)
+
+tm( # ~ㄹ/을 때부터 "since the time when ~" adverbial verb-phrase suffix
+    tagPat=r'(ㄹ|을):ETM;때:NNG;부터:JX', repl=r'\1 때부터:ADVEC',
+    basePOS="EC", posLabel="Since Time When\nSuffix", descr="Since-the-time-when connecting suffix",
+    nodeRename="Adverbial Phrase:Since When Phrase",
     refs={},
 )
 

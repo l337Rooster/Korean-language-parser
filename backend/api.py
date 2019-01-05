@@ -82,7 +82,7 @@ def parse():
 
     for s in sentences:
         # map POS through synthetic tag mapper & extract word groupings
-        mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups'])
+        mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups']) #, disableMapping=True)
 
         # perform chunk parsing
         chunkTree = Chunker.parse(mappedPosList, trace=1)
@@ -123,14 +123,21 @@ def buildParseTree(chunkTree):
     # first, recursively turn the chunk tree into a Python nested dict so it can be JSONified
     #  gathering terminals list & adding level from root & parent links along the way
     terminals = []; height = [0]; allNodes = []
-    def asDict(chunk, parent=None, level=0):
+    def asDict(chunk, parent=None, level=0, isLastChild=False):
         height[0] = max(height[0], level)
         while isinstance(chunk, nltk.Tree) and len(chunk) == 1:
             # flatten degenerate tree nodes
             chunk = chunk[0]
         if isinstance(chunk, nltk.Tree):
-            node = dict(type='tree', tag='Sentence' if chunk.label() == 'S' else chunk.label(), level=level, layer=1, parent=parent)
-            node['children'] = [asDict(c, node, level+1) for c in chunk]
+            tag = chunk.label()
+            # ad-hoc label mappings
+            if tag == 'S':
+                tag = 'Sentence'
+            elif tag == 'Predicate' and not isLastChild:
+                tag = 'Verb Phrase'
+            # build tree node
+            node = dict(type='tree', tag=tag, level=level, layer=1, parent=parent)
+            node['children'] = [asDict(c, node, level+1, isLastChild=i == len(chunk)-1) for i, c in enumerate(chunk)]
             node['id'] = id(node)
             allNodes.append(node)
             return node
