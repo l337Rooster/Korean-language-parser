@@ -323,6 +323,9 @@ if __name__ == "__main__":
 # 이것은 너무 작은가요?  그 학교가 좋은가?  그 사람이 우리 엄마인가?
 #    뭔가 제가 모르는 일이 있었어요?
 
+# 대한민국 사람들 중에 지하철을 타 본 사람은 다 아실 거예요. - Will's sentence
+# 이야기를 사랑하는 제시카와 앤, 그리고 이 이야기를 가장 먼저 들어준 디에게  - dedication in H.P
+
 # 말포이는 해리와 론이 조금 피곤해 보이기는 했지만 그다음 날에도 아주 기분 좋은 얼굴로 여전히 호그와트에 있는 걸 보자, 자신의 눈을 믿을 수가 없었다.   H.P.
 
 #  this OK: 김의 큰 집에서 파티가 있었어   or  김의 큰 집에서도 음식과 음료가 있었어   or 김의 새로운 집에서도 음식과 음료가 있을 거예요.
@@ -338,3 +341,4 @@ if __name__ == "__main__":
 # 음식과 음료가 있는 파티가 있을 것이다. - has two subjects, both because they are associated with 있다 ??  how to annotate?
 # 성함이 어떻게 되세요? - the 게 되 are label together as an aixialiay verb
 # 병아리나 물고기도 키워 본 적 없어요?  - gets 키워 본 intermixed wrongly
+

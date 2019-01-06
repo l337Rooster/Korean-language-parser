@@ -275,21 +275,27 @@ tm = TagMap
 # ---------- labeling & reference metadata for specific, un-mapped morpheme:TAG pairs ----------
 
 tm(tagPat="이:VCP",          posLabel="Verb\nTo be", notes="The positive copula, to be. Always attached directly to the equated noun form")
+
 tm(tagPat="의:JKG",          posLabel="Possessive\nParticle", notes="The possessive suffix, attached to the owning entity, indicates ownership of the following entity")
-tm(tagPat="겠:EP",           posLabel="Intension\nMarker", refs={})
+tm(tagPat="(으시|시):EP",      posLabel="Honorific\nMarker", )
+
+tm(tagPat="(이|가):JKS",      posLabel="Subject\nMarker", )
 tm(tagPat="(을|를):JKO",      posLabel="Object\nMarker", refs={})
 tm(tagPat="(은|는):JKO",      posLabel="Subject\nMarker", )
+
 tm(tagPat="(아요|어요|에요):EF", posLabel="Polite\nEnding", )
 tm(tagPat="(아|어|야):EF",    posLabel="Informal\nEnding", )
 tm(tagPat="다:EF",           posLabel="Plain-form\nEnding", )
 tm(tagPat="습니다:EF",        posLabel="Formal\nEnding", )
+tm(tagPat="ㄹ게:EF",         posLabel="Future Tense\nSuffix", )
+tm(tagPat="네요:EF",          posLabel="Surprised\nEnding", )
+
+tm(tagPat="겠:EP",           posLabel="Intension\nMarker", refs={})
+tm(tagPat="면:EC",           posLabel="If\nSuffix", )
+
 tm(tagPat="(ㄴ|은|는|ㄹ):ETM", posLabel="Adjectival\nSuffix", )
 tm(tagPat="(와|과):JC",       posLabel="And/With\nParticle", )
-tm(tagPat="(이|가):JKS",      posLabel="Subject\nMarker", )
-tm(tagPat="(으시|시):EP",      posLabel="Honorific\nMarker", )
-tm(tagPat="네요:EF",          posLabel="Surprised\nEnding", )
 tm(tagPat="만약:NNG",         posLabel="If\nPrefix", )
-tm(tagPat="면:EC",           posLabel="If\nSuffix", )
 tm(tagPat="보다:JKB",         posLabel="Comparison\nParticle", )
 tm(tagPat="부터:JX",         posLabel="Since\nParticle", )
 
@@ -332,7 +338,7 @@ tm( # 은/는 topic marker
 tm( # 들 pluralizer
     tagPat=r'들:(TM|XSN)', repl=r'들:PRT',
     basePOS="VA", posLabel="Plural\nParticle", descr="Pluralizer",
-    nodeRename="Noun Phrase:Plural",
+    # nodeRename="Noun Phrase:Plural",
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-12/#kp1", },
 )
 

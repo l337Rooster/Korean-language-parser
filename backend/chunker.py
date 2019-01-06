@@ -18,7 +18,7 @@ class Chunker(object):
                              {<AUX.*>}
          Adverb:             {<MAG>}
          NounDerivedAdjective: {<VAND.*>}
-         Adjective:          {<Adverb>*<VA|VV|NounDerivedAdjective|NounDerivedVerb><ETM>}
+         AdjectivalPhrase:   {<Adverb>*<Object>*<VA|VV|AuxiliaryVerbForm|NounDerivedAdjective|NounDerivedVerb><ETM>}
          DescriptiveVerb:    {<VA|NounDerivedAdjective>}
          Verb:               {<VV|VCN|VX|NounDerivedVerb|DescriptiveVerb>}
          NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
@@ -31,7 +31,7 @@ class Chunker(object):
          Substantive:        {<Noun><Noun>*}
                              {<Pronoun>}
                              {<NominalizedVerb>}            
-         NounPhrase:         {<MM>*<XPN>*<Adverb>*<Adjective>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
+         NounPhrase:         {<MM>*<XPN>*<Adverb>*<AdjectivalPhrase>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
     
          Component:          {<NounPhrase|Possessive><JC|CON.*>}
          Connection:         {<Component><Component>*<NounPhrase|Possessive>}
@@ -39,9 +39,9 @@ class Chunker(object):
          Possessive:         {<NounPhrase><JKG><NounPhrase>}
          Constituent:        {<NounPhrase|Possessive|Connection>}
     
-         PrepositionalPhrase: {<Constituent|Object|Adjective>*<Constituent|Object|Adjective><PRP.*>}
+         PrepositionalPhrase: {<Constituent|Object|AdjectivalPhrase>*<Constituent|Object|AdjectivalPhrase><PRP.*>}
          AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<VerbSuffix>*<ADVEC.*>}
-    
+   
          Complement:         {<Constituent><JKC>} 
          Object:             {<Constituent|PrepositionalPhrase><JKO>}  
          Subject:            {<Constituent|PrepositionalPhrase><JKS>}
