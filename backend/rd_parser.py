@@ -70,6 +70,7 @@ class ParseTree(object):
     @classmethod
     def makeNode(cls, label, marker, constituents):
         "makes a node with given label & constituents as children"
+        label = label[0].capitalize() + label[1:]
         nn = cls('node', label, None)
         constituents = constituents if type(constituents) == list else [constituents]
         for c in constituents:
@@ -98,10 +99,6 @@ class ParseTree(object):
     def delete(self, index):
         "deletes indexed child"
 
-    def children(self):
-        "return iterable over children"
-        return self.children
-
     def count(self):
         "return count of child nodes"
         return len(self.children)
@@ -114,6 +111,15 @@ class ParseTree(object):
 
     def isEmpty(self):
         return len(self.children) == 0
+
+    def pprint(self, level=0, closer=''):
+        indent = '  ' * level
+        if self.isEmpty():
+            print(indent + self.label + closer)
+        else:
+            print(indent + self.label + ' (')
+            for c in self.children:
+                c.pprint(level + 1, closer + (')' if c == self.children[-1] else ''))
 
     # not sure if we need state to be a stack yet
     # def pushState(self, state):
@@ -137,12 +143,15 @@ def grammarRule(rule):
     @functools.wraps(rule)
     def backtrack_wrapper(self, *args, **kwargs):
         marker = self.lexer.mark()
+        print('--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
         result = rule(self, *args, **kwargs)
-        node = ParseTree.makeNode(rule.__name__.capitalize(), marker, result)
+        node = ParseTree.makeNode(rule.__name__, marker, result)
         if not node:
             self.lexer.backTrackTo(marker)
+            print('    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
             return []
         else:
+            print('    found', node)
             return [node]
     return backtrack_wrapper
 
@@ -176,7 +185,7 @@ def sequence(*rules):
     nodes = []
     for r in rules:
         nodes.extend(eval(r))
-    return nodes if all(nodes) else []
+    return nodes if all(nodes) and len(nodes) == len(rules) else []
 
 
 # ---------------
@@ -202,7 +211,10 @@ class Parser(object):
     def parse(self):
         "begin parse, return ParseTree root node"
 
-        return self.sentence()
+        s = self.sentence()[0]
+        s.pprint()
+
+        return s
 
     @grammarRule
     def sentence(self):
@@ -215,10 +227,10 @@ class Parser(object):
         # loop getting clauses until sentence end
         while True:
             c = self.clause()
-            if self.lexer.peek(r'(.*:SF)'):
-                break
             # add clause or current terminal if not recognized
             constituents.extend(c or self.lexer.next())
+            if self.lexer.peek(r'(.*:SF)'):
+                break
         #
         return constituents
 
@@ -241,12 +253,12 @@ class Parser(object):
     def nounPhrase(self):
         "parse a noun-phrase"
         #
-        return sequence(optional(self.determiner), zeroOrMore(self.adjective), self.noun, optional(self.marker))
+        return sequence(optional(self.determiner), zeroOrMore(self.adjective), self.noun(), optional(self.marker))
 
     @grammarRule
     def adjective(self):
         "adjective"
-        return sequence(self.descriptiveVerb, self.adjectivalParticle)
+        return sequence(self.descriptiveVerb(), self.adjectivalParticle())
 
     @grammarRule
     def descriptiveVerb(self):
@@ -276,12 +288,12 @@ class Parser(object):
     @grammarRule
     def verbPhrase(self):
         "verb phrase"
-        return sequence(self.verb, self.verbConnectingParticle)
+        return sequence(self.verb(), self.verbConnectingParticle())
 
     @grammarRule
     def predicate(self):
         "sentence-ending predicate"
-        return sequence(self.verb, self.predicateEndingSuffix)
+        return sequence(self.verb(), self.predicateEndingSuffix())
 
     @grammarRule
     def verb(self):
