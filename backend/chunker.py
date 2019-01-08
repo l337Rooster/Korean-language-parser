@@ -28,7 +28,7 @@ class Chunker(object):
 
          Noun:               {<NN.*|NR|SL>}       
          Pronoun:            {<NP>}
-         Substantive:        {<Noun><Noun>*}
+         Substantive:        {<Noun>}
                              {<Pronoun>}
                              {<NominalizedVerb>}            
          NounPhrase:         {<MM>*<XPN>*<Adverb>*<AdjectivalPhrase>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}

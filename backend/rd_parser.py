@@ -84,10 +84,13 @@ class ParseTree(object):
         self.notes = notes
         #
         self.children = []
-        self.state = 'start'
+
+    def __repr__(self):
+        return '{0}: {1} [{2}]'.format(self.type, self.label, ', '.join(c.label for c in self.children))
 
     def append(self, node):
         "adds child node"
+        self.children.append(node)
 
     def insert(self, index, node):
         "inserts child node before given index"
@@ -97,18 +100,18 @@ class ParseTree(object):
 
     def children(self):
         "return iterable over children"
+        return self.children
 
     def count(self):
         "return count of child nodes"
+        return len(self.children)
 
     def phrase(cls, type, label, *constituents):
         "appends constituents as a phrase subtree"
 
-    @property
     def isLeaf(self):
-        return self.type == 'leaf'
+        return self.type == 'terminal'
 
-    @property
     def isEmpty(self):
         return len(self.children) == 0
 
@@ -144,16 +147,22 @@ def grammarRule(rule):
     return backtrack_wrapper
 
 # parser helper functions
+def eval(rule):
+    return rule() if callable(rule) else rule
+
 def optional(rule):
-    return rule() or [ParseTree.nullNode]
+    return eval(rule) or [ParseTree.nullNode]
 
 def anyOneOf(*rules):
-    return any(r() for r in rules)
+    for r in rules:
+        node = eval(r)
+        if node:
+            return node
 
 def oneOrMore(rule):
     nodes = []
     while True:
-        node = rule()
+        node = eval(rule)
         if node:
             nodes.extend(node)
         else:
@@ -166,7 +175,7 @@ def zeroOrMore(rule):
 def sequence(*rules):
     nodes = []
     for r in rules:
-        nodes.extend(r())
+        nodes.extend(eval(r))
     return nodes if all(nodes) else []
 
 
@@ -178,6 +187,7 @@ class Parser(object):
     def __init__(self, posList):
         self.posList = posList
         self.lexer = Lexer(posList)
+        self.state = 'start'
 
     def mark(self):
         "return marker for current parsing state"
@@ -202,9 +212,13 @@ class Parser(object):
         # subordinateClause ::= clase (ending with  SENTENCE_CONNECTOR construct)
 
         constituents = []
-        # loop getting clauses until ending main clause
-        while self.state != 'end':
-            constituents.extend(self.clause())
+        # loop getting clauses until sentence end
+        while True:
+            c = self.clause()
+            if self.lexer.peek(r'(.*:SF)'):
+                break
+            # add clause or current terminal if not recognized
+            constituents.extend(c or self.lexer.next())
         #
         return constituents
 
@@ -227,7 +241,7 @@ class Parser(object):
     def nounPhrase(self):
         "parse a noun-phrase"
         #
-        return sequence(optional(self.determiner), zeroOrMore(self.adjective), oneOrMore(self.noun), optional(self.marker))
+        return sequence(optional(self.determiner), zeroOrMore(self.adjective), self.noun, optional(self.marker))
 
     @grammarRule
     def adjective(self):
@@ -262,18 +276,17 @@ class Parser(object):
     @grammarRule
     def verbPhrase(self):
         "verb phrase"
-        nodes = sequence(self.verb, self.verbConnectingParticle)
-        if nodes:
-            self.state = 'connecting'
-        return nodes
+        return sequence(self.verb, self.verbConnectingParticle)
 
     @grammarRule
     def predicate(self):
         "sentence-ending predicate"
-        nodes = sequence(self.verb, self.predicateEndingSuffix)
-        if nodes:
-            self.state = 'end'
-        return nodes
+        return sequence(self.verb, self.predicateEndingSuffix)
+
+    @grammarRule
+    def verb(self):
+        "verb"
+        return self.lexer.next(r'.*:(V.*)')
 
     @grammarRule
     def verbConnectingParticle(self):
@@ -285,7 +298,16 @@ class Parser(object):
         "sentence-ending suffix"
         return self.lexer.next(r'.*:(EF)')
 
-# ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
+
+if __name__ == "__main__":
+    #
+    posList = ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
+
+    p = Parser(posList)
+    p.parse()
+
+
+
 
 
 
