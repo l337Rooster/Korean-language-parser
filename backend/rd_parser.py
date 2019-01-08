@@ -174,8 +174,9 @@ def oneOrMore(rule):
         node = eval(rule)
         if node:
             nodes.extend(node)
-        else:
+        if not node or not callable(rule):
             break
+
     return nodes
 
 def zeroOrMore(rule):
@@ -186,7 +187,6 @@ def sequence(*rules):
     for r in rules:
         nodes.extend(eval(r))
     return nodes if all(nodes) and len(nodes) == len(rules) else []
-
 
 # ---------------
 
@@ -253,7 +253,12 @@ class Parser(object):
     def nounPhrase(self):
         "parse a noun-phrase"
         #
-        return sequence(optional(self.determiner), zeroOrMore(self.adjective), self.noun(), optional(self.marker))
+        return sequence(optional(self.determiner), optional(self.adjectivalPhrase), anyOneOf(self.noun, self.nounPhrase), optional(self.marker))
+
+    @grammarRule
+    def adjectivalPhrase(self):
+        "adjectival phrase"
+        return anyOneOf(self.possessive, oneOrMore(self.adjective))
 
     @grammarRule
     def adjective(self):
@@ -276,6 +281,11 @@ class Parser(object):
         return self.lexer.next(r'.*:(MM)')
 
     @grammarRule
+    def possessive(self):
+        "nounPhrase + possessive marker"
+        return sequence(self.nounPhrase(), self.possessiveMarker())
+
+    @grammarRule
     def noun(self):
         "noun"
         return self.lexer.next(r'.*:(N.*)')
@@ -284,6 +294,11 @@ class Parser(object):
     def marker(self):
         "noun marker"
         return self.lexer.next(r'.*:(JKS|JKO|JKC)')
+
+    @grammarRule
+    def possessiveMarker(self):
+        "possessive marker"
+        return self.lexer.next(r'.*:(JKG)')
 
     @grammarRule
     def verbPhrase(self):
@@ -314,6 +329,17 @@ class Parser(object):
 if __name__ == "__main__":
     #
     posList = ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
+    posList = ['저:MM',
+                 '작:VA',
+                 '은:ETM',
+                 '소년:NNG',
+                 '의:JKG',
+                 '남동생:NNG',
+                 '밥:NNG',
+                 '을:JKO',
+                 '먹:VV',
+                 '다:EF',
+                 '.:SF']
 
     p = Parser(posList)
     p.parse()
