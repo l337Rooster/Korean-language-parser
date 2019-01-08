@@ -13,45 +13,34 @@ class Chunker(object):
     # the main NLTK chunking grammar
     grammar = r"""
 
-         NounDerivedVerb:    {<VND.*>}
-         AuxiliaryVerb:      {<EC><VX|VV>}
-                             {<AUX.*>}
-         Adverb:             {<MAG>}
-         NounDerivedAdjective: {<VAND.*>}
-         AdjectivalPhrase:   {<Adverb>*<Object>*<VA|VV|VCP|AuxiliaryVerbForm|NounDerivedAdjective|NounDerivedVerb><ETM>}
-         DescriptiveVerb:    {<VA|NounDerivedAdjective>}
-         Verb:               {<VV|VCN|VX|NounDerivedVerb|DescriptiveVerb>}
-         NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
-                             {<AuxiliaryVerbForm><NOM.*>}
-
-         VerbSuffix:         {<EP|PSX.*>*<EF|EC>*}
-
-         Noun:               {<NN.*|NR|SL>}       
-         Pronoun:            {<NP>}
-         Substantive:        {<Noun>}
-                             {<Pronoun>}
-                             {<NominalizedVerb>}            
-         NounPhrase:         {<MM>*<XPN>*<Adverb>*<AdjectivalPhrase>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
-
-         Component:          {<NounPhrase|Possessive><JC|CON.*>}
-         Connection:         {<Component><Component>*<NounPhrase|Possessive>}
-
-         Possessive:         {<NounPhrase><JKG>}
-         Constituent:        {<NounPhrase|Possessive|Connection>}
-
-         PrepositionalPhrase: {<Constituent|Object|AdjectivalPhrase>*<Constituent|Object|AdjectivalPhrase><PRP.*>}
-         AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<VerbSuffix>*<ADVEC.*>}
-
-         Complement:         {<Constituent><JKC>} 
-         Object:             {<Constituent|PrepositionalPhrase><JKO>}  
-         Subject:            {<Constituent|PrepositionalPhrase><JKS>}
-         Topic:              {<Constituent|PrepositionalPhrase><TOP.*>}
-
-         Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
-         AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
-         NominalVerbForm:    {<Verb|AuxiliaryVerbForm><NMF.*>}
-         Predicate:          {<Adverb|AdverbialPhrase>*<Verb|AuxiliaryVerbForm|NominalVerbForm>*<VerbSuffix>}
-
+        Sentence:           {<SubordinateClause>*<PredicateClause>}
+        PredicateClause:    {<Clause><EndingSuffix>}
+        SubordinateClause:  {<Clause><ConnectingSuffix>}
+        
+        Clause:             {<Phrase><Phrase>*}
+        Phrase:             {<NounPhrase|ObjectPhrase|SubjectPhrase|TopicPhrase|VerbPhrase>}
+        
+        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun>}
+        ObjectPhrase:       {<NounPhrase><JKO>}
+        SubjectPhrase:      {<NounPhrase><JKS>}
+        TopicPhrase:        {<NounPhrase><TOP.*>}
+        
+        Determiner:         {<MM>}
+        AdjectivalPhrase:   {<Adjective>*<Possessive>*<Adjective>*}
+        Adjective:          {<DescriptiveVerb><ETM>}
+        DescriptiveVerb:    {<VA|VCP|VCN>}
+        Possessive:         {<Noun><JKG>}
+        
+        Noun:               {<NN.*|NR|SL|NP>}
+        
+        VerbPhrase:         {<Adverb>*<Verb>}
+        Adverb:             {<MAG>}
+        
+        Verb:               {<VV|VCN|VX>}
+        
+        ConnectingSuffix:   {<EC>}
+        EndingSuffix:       {<EF>}
+        
          """
 
     grammarXXX = r"""

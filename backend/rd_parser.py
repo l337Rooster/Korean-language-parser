@@ -67,21 +67,10 @@ class ParseTree(object):
 
     nullNode = None
 
-    @classmethod
-    def makeNode(cls, label, marker, constituents):
-        "makes a node with given label & constituents as children"
-        label = label[0].capitalize() + label[1:]
-        nn = cls('node', label, None)
-        constituents = constituents if type(constituents) == list else [constituents]
-        for c in constituents:
-            if c and c != ParseTree.nullNode:
-                nn.append(c)
-        return None if nn.isEmpty() else nn
-
-    def __init__(self, type, label, parent, notes=''):
+    def __init__(self, type, label, startMark, endMark, notes=''):
         self.type = type
         self.label = label
-        self.parent = parent
+        self.startMark, self.endMark = startMark, endMark
         self.notes = notes
         #
         self.children = []
@@ -142,12 +131,12 @@ ParseTree.nullNode = ParseTree('null', 'null', None)
 def grammarRule(rule):
     @functools.wraps(rule)
     def backtrack_wrapper(self, *args, **kwargs):
-        marker = self.lexer.mark()
+        startMark = self.lexer.mark()
         print('--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
         result = rule(self, *args, **kwargs)
-        node = ParseTree.makeNode(rule.__name__, marker, result)
+        node = self.makeNode(rule.__name__, startMark, result)
         if not node:
-            self.lexer.backTrackTo(marker)
+            self.lexer.backTrackTo(startMark)
             print('    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
             return []
         else:
@@ -163,10 +152,21 @@ def optional(rule):
     return eval(rule) or [ParseTree.nullNode]
 
 def anyOneOf(*rules):
+    # eval all rules, take the longest matching
+    longest = None; length = 0
     for r in rules:
         node = eval(r)
-        if node:
-            return node
+        if node and node[0] != ParseTree.nullNode:
+            l = sum(n.terminalSpan() for n in node)
+            if not longest or l > length:
+                longest, length = node, l
+            # restart matching
+            node[0].lexer.backTrack(node[0].startMark)
+    #
+    if longest:
+        # seek to end of selected longes match
+        longest[0].lexer.backTrack(longest[-1].endMark)
+        return longest
 
 def oneOrMore(rule):
     nodes = []
@@ -216,6 +216,19 @@ class Parser(object):
 
         return s
 
+    def makeNode(self, label, startMark, constituents):
+        "makes a node with given label & constituents as children"
+        label = label[0].capitalize() + label[1:]
+        nn = ParseTree('node', label, startMark, self.lexer.mark())
+        constituents = constituents if type(constituents) == list else [constituents]
+        for c in constituents:
+            if c and c != ParseTree.nullNode:
+                nn.append(c)
+        return None if nn.isEmpty() else nn
+
+
+    # -----------  grammar rules ---------
+
     @grammarRule
     def sentence(self):
         "parses top-level sentence"
@@ -228,7 +241,7 @@ class Parser(object):
         while True:
             c = self.clause()
             # add clause or current terminal if not recognized
-            constituents.extend(c or self.lexer.next())
+            constituents.extend(c or [self.lexer.next()])
             if self.lexer.peek(r'(.*:SF)'):
                 break
         #
@@ -247,18 +260,37 @@ class Parser(object):
     def phrase(self):
         "parse a phrase"
 
-        return anyOneOf(self.nounPhrase, self.verbPhrase, self.predicate)
+        return anyOneOf(self.nounPhrase,
+                        self.objectPhrase,
+                        self.subjectPhrase,
+                        self.topicPhrase,
+                        self.verbPhrase,
+                        self.predicate)
 
     @grammarRule
     def nounPhrase(self):
         "parse a noun-phrase"
-        #
-        return sequence(optional(self.determiner), optional(self.adjectivalPhrase), anyOneOf(self.noun, self.nounPhrase), optional(self.marker))
+        return sequence(optional(self.determiner), optional(self.adjectives), self.noun())
 
     @grammarRule
-    def adjectivalPhrase(self):
-        "adjectival phrase"
-        return anyOneOf(self.possessive, oneOrMore(self.adjective))
+    def objectPhrase(self):
+        "parse a noun-phrase with object-marker"
+        return sequence(self.nounPhrase(), self.lexer.next(r'.*:JKO)'))
+
+    @grammarRule
+    def subjectPhrase(self):
+        "parse a noun-phrase with subject-marker"
+        return sequence(self.nounPhrase(), self.lexer.next(r'.*:JKS)'))
+
+    @grammarRule
+    def topicPhrase(self):
+        "parse a noun-phrase with topic-marker"
+        return sequence(self.nounPhrase(), self.lexer.next(r'(ㄴ|은|는):JX'))
+
+    @grammarRule
+    def adjectives(self):
+        "adjective sequence"
+        return sequence(zeroOrMore(self.adjective), optional(self.possessive), zeroOrMore(self.adjective))
 
     @grammarRule
     def adjective(self):
@@ -282,8 +314,8 @@ class Parser(object):
 
     @grammarRule
     def possessive(self):
-        "nounPhrase + possessive marker"
-        return sequence(self.nounPhrase(), self.possessiveMarker())
+        "possessive"
+        return sequence(self.noun(), self.possessiveMarker())
 
     @grammarRule
     def noun(self):
@@ -328,7 +360,6 @@ class Parser(object):
 
 if __name__ == "__main__":
     #
-    posList = ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
     posList = ['저:MM',
                  '작:VA',
                  '은:ETM',
@@ -339,6 +370,20 @@ if __name__ == "__main__":
                  '을:JKO',
                  '먹:VV',
                  '다:EF',
+                 '.:SF']
+    posList = ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
+    posList = ['저:NP',
+                 '의:JKG',
+                 '친구:NNG',
+                 '는:JX',
+                 '아주:MAG',
+                 '예쁘:VA',
+                 'ㄴ:ETM',
+                 '차:NNG',
+                 '를:JKO',
+                 '사:VV',
+                 '았:EP',
+                 '어요:EF',
                  '.:SF']
 
     p = Parser(posList)
