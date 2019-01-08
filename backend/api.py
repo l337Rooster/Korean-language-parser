@@ -1,4 +1,4 @@
-#  backend/api.py  - Konlpy Korean parser API
+#  backend/api.py  - Khaiii-based parser API
 #
 #
 __author__ = 'jwainwright'
@@ -323,9 +323,22 @@ if __name__ == "__main__":
 # 이것은 너무 작은가요?  그 학교가 좋은가?  그 사람이 우리 엄마인가?
 #    뭔가 제가 모르는 일이 있었어요?
 
+# 그 분은 한국말을 이해하시지?  - confirmation-seeking 지:EF  (in a question?, if not then a recommendation)
+# 맞춤법과 문법 오류를 찾지 못했습니다. - negative-marking 지:EC in an a\uxialiary verb
+# multiple-clause examples (아/어서, ~면, ...)
+# 만약에 노력하면 한국어를 잘 말할 것 같아요.
+# 근데 가서 뭐 하지?
+# 날이 추워서 집에만 있는다.
+# 참기름을 넣어서 더 맛있게 만들었다.
+# 그녀는 어느 모로나 그녀의 여동생처럼 총명하다. - what ios the 나:JC connector here?
+# 나는 일하러 달려갈 것이다. 그렇지 않으면 나는 거기에 차를 몰고 갈 것이다.   - the "그렇지 않으면" is just "Or,"
+# 추우면 못 뛰니까 안 뛰겠다.  - two conditionals in one sentene
+
 # 대한민국 사람들 중에 지하철을 타 본 사람은 다 아실 거예요. - Will's sentence
 # 이야기를 사랑하는 제시카와 앤, 그리고 이 이야기를 가장 먼저 들어준 디에게  - dedication in H.P
-
+# 금속은 뜨거우면 팽창하고 차가우면 수축한다.  two 면 in a single clause?
+# 프랑스의 세계적인 의상 디자이너 Emanuel Ungaro가 실내 장식용 직물 디자이너로 나서었다.  SWRC parser sample sentence
+# 그녀는 어느 모로나 그녀의 여동생처럼 총명하다 - '어느 모로나' is an idiom which means 'in every respect', need to map in lexer
 # 말포이는 해리와 론이 조금 피곤해 보이기는 했지만 그다음 날에도 아주 기분 좋은 얼굴로 여전히 호그와트에 있는 걸 보자, 자신의 눈을 믿을 수가 없었다.   H.P.
 
 #  this OK: 김의 큰 집에서 파티가 있었어   or  김의 큰 집에서도 음식과 음료가 있었어   or 김의 새로운 집에서도 음식과 음료가 있을 거예요.

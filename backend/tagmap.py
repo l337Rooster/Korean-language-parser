@@ -291,7 +291,7 @@ tm(tagPat="ㄹ게:EF",         posLabel="Future Tense\nSuffix", )
 tm(tagPat="네요:EF",          posLabel="Surprised\nEnding", )
 
 tm(tagPat="겠:EP",           posLabel="Intension\nMarker", refs={})
-tm(tagPat="면:EC",           posLabel="If\nSuffix", )
+tm(tagPat="(으면|면):EC",     posLabel="If\nSuffix", )
 
 tm(tagPat="(ㄴ|은|는|ㄹ):ETM", posLabel="Adjectival\nSuffix", )
 tm(tagPat="(와|과):JC",       posLabel="And/With\nParticle", )
