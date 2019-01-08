@@ -43,6 +43,39 @@ class Chunker(object):
         
          """
 
+    grammar = r"""
+    
+        EndingSuffix:       {<EF>}
+        ConnectingSuffix:   {<EC>}
+        
+        Verb:               {<VV|VCN|VX>}
+        
+        Adverb:             {<MAG>}
+        VerbPhrase:         {<Adverb>*<Verb><EP|PSX.*>*}
+        
+        Noun:               {<NN.*|NR|SL|NP><XSN>*}
+        
+        Possessive:         {<Noun><JKG>}
+        DescriptiveVerb:    {<VA|VCP|VCN>}
+        Adjective:          {<DescriptiveVerb><ETM>}
+        AdjectivalPhrase:   {<Adverb>*<Adjective>*<Possessive>*<Adjective>*}
+        Determiner:         {<MM>}
+        
+        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun>}
+        TopicPhrase:        {<NounPhrase><TOP.*>}
+        SubjectPhrase:      {<NounPhrase><JKS>}
+        ComplementPhrase:   {<NounPhrase><JKC>}
+        ObjectPhrase:       {<NounPhrase><JKO>}
+        
+        Phrase:             {<NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
+        
+        SubordinateClause:  {<Phrase><Phrase>*<VerbPhrase><ConnectingSuffix>}
+        Predicate:          {<VerbPhrase><EndingSuffix>}
+        MainClause:         {<Phrase><Phrase>*<Predicate>}
+        Sentence:           {<SubordinateClause>*<MainClause>}
+            
+    """
+
     grammarXXX = r"""
 
          NounDerivedVerb:    {<VND.*>}
