@@ -15,12 +15,10 @@ class Chunker(object):
 
     grammar = r"""
     
-        EndingSuffix:       {<EF>}
-        ConnectingSuffix:   {<EC|ADVEC.*>}
-        
         Verb:               {<VV|VX|DescriptiveVerb>}
         
         Adverb:             {<MAG>}
+                            {<VA|VAND.*><EC>}
         VerbPhrase:         {<Adverb>*<Verb><EP|PSX.*>*}
         
         Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
@@ -39,6 +37,9 @@ class Chunker(object):
         ObjectPhrase:       {<NounPhrase><JKO>}     # ObjectPhrase
         
         Phrase:             {<NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
+        
+        EndingSuffix:       {<EF>}
+        ConnectingSuffix:   {<EC|ADVEC.*>}
         
         SubordinateClause:  {<Phrase><Phrase>*<VerbPhrase><ConnectingSuffix>}
         Predicate:          {<VerbPhrase><EndingSuffix>}
