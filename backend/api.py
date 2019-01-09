@@ -62,6 +62,7 @@ def parse():
     sentence = request.form.get('sentence')
     if not sentence:
         return jsonify(result="FAIL", msg="Missing sentence")
+    showAllLevels = request.form.get('showAllLevels') == 'true'
 
     # build a string for the KHaiii phoneme analyzer
     if sentence.strip()[-1] not in ['.', '?', '!']:
@@ -98,7 +99,7 @@ def parse():
         phrases = Chunker.phraseList(chunkTree)
 
         #
-        parseTree = buildParseTree(chunkTree)
+        parseTree = buildParseTree(chunkTree, showAllLevels=showAllLevels)
 
         debugging = dict(posList=pformat(s['posList']),
                          mappedPosList=pformat(mappedPosList),
@@ -118,16 +119,17 @@ def parse():
     return jsonify(result="OK",
                    sentences=sentences)
 
-def buildParseTree(chunkTree):
+def buildParseTree(chunkTree, showAllLevels=False):
     "constructs display structures from NLTK chunk-tree"
     # first, recursively turn the chunk tree into a Python nested dict so it can be JSONified
     #  gathering terminals list & adding level from root & parent links along the way
     terminals = []; height = [0]; allNodes = []
     def asDict(chunk, parent=None, level=0, isLastChild=False):
         height[0] = max(height[0], level)
-        while isinstance(chunk, nltk.Tree) and len(chunk) == 1:
-            # flatten degenerate tree nodes
-            chunk = chunk[0]
+        if not showAllLevels:
+            # elide degenerate tree nodes (those with singleton children)
+            while isinstance(chunk, nltk.Tree) and len(chunk) == 1:
+                chunk = chunk[0]
         if isinstance(chunk, nltk.Tree):
             tag = chunk.label()
             # ad-hoc label mappings
@@ -274,6 +276,8 @@ if __name__ == "__main__":
 # 책 두세 권 있어요.
 # 어머니께서 아이에게 밥을 먹이셨습니다.
 # 저는 학교에 안 갔어요.   <---  up to here with new grammar
+# 날이 추워서 집에만 있는다.   아기가 있어서 강아지는 안 키워요
+# 참기름을 넣어서 더 맛있게 만들었다.
 # 탐은 공부하기를 싫어한다.
 # 기차가 떠나가 버렸어요.  or
 # 인삼은 한국에서만 잘 자랍니다.

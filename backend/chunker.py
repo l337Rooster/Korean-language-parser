@@ -11,58 +11,28 @@ class Chunker(object):
     "finds phrase chunks in the POS list produced by the KHaiii phoneme analyzer"
 
     # the main NLTK chunking grammar
-    grammar = r"""
 
-        Sentence:           {<SubordinateClause>*<PredicateClause>}
-        PredicateClause:    {<Clause><EndingSuffix>}
-        SubordinateClause:  {<Clause><ConnectingSuffix>}
-        
-        Clause:             {<Phrase><Phrase>*}
-        Phrase:             {<NounPhrase|ObjectPhrase|SubjectPhrase|TopicPhrase|VerbPhrase>}
-        
-        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun>}
-        ObjectPhrase:       {<NounPhrase><JKO>}
-        SubjectPhrase:      {<NounPhrase><JKS>}
-        TopicPhrase:        {<NounPhrase><TOP.*>}
-        
-        Determiner:         {<MM>}
-        AdjectivalPhrase:   {<Adjective>*<Possessive>*<Adjective>*}
-        Adjective:          {<DescriptiveVerb><ETM>}
-        DescriptiveVerb:    {<VA|VCP|VCN>}
-        Possessive:         {<Noun><JKG>}
-        
-        Noun:               {<NN.*|NR|SL|NP>}
-        
-        VerbPhrase:         {<Adverb>*<Verb>}
-        Adverb:             {<MAG>}
-        
-        Verb:               {<VV|VCN|VX>}
-        
-        ConnectingSuffix:   {<EC>}
-        EndingSuffix:       {<EF>}
-        
-         """
 
     grammar = r"""
     
         EndingSuffix:       {<EF>}
-        ConnectingSuffix:   {<EC>}
+        ConnectingSuffix:   {<EC|ADVEC.*>}
         
-        Verb:               {<VV|VCN|VX|VCP>}
+        Verb:               {<VV|VX|DescriptiveVerb>}
         
         Adverb:             {<MAG>}
         VerbPhrase:         {<Adverb>*<Verb><EP|PSX.*>*}
         
-        Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>}  # Count
+        Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
         Noun:               {<NN.*|NR|SL|NP>}       # Noun
         
         Possessive:         {<Noun><JKG>}
-        DescriptiveVerb:    {<VA|VCP|VCN>}
-        Adjective:          {<DescriptiveVerb|VAND.*><ETM>}
+        DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
+        Adjective:          {<DescriptiveVerb|Verb><ETM>}
         AdjectivalPhrase:   {<Adverb>*<Adjective>*<Possessive>*<Adjective>*}
         Determiner:         {<MM>}
         
-        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun|Count><XSN>*<PRT.*>*}  # NounPhrase
+        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun|Count><XSN>*<JX|PRT.*>*}  # NounPhrase
         TopicPhrase:        {<NounPhrase><TOP.*>}
         SubjectPhrase:      {<NounPhrase><JKS>}
         ComplementPhrase:   {<NounPhrase><JKC>}
@@ -75,8 +45,41 @@ class Chunker(object):
         MainClause:         {<Phrase><Phrase>*<Predicate>}
         Sentence:           {<SubordinateClause>*<MainClause>}
             
-    """
 
+    """
+# ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
+
+    grammarYYY = r"""
+
+        Sentence:           {<SubordinateClause>*<PredicateClause>}
+        PredicateClause:    {<Clause><EndingSuffix>}
+        SubordinateClause:  {<Clause><ConnectingSuffix>}
+
+        Clause:             {<Phrase><Phrase>*}
+        Phrase:             {<NounPhrase|ObjectPhrase|SubjectPhrase|TopicPhrase|VerbPhrase>}
+
+        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun>}
+        ObjectPhrase:       {<NounPhrase><JKO>}
+        SubjectPhrase:      {<NounPhrase><JKS>}
+        TopicPhrase:        {<NounPhrase><TOP.*>}
+
+        Determiner:         {<MM>}
+        AdjectivalPhrase:   {<Adjective>*<Possessive>*<Adjective>*}
+        Adjective:          {<DescriptiveVerb><ETM>}
+        DescriptiveVerb:    {<VA|VCP|VCN>}
+        Possessive:         {<Noun><JKG>}
+
+        Noun:               {<NN.*|NR|SL|NP>}
+
+        VerbPhrase:         {<Adverb>*<Verb>}
+        Adverb:             {<MAG>}
+
+        Verb:               {<VV|VCN|VX>}
+
+        ConnectingSuffix:   {<EC>}
+        EndingSuffix:       {<EF>}
+
+         """
     grammarXXX = r"""
 
          NounDerivedVerb:    {<VND.*>}

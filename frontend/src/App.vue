@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.5.5 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.6.0 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -20,6 +20,8 @@
                                     <a :href="t.slug.replace('${sentence}', sentence)" target="_blank">{{t.title}}</a> ~
                                 </span>
                             </template>
+                            <label for="show-all-levels">Show all levels: </label>
+                            <input class="" type="checkbox" id="show-all-levels" v-model="showAllLevels"> ~
                             <label for="debug">Debug output: </label>
                             <input class="" type="checkbox" id="debug" v-model="debugOutput">
                         </td>
@@ -154,6 +156,7 @@ export default {
             terminalHeight: 0, tagLabelHeight: 0,
             treeWidth: 0, treeHeight: 0,
             debugOutput: false,
+            showAllLevels: false,
             references: {},
             defPopup: null,
             nodeInDef: null,
@@ -185,7 +188,7 @@ export default {
                 url: self.APIHost + '/parse/', // '/parse/', // 'http://localhost:9000/parse/',
                 crossDomain: true,
                 cache: false,
-                data: {sentence: self.sentence},
+                data: { sentence: self.sentence, showAllLevels: self.showAllLevels },
                 success: function (response) {
                     self.parsing = false;
                     self.parseButtonText = "Parse";

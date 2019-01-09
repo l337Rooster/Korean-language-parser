@@ -275,12 +275,14 @@ tm = TagMap
 # ---------- labeling & reference metadata for specific, un-mapped morpheme:TAG pairs ----------
 #
 #  note that the apparent RE patterns below are NOT, only |-separated alternate phonemes in parens are supported
-tm(tagPat="이:VCP",          posLabel="Verb\nTo be", notes="The positive copula, to be. Always attached directly to the equated noun form")
+tm(tagPat="이:VCP",          posLabel="Copula\nTo be", notes="The positive copula, to be. Always attached directly to the equated noun form")
+tm(tagPat="아니:VCN",          posLabel="Copula\nTo not be", notes="The negative copula, to not be. Always attached directly to the equated noun form")
 
 tm(tagPat="의:JKG",          posLabel="Possessive\nParticle", notes="The possessive suffix, attached to the owning entity, indicates ownership of the following entity")
 tm(tagPat="(으시|시):EP",      posLabel="Honorific\nMarker", )
 
 tm(tagPat="(이|가):JKS",      posLabel="Subject\nMarker", )
+tm(tagPat="(께서):JKS",       posLabel="Honorific\nSubject", )
 tm(tagPat="(을|를):JKO",      posLabel="Object\nMarker", refs={})
 tm(tagPat="(은|는):JKO",      posLabel="Subject\nMarker", )
 tm(tagPat="(이|가):JKC",      posLabel="Complement\nMarker", )
