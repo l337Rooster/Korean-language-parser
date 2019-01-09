@@ -15,14 +15,18 @@ class Chunker(object):
 
     grammar = r"""
     
-        Verb:               {<VV|VX|DescriptiveVerb>}
+        Verb:               {<VV|VX|DescriptiveVerb|VND.*>}
+        NominalizedVerb:    {<Verb><NOM.*>}
+        AuxiliaryVerb:      {<EC><VX|VV>}
+                            {<AUX.*>}
         
         Adverb:             {<MAG>}
                             {<VA|VAND.*><EC>}
-        VerbPhrase:         {<Adverb>*<Verb><EP|PSX.*>*}
+        AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
+        VerbPhrase:         {<Adverb>*<Verb|AuxiliaryVerbForm><EP|PSX.*>*}
         
         Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
-        Noun:               {<NN.*|NR|SL|NP>}       # Noun
+        Noun:               {<NN.*|NR|SL|NP|NominalizedVerb>}       # Noun
         
         Possessive:         {<Noun><JKG>}
         DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
@@ -48,39 +52,8 @@ class Chunker(object):
             
 
     """
-# ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
 
-    grammarYYY = r"""
 
-        Sentence:           {<SubordinateClause>*<PredicateClause>}
-        PredicateClause:    {<Clause><EndingSuffix>}
-        SubordinateClause:  {<Clause><ConnectingSuffix>}
-
-        Clause:             {<Phrase><Phrase>*}
-        Phrase:             {<NounPhrase|ObjectPhrase|SubjectPhrase|TopicPhrase|VerbPhrase>}
-
-        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun>}
-        ObjectPhrase:       {<NounPhrase><JKO>}
-        SubjectPhrase:      {<NounPhrase><JKS>}
-        TopicPhrase:        {<NounPhrase><TOP.*>}
-
-        Determiner:         {<MM>}
-        AdjectivalPhrase:   {<Adjective>*<Possessive>*<Adjective>*}
-        Adjective:          {<DescriptiveVerb><ETM>}
-        DescriptiveVerb:    {<VA|VCP|VCN>}
-        Possessive:         {<Noun><JKG>}
-
-        Noun:               {<NN.*|NR|SL|NP>}
-
-        VerbPhrase:         {<Adverb>*<Verb>}
-        Adverb:             {<MAG>}
-
-        Verb:               {<VV|VCN|VX>}
-
-        ConnectingSuffix:   {<EC>}
-        EndingSuffix:       {<EF>}
-
-         """
     grammarXXX = r"""
 
          NounDerivedVerb:    {<VND.*>}

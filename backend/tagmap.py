@@ -486,6 +486,17 @@ tm( # ~아/어 보다 to try
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-32/#323"},
 )
 
+tm( # ~아/어 버리다 done to completion
+    tagPat=r'(아|어|여):EC;버리:(VV|VX)', repl=r'\1 버리:AUX',
+    basePOS="VX", posLabel="To Complete", descr="Auxiliary verb pattern: done to completion",
+    #nodeRename="AuxiliaryVerbForm:Seems/Looks",
+    wikiKey='버리다',
+    refs={},
+)
+
+# A/V + 아/어 버리다
+
+
 # ------ nominal verb forms V 기 ... ---------  usually mapping to NMF.*
 
 tm( # ~기는 하- indeed
