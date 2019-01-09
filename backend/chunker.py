@@ -15,14 +15,16 @@ class Chunker(object):
 
     grammar = r"""
     
+        Punctuation:        {<SP|SS|SE|SO|SW|SWK>}
+    
         Verb:               {<VV|VX|DescriptiveVerb|VND.*>}
         NominalizedVerb:    {<Verb><NOM.*>}
         AuxiliaryVerb:      {<EC><VX|VV>}
                             {<AUX.*>}
+        AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
         
         Adverb:             {<MAG>}
                             {<VA|VAND.*><EC>}
-        AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
         VerbPhrase:         {<Adverb>*<Verb|AuxiliaryVerbForm><EP|PSX.*>*}
         
         Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
@@ -30,17 +32,18 @@ class Chunker(object):
         
         Possessive:         {<Noun><JKG>}
         DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
-        Adjective:          {<DescriptiveVerb|Verb><ETM>}
-        AdjectivalPhrase:   {<Adverb>*<Adjective>*<Possessive>*<Adjective>*}
+        Adjective:          {<VerbPhrase><ETM>}
+        AdjectivalPhrase:   {<Adverb>*<Adjective>*<Possessive>*<Adjective>*<Noun|Count>}
         Determiner:         {<MM>}
         
-        NounPhrase:         {<Determiner>*<AdjectivalPhrase>*<Noun|Count><XSN>*<JX|PRT.*>*}  # NounPhrase
+        NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><XSN>*<JX|PRT.*>*}  # NounPhrase
         TopicPhrase:        {<NounPhrase><TOP.*>}
         SubjectPhrase:      {<NounPhrase><JKS>}
         ComplementPhrase:   {<NounPhrase><JKC>}
         ObjectPhrase:       {<NounPhrase><JKO>}     # ObjectPhrase
         
         Phrase:             {<NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
+                            {<Punctuation>*<Phrase><Phrase*><Phrase*><Punctuation>}
         
         EndingSuffix:       {<EF>}
         ConnectingSuffix:   {<EC|ADVEC.*>}

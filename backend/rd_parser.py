@@ -152,7 +152,7 @@ def optional(rule):
     return eval(rule) or [ParseTree.nullNode]
 
 def anyOneOf(*rules):
-    # eval all rules, take the longest matching
+    # eager match: eval all rules, take the longest matching
     longest = None; length = 0
     for r in rules:
         node = eval(r)
