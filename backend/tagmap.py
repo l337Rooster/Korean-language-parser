@@ -273,7 +273,8 @@ class TagMap(object):
 tm = TagMap
 
 # ---------- labeling & reference metadata for specific, un-mapped morpheme:TAG pairs ----------
-
+#
+#  note that the apparent RE patterns below are NOT, only |-separated alternate phonemes in parens are supported
 tm(tagPat="이:VCP",          posLabel="Verb\nTo be", notes="The positive copula, to be. Always attached directly to the equated noun form")
 
 tm(tagPat="의:JKG",          posLabel="Possessive\nParticle", notes="The possessive suffix, attached to the owning entity, indicates ownership of the following entity")
@@ -282,6 +283,7 @@ tm(tagPat="(으시|시):EP",      posLabel="Honorific\nMarker", )
 tm(tagPat="(이|가):JKS",      posLabel="Subject\nMarker", )
 tm(tagPat="(을|를):JKO",      posLabel="Object\nMarker", refs={})
 tm(tagPat="(은|는):JKO",      posLabel="Subject\nMarker", )
+tm(tagPat="(이|가):JKC",      posLabel="Complement\nMarker", )
 
 tm(tagPat="(아요|어요|에요):EF", posLabel="Polite\nEnding", )
 tm(tagPat="(아|어|야):EF",    posLabel="Informal\nEnding", )
@@ -297,8 +299,7 @@ tm(tagPat="(ㄴ|은|는|ㄹ):ETM", posLabel="Adjectival\nSuffix", )
 tm(tagPat="(와|과):JC",       posLabel="And/With\nParticle", )
 tm(tagPat="만약:NNG",         posLabel="If\nPrefix", )
 tm(tagPat="보다:JKB",         posLabel="Comparison\nParticle", )
-tm(tagPat="부터:JX",         posLabel="Since\nParticle", )
-
+tm(tagPat="부터:JX",          posLabel="Since\nParticle", )
 
 # -------------- synthetic tag patterns ----------------
 
@@ -311,7 +312,7 @@ tm(tagPat="부터:JX",         posLabel="Since\nParticle", )
 # new tags in the chunking grammar MUST be included with a trailing ".*" in the chunking grammar so that it
 #  matches all generated integer-suffixed variations of the base synthetic tag
 
-# ------------ tag-sequence foldings ---------------
+# ------------ tag-sequence foldings & renamings ---------------
 
 tm(  # noun-derived verbs, N하다, N되다, N당하다, N시키다, etc. - combine XR|NN & VND suffix into a single NDV (noun-derived verb) verb
     tagPat=r'([^:]+):(XR|NNG);([^:]+):XSV', repl=r'\1\3:VND',
@@ -323,6 +324,10 @@ tm(  # noun-derived adjectives,  - combine XR|NN & XSA suffix into a single VAND
     tagPat=r'([^:]+):(XR|NNG);([^:]+):XSA', repl=r'\1\3:VAND',
     basePOS="VA", descr="Adjective derived from a noun",
     notes="Noun-derived adjective - ${1} + ${3}",
+)
+
+tm(  # numbers
+    tagPat=r'(.*):NR', repl=r'\1:NUM', basePOS="NR", posLabel="Number",
 )
 
 # ----- dependent (aka bound) noun forms --------  map to DNF.* + DependentNounForm node rename
