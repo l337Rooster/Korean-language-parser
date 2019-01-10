@@ -17,9 +17,10 @@ class Chunker(object):
     
         Punctuation:        {<SP|SS|SE|SO|SW|SWK>}
     
+        DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
         Verb:               {<VV|VX|DescriptiveVerb|VND.*>}
         NominalizedVerb:    {<Verb><NOM.*>}
-        AuxiliaryVerb:      {<EC><VX|VV>}
+        AuxiliaryVerb:      {<EC><Verb>}
                             {<AUX.*>}
         VerbAndAuxiliary:   {<Verb><AuxiliaryVerb>}
         
@@ -31,9 +32,11 @@ class Chunker(object):
         Noun:               {<NN.*|NR|SL|NP|NominalizedVerb>}       # Noun
         
         Possessive:         {<Noun><JKG>}
-        DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
         Adjective:          {<VerbPhrase><ETM>}
-        AdjectivalPhrase:   {<Adverb>*<Adjective>*<Possessive>*<Adjective>*<Noun|Count>}
+                            {<Adverb>}
+                            {<Possessive>}
+        AdjectivalPhrase:   {<Adjective><Adjective>*<Noun|Count>}
+                            
         Determiner:         {<MM>}
         
         NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><XSN>*<JX|PRT.*>*}  # NounPhrase

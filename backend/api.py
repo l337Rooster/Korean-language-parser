@@ -86,7 +86,7 @@ def parse():
         mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups']) #, disableMapping=True)
 
         # perform chunk parsing
-        chunkTree = Chunker.parse(mappedPosList, trace=1)
+        chunkTree = Chunker.parse(mappedPosList, trace=2)
         chunkTree.pprint()
 
         # apply any synthetic-tag-related node renamings

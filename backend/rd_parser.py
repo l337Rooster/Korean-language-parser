@@ -122,7 +122,7 @@ class ParseTree(object):
     #     "pop & return last state"
     #     return self.popState()
 
-ParseTree.nullNode = ParseTree('null', 'null', None)
+ParseTree.nullNode = ParseTree('null', 'null', 0, 0)
 
 # --------------
 
