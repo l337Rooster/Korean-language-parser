@@ -473,7 +473,7 @@ tm( # 에대해 "about X" prepositional suffix
 tm( # ~아/어 보이다 to seem/look like
     tagPat=r'(아|어|여):EC;보이:(VV|VX)', repl=r'\1 보이:AUX',
     basePOS="VX", posLabel="Seems Like\nLooks Like", descr="Auxiliary verb pattern: to seem like or look like",
-    #nodeRename="AuxiliaryVerbForm:Seems/Looks",
+    #nodeRename="Verb With Auxiliary:Verb + Auxiliary",
     wikiKey='보이다',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-36/#363", "ttmik": "/lessons/ttmik-l9l12"},
 )
@@ -481,7 +481,7 @@ tm( # ~아/어 보이다 to seem/look like
 tm( # ~아/어 보다 to try
     tagPat=r'(아|어|여):EC;보:(VV|VX)', repl=r'\1 보:AUX',
     basePOS="VX", posLabel="Try/Attempt", descr="Auxiliary verb pattern: to try or to attempt",
-    #nodeRename="AuxiliaryVerbForm:Seems/Looks",
+    #nodeRename="VerbWithAuxiliary:Verb + Auxiliary",
     wikiKey='보다',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-32/#323"},
 )
@@ -489,13 +489,22 @@ tm( # ~아/어 보다 to try
 tm( # ~아/어 버리다 done to completion
     tagPat=r'(아|어|여):EC;버리:(VV|VX)', repl=r'\1 버리:AUX',
     basePOS="VX", posLabel="To Complete", descr="Auxiliary verb pattern: done to completion",
-    #nodeRename="AuxiliaryVerbForm:Seems/Looks",
+    #nodeRename="Verb With Auxiliary:Verb + Auxiliary",
     wikiKey='버리다',
     refs={},
 )
 
-# A/V + 아/어 버리다
+tm( # 고 싶다 want-to auxiliary form
+    tagPat=r'고:EC;싶:VX', repl=r'고 싶:AUX',
+    basePOS="VX", posLabel="Want to", descr="Want-to auxiliary verb form",
+    #nodeRename="Verb Suffix:WantTo",
+    wikiKey="싶다",
+    refs={"ttmik": "/lessons/l1l13", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-17/#co5"},
+    notes="",
+)
 
+# A/V + 아/어 버리다
+#
 
 # ------ nominal verb forms V 기 ... ---------  usually mapping to NMF.*
 
@@ -529,15 +538,6 @@ tm( # ㄹ/를 거 이다 future-tense suffix pattern
     nodeRename="Verb Suffix:Future Tense",
     wikiKey="none",
     refs={"ttmik": "/lessons/level-2-lesson-1-future-tense", "htsk": "/unit1/unit-1-lessons-9-16/unit-1-lesson-9/#ifut"},
-    notes="",
-)
-
-tm( # 고 싶다 want-to suffix pattern
-    tagPat=r'고:EC;싶:VX', repl=r'고 싶:PSX',
-    basePOS="VX", descr="Want-to predicate suffix",
-    nodeRename="Verb Suffix:WantTo",
-    wikiKey="싶다",
-    refs={"ttmik": "/lessons/l1l13", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-17/#co5"},
     notes="",
 )
 

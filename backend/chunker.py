@@ -21,11 +21,11 @@ class Chunker(object):
         NominalizedVerb:    {<Verb><NOM.*>}
         AuxiliaryVerb:      {<EC><VX|VV>}
                             {<AUX.*>}
-        AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
+        VerbAndAuxiliary:   {<Verb><AuxiliaryVerb>}
         
         Adverb:             {<MAG>}
                             {<VA|VAND.*><EC>}
-        VerbPhrase:         {<Adverb>*<Verb|AuxiliaryVerbForm><EP|PSX.*>*}
+        VerbPhrase:         {<Adverb>*<Verb|VerbAndAuxiliary><EP|PSX.*>*}
         
         Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
         Noun:               {<NN.*|NR|SL|NP|NominalizedVerb>}       # Noun
@@ -43,7 +43,7 @@ class Chunker(object):
         ObjectPhrase:       {<NounPhrase><JKO>}     # ObjectPhrase
         
         Phrase:             {<NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
-                            {<Punctuation>*<Phrase><Phrase*><Phrase*><Punctuation>}
+                            {<Punctuation>*<Phrase><Phrase>*<Punctuation>} 
         
         EndingSuffix:       {<EF>}
         ConnectingSuffix:   {<EC|ADVEC.*>}
