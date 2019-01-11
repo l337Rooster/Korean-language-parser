@@ -51,7 +51,7 @@ class Chunker(object):
                             {<Punctuation>*<Phrase><Phrase>*<Punctuation>} 
         
         EndingSuffix:       {<EF>}
-        ConnectingSuffix:   {<EC|ADVEC.*>}
+        ConnectingSuffix:   {<EC|ADVEC.*|CEC.*>}
         
         SubordinateClause:  {<Phrase><Phrase>*<VerbPhrase><ConnectingSuffix>}
         Predicate:          {<VerbPhrase><EndingSuffix>}

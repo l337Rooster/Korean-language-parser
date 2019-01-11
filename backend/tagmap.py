@@ -332,6 +332,15 @@ tm(  # numbers
     tagPat=r'(.*):NR', repl=r'\1:NUM', basePOS="NR", posLabel="Number",
 )
 
+tm(  # ~라고 subordinate clause connector  CEC.*
+    tagPat=r'(라고):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
+)
+
+tm(  # ~지만 subordinate clause connector  CEC.*  # todo: these will probably move into specific pattern definitions
+    tagPat=r'(지만):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
+)
+
+
 # ----- dependent (aka bound) noun forms --------  map to DNF.* + DependentNounForm node rename
 
 # ----- particles --------  usually map to PRT.* + NounPhrase node rename
