@@ -59,20 +59,29 @@ def analyzer():
 def parse():
     "parse POSTed Korean sentence"
     # grab sentence to parse
-    sentence = request.form.get('sentence')
-    if not sentence:
-        return jsonify(result="FAIL", msg="Missing sentence")
+    input = request.form.get('sentence')
+    if not input:
+        return jsonify(result="FAIL", msg="Missing input sentence(s)")
     showAllLevels = request.form.get('showAllLevels') == 'true'
 
+    # parse input & return parse results to client
+    sentences = parseInput(input, showAllLevels=showAllLevels)
+
+    return jsonify(result="OK",
+                   sentences=sentences)
+
+def parseInput(input, showAllLevels=False):
+    "parse input string into list of parsed contained sentence structures"
+
     # build a string for the KHaiii phoneme analyzer
-    if sentence.strip()[-1] not in ['.', '?', '!']:
-        sentence += '.'
-    sentence = sentence.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ')
+    if input.strip()[-1] not in ['.', '?', '!']:
+        input += '.'
+        input = input.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ')
 
     # run Khaiii, grab the parts-of-speech list it generates (morphemes + POS tags) and extract original word-to-morpheme groupings
     sentences = []  # handle possible multiple sentences
     posList = []; morphemeGroups = []
-    for w in khaiiiAPI.analyze(sentence):
+    for w in khaiiiAPI.analyze(input):
         morphemeGroups.append([w.lex, [m.lex for m in w.morphs if m.tag != 'SF']])
         for m in w.morphs:
             posList.append('{0}:{1}'.format(m.lex.strip(), m.tag))
@@ -115,15 +124,14 @@ def parse():
                       phrases=phrases,
                       debugging=debugging
                       ))
-
-    return jsonify(result="OK",
-                   sentences=sentences)
+    #
+    return sentences
 
 def buildParseTree(chunkTree, showAllLevels=False):
     "constructs display structures from NLTK chunk-tree"
     # first, recursively turn the chunk tree into a Python nested dict so it can be JSONified
     #  gathering terminals list & adding level from root & parent links along the way
-    terminals = []; height = [0]; allNodes = []
+    terminals = []; height = [0]; allNodes = []; nodeIDs = {}
     def asDict(chunk, parent=None, level=0, isLastChild=False):
         height[0] = max(height[0], level)
         if not showAllLevels:
@@ -140,7 +148,10 @@ def buildParseTree(chunkTree, showAllLevels=False):
             # build tree node
             node = dict(type='tree', tag=tag, level=level, layer=1, parent=parent)
             node['children'] = [asDict(c, node, level+1, isLastChild=i == len(chunk)-1) for i, c in enumerate(chunk)]
-            node['id'] = id(node)
+            nodeID = nodeIDs.get(id(node))
+            if not nodeID:
+                nodeIDs[id(node)] = nodeID = len(nodeIDs) + 1
+            node['id'] = nodeID
             allNodes.append(node)
             return node
         else:
@@ -149,7 +160,10 @@ def buildParseTree(chunkTree, showAllLevels=False):
             tm = TagMap.POS_labels.get(word + ":" + tag)
             tagLabel = (tm.posLabel if tm else TagMap.partsOfSpeech.get(tag)[0]).split('\n')
             node = dict(type='word', word=word, tag=tag, tagLabel=tagLabel, children=[], parent=parent, level=-1, layer=0)
-            node['id'] = id(node)
+            nodeID = nodeIDs.get(id(node))
+            if not nodeID:
+                nodeIDs[id(node)] = nodeID = len(nodeIDs) + 1
+            node['id'] = nodeID
             terminals.append(node)
             allNodes.append(node)
             return node
@@ -172,7 +186,7 @@ def buildParseTree(chunkTree, showAllLevels=False):
     layers = [list() for i in range(maxLayer + 1)]
     for n in allNodes:
         layers[n['layer']].append(n['id'])
-        n['parent'] = id(n['parent']) if n['parent'] else None
+        n['parent'] = nodeIDs[id(n['parent'])] if n['parent'] else None
     #
     return dict(tree=tree, layers=layers)
 

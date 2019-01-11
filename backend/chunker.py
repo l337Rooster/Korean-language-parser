@@ -26,7 +26,7 @@ class Chunker(object):
         
         Adverb:             {<MAG>}
                             {<VA|VAND.*><EC>}
-        VerbPhrase:         {<Adverb>*<Verb|VerbAndAuxiliary><EP|PSX.*>*}
+        VerbPhrase:         {<Adverb|AdverbialPhrase>*<Verb|VerbAndAuxiliary><EP|PSX.*>*}
         
         Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
         Noun:               {<NN.*|NR|SL|NP|NominalizedVerb>}       # Noun
@@ -36,7 +36,9 @@ class Chunker(object):
                             {<Adverb>}
                             {<Possessive>}
         AdjectivalPhrase:   {<Adjective><Adjective>*<Noun|Count>}
-                            
+        
+        AdverbialPhrase:    {<AdjectivalPhrase|Noun><EC|ADVEC.*><JX>*}
+                                    
         Determiner:         {<MM>}
         
         NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><XSN>*<JX|PRT.*>*}  # NounPhrase
@@ -45,7 +47,7 @@ class Chunker(object):
         ComplementPhrase:   {<NounPhrase><JKC>}
         ObjectPhrase:       {<NounPhrase><JKO>}     # ObjectPhrase
         
-        Phrase:             {<NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
+        Phrase:             {<AdverbialPhrase|NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
                             {<Punctuation>*<Phrase><Phrase>*<Punctuation>} 
         
         EndingSuffix:       {<EF>}

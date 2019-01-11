@@ -349,20 +349,6 @@ tm( # 들 pluralizer
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-12/#kp1", },
 )
 
-tm( # 에/에서 Location/Time marker
-    tagPat=r'(에|에서):JKB', repl=r'\1:PRT',
-    basePOS="JKB", posLabel="Time/Place\nMarker",
-    # nodeRename="NounPhrase:Location/Time",
-    refs={"ttmik": "/lessons/l1l18", "htsk": "/unit-1-lessons-9-16/lesson-12/#kp3", },
-)
-
-tm( # 에게:JKB "to/at/for" particle
-    tagPat=r'(에게|한테|께):JKB', repl=r'\1:PRT',
-    basePOS="JKB",
-    nodeRename="Noun Phrase:To/for/at",
-    refs={"ttmik": "/lessons/level-2-lesson-7", "htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp3", },
-)
-
 tm( # 밖에 other-than particle
     tagPat=r'밖에:JX', repl=r'밖에:PRT',
     basePOS="JX",
@@ -411,17 +397,31 @@ tm( # 또는 "alternatives" connecting adverb(??)
 
 # ----- adverbial predicate-phrase connectors --------  mapping to ADVEC.* & renaming AdverbialPhrase
 
+tm( # 에/에서/서 Location/Time marker
+    tagPat=r'(서|에|에서):JKB', repl=r'\1:ADVEC',
+    basePOS="JKB", posLabel="Time/Place\nMarker",
+    # nodeRename="NounPhrase:Location/Time",
+    refs={"ttmik": "/lessons/l1l18", "htsk": "/unit-1-lessons-9-16/lesson-12/#kp3", },
+)
+
+tm( # 에게:JKB "to/at/for" particle
+    tagPat=r'(에게|한테|께):JKB', repl=r'\1:ADVEC',
+    basePOS="JKB",
+    #nodeRename="Noun Phrase:To/for/at",
+    refs={"ttmik": "/lessons/level-2-lesson-7", "htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp3", },
+)
+
 tm( # 어서 "reason" adverbial verb-phrase suffix
     tagPat=r'어서:EC', repl=r'어서:ADVEC',
     basePOS="EC", posLabel="Reason-giving\nSuffix", descr="Reason-giving connecting suffix",
-    nodeRename="Adverbial Phrase:Reason",
+    #nodeRename="Adverbial Phrase:Reason",
     refs={},
 )
 
 tm( # ~ㄹ/을 때 "when/during the time" adverbial verb-phrase suffix
     tagPat=r'(ㄹ|을):ETM;때:NNG', repl=r'\1 때:ADVEC',
     basePOS="EC", posLabel="When\nSuffix", descr="At-a-time-when connecting suffix",
-    nodeRename="Adverbial Phrase:When",
+    #nodeRename="Adverbial Phrase:When",
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-42-50/lesson-42/#422",
           "kacg": "Section 7.2.1, pp 346"},
 )
@@ -429,7 +429,7 @@ tm( # ~ㄹ/을 때 "when/during the time" adverbial verb-phrase suffix
 tm( # ~ㄹ/을 때부터 "since the time when ~" adverbial verb-phrase suffix
     tagPat=r'(ㄹ|을):ETM;때:NNG;부터:JX', repl=r'\1 때부터:ADVEC',
     basePOS="EC", posLabel="Since Time When\nSuffix", descr="Since-the-time-when connecting suffix",
-    nodeRename="Adverbial Phrase:Since When Phrase",
+    #nodeRename="Adverbial Phrase:Since When Phrase",
     refs={},
 )
 
