@@ -30,7 +30,7 @@ class Chunker(object):
         
         Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
         Noun:               {<NN.*|NR|SL|NP|NominalizedVerb>}       # Noun
-        
+                            
         Possessive:         {<Noun><JKG>}
         Adjective:          {<VerbPhrase><ETM>}
                             {<Adverb>}
@@ -41,7 +41,7 @@ class Chunker(object):
                                     
         Determiner:         {<MM>}
         
-        NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><XSN>*<JX|PRT.*>*}  # NounPhrase
+        NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><Noun>*<XSN>*<JX|PRT.*>*<AdverbialPhrase>*}  # NounPhrase
         TopicPhrase:        {<NounPhrase><TOP.*>}
         SubjectPhrase:      {<NounPhrase><JKS>}
         ComplementPhrase:   {<NounPhrase><JKC>}
