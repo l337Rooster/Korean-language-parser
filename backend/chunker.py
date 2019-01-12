@@ -20,7 +20,7 @@ class Chunker(object):
         DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
         Verb:               {<VV|VX|DescriptiveVerb|VND.*>}
         NominalizedVerb:    {<Verb><NOM.*>}
-        AuxiliaryVerb:      {<EC><Verb>}
+        AuxiliaryVerb:      {<EC|NEC.*><Verb>}
                             {<AUX.*>}
         VerbAndAuxiliary:   {<Verb><AuxiliaryVerb>}
         
@@ -62,48 +62,48 @@ class Chunker(object):
     """
 
 
-    grammarXXX = r"""
-
-         NounDerivedVerb:    {<VND.*>}
-         AuxiliaryVerb:      {<EC><VX|VV>}
-                             {<AUX.*>}
-         Adverb:             {<MAG>}
-         NounDerivedAdjective: {<VAND.*>}
-         AdjectivalPhrase:   {<Adverb>*<Object>*<VA|VV|AuxiliaryVerbForm|NounDerivedAdjective|NounDerivedVerb><ETM>}
-         DescriptiveVerb:    {<VA|NounDerivedAdjective>}
-         Verb:               {<VV|VCN|VX|NounDerivedVerb|DescriptiveVerb>}
-         NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
-                             {<AuxiliaryVerbForm><NOM.*>}
-
-         VerbSuffix:         {<EP|PSX.*>*<EF|EC>*}
-
-         Noun:               {<NN.*|NR|SL>}       
-         Pronoun:            {<NP>}
-         Substantive:        {<Noun><Noun>*}
-                             {<Pronoun>}
-                             {<NominalizedVerb>}            
-         NounPhrase:         {<MM>*<XPN>*<Adverb>*<AdjectivalPhrase>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
-
-         Component:          {<NounPhrase|Possessive><JC|CON.*>}
-         Connection:         {<Component><Component>*<NounPhrase|Possessive>}
-
-         Possessive:         {<NounPhrase><JKG><NounPhrase>}
-         Constituent:        {<NounPhrase|Possessive|Connection>}
-
-         PrepositionalPhrase: {<Constituent|Object|AdjectivalPhrase>*<Constituent|Object|AdjectivalPhrase><PRP.*>}
-         AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<VerbSuffix>*<ADVEC.*>}
-
-         Complement:         {<Constituent><JKC>} 
-         Object:             {<Constituent|PrepositionalPhrase><JKO>}  
-         Subject:            {<Constituent|PrepositionalPhrase><JKS>}
-         Topic:              {<Constituent|PrepositionalPhrase><TOP.*>}
-
-         Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
-         AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
-         NominalVerbForm:    {<Verb|AuxiliaryVerbForm><NMF.*>}
-         Predicate:          {<Adverb|AdverbialPhrase>*<Verb|AuxiliaryVerbForm|NominalVerbForm>*<VerbSuffix>}
-
-         """
+    # grammarXXX = r"""
+    #
+    #      NounDerivedVerb:    {<VND.*>}
+    #      AuxiliaryVerb:      {<EC><VX|VV>}
+    #                          {<AUX.*>}
+    #      Adverb:             {<MAG>}
+    #      NounDerivedAdjective: {<VAND.*>}
+    #      AdjectivalPhrase:   {<Adverb>*<Object>*<VA|VV|AuxiliaryVerbForm|NounDerivedAdjective|NounDerivedVerb><ETM>}
+    #      DescriptiveVerb:    {<VA|NounDerivedAdjective>}
+    #      Verb:               {<VV|VCN|VX|NounDerivedVerb|DescriptiveVerb>}
+    #      NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
+    #                          {<AuxiliaryVerbForm><NOM.*>}
+    #
+    #      VerbSuffix:         {<EP|PSX.*>*<EF|EC>*}
+    #
+    #      Noun:               {<NN.*|NR|SL>}
+    #      Pronoun:            {<NP>}
+    #      Substantive:        {<Noun><Noun>*}
+    #                          {<Pronoun>}
+    #                          {<NominalizedVerb>}
+    #      NounPhrase:         {<MM>*<XPN>*<Adverb>*<AdjectivalPhrase>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
+    #
+    #      Component:          {<NounPhrase|Possessive><JC|CON.*>}
+    #      Connection:         {<Component><Component>*<NounPhrase|Possessive>}
+    #
+    #      Possessive:         {<NounPhrase><JKG><NounPhrase>}
+    #      Constituent:        {<NounPhrase|Possessive|Connection>}
+    #
+    #      PrepositionalPhrase: {<Constituent|Object|AdjectivalPhrase>*<Constituent|Object|AdjectivalPhrase><PRP.*>}
+    #      AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<VerbSuffix>*<ADVEC.*>}
+    #
+    #      Complement:         {<Constituent><JKC>}
+    #      Object:             {<Constituent|PrepositionalPhrase><JKO>}
+    #      Subject:            {<Constituent|PrepositionalPhrase><JKS>}
+    #      Topic:              {<Constituent|PrepositionalPhrase><TOP.*>}
+    #
+    #      Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
+    #      AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
+    #      NominalVerbForm:    {<Verb|AuxiliaryVerbForm><NMF.*>}
+    #      Predicate:          {<Adverb|AdverbialPhrase>*<Verb|AuxiliaryVerbForm|NominalVerbForm>*<VerbSuffix>}
+    #
+    #      """
 
     # Location:           {<JKB>}
     # Title:              {<XSN>}

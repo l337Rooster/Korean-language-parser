@@ -76,7 +76,7 @@ def parseInput(input, showAllLevels=False):
     # build a string for the KHaiii phoneme analyzer
     if input.strip()[-1] not in ['.', '?', '!']:
         input += '.'
-        input = input.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ')
+    input = input.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ')
 
     # run Khaiii, grab the parts-of-speech list it generates (morphemes + POS tags) and extract original word-to-morpheme groupings
     sentences = []  # handle possible multiple sentences
@@ -292,11 +292,11 @@ testSamples = r"""
 기차가 떠나가 버렸어요.  
   인삼은 한국에서만 잘 자랍니다.
 비가 오는 것을 봤어요.
-  비가 올까 봐 걱정이다.  <---  up to here with new grammar
+  비가 올까 봐 걱정이다.  
   비가 올 것이라고 걱정된다.
-  나는 뭐, 심각한 일이라고.
+  나는 뭐, 심각한 일이라고.   <<--- this one is odd, Khaiii says in "뭐," 뭐 is an IC, but with a space "뭐 ," 뭐 is an NP, wtf?
   사실이 아니라고 몇 번을 해명했지만 통하지 않았다.
-  나는 비가 온 것을 보았다.
+  나는 비가 온 것을 보았다.<---  up to here with new grammar
 한국어를 배우고 싶지 않아요.
 저는 숙제를 끝내고 나서 집으로 갈 거예요
 나는 저녁으로 빵과 물과 밥을 먹었어요.    나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.

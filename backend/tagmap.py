@@ -340,6 +340,9 @@ tm(  # ~지만 subordinate clause connector  CEC.*  # todo: these will probably 
     tagPat=r'(지만):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
 )
 
+tm(  # V 지:EC negation connector  NEC.*
+    tagPat=r'(지):EC', repl=r'\1:NEC', basePOS="EC", posLabel="Negation\nConnector",
+)
 
 # ----- dependent (aka bound) noun forms --------  map to DNF.* + DependentNounForm node rename
 

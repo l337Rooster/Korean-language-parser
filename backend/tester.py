@@ -33,7 +33,14 @@ testSentences = [
     "비가 오는 것을 봤어요.",
     "비가 올까 봐 걱정이다.",
     "나는 이미 여기서 많은 시간을 기다렸다.",
+    "비가 올 것이라고 걱정된다.",
+    "사실이 아니라고 몇 번을 해명했지만 통하지 않았다.",
 ]
+
+# "사실이 아니라고 몇 번을 해명했지만 통하지 않았다.",
+# "나는 비가 온 것을 보았다.",
+# "그 분은 한국말을 이해하시지?",
+#
 
 def buildRefTrees():
     "runs parser against each sentence, writing JSONed parse-tree to reference dictionary"
@@ -54,25 +61,31 @@ def test():
 
     with open("parse-ref-tree-dict.json") as inf:
         refDict = json.load(inf)
-    fails = []
+    fails = []; missing = []
     for s in testSentences:
         # parse sentence, extract parseTree & compare to ref dict
         parse = parseInput(s)[0]
-        if json.dumps(refDict[s]) != json.dumps(parse['parseTree']):
-            fails.append(s)
+        ref = refDict.get(s)
+        if not ref:
+            missing.append(s)
+        else:
+            if json.dumps(ref) != json.dumps(parse['parseTree']):
+                fails.append(s)
     #
-    return fails
+    return fails, missing
 
 if __name__ == "__main__":
-    #
-
-    #buildRefTrees()
 
     #
-    fails = test()
-    print("\n-------\nTests complete")
-    for f in fails:
-        print("Parse mismatch for sentence: ", f)
-        #
-    print(len(fails), "fails")
+    if False: # False:  # True
+        buildRefTrees()
+    else:
+        fails, missing = test()
+        print("\n-------\nTests complete")
+        for m in missing:
+            print("Missing in refDict: ", m)
+        for f in fails:
+            print("Parse mismatch for sentence: ", f)
+            #
+        print(len(fails), "fails")
 
