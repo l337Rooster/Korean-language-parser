@@ -4,6 +4,7 @@
 __author__ = 'jwainwright'
 
 import functools, re
+from collections import defaultdict
 
 #  This is an alternative to the nltk chunking approach, allowing more contextual control over parsing
 #
@@ -25,6 +26,7 @@ class Lexer(object):
     def __init__(self, posList):   # in the form ['phoneme:POStag', ,...]
         self.posList = posList
         self.cursor = 0
+        self.lexer = None
 
     # -------- parser API ---------
 
@@ -41,7 +43,7 @@ class Lexer(object):
         if tokenPat and not re.fullmatch(tokenPat, token):
             return None
         #
-        return ParseTree('terminal', token, None)
+        return [ParseTree('terminal', token, self.cursor, self.cursor, self, None)]
 
     def last(self):
         "yields last token again"
@@ -67,10 +69,11 @@ class ParseTree(object):
 
     nullNode = None
 
-    def __init__(self, type, label, startMark, endMark, notes=''):
+    def __init__(self, type, label, startMark, endMark, lexer, notes=''):
         self.type = type
         self.label = label
         self.startMark, self.endMark = startMark, endMark
+        self.lexer = lexer
         self.notes = notes
         #
         self.children = []
@@ -92,6 +95,10 @@ class ParseTree(object):
         "return count of child nodes"
         return len(self.children)
 
+    def terminalSpan(self):
+        "return number of terminal symbols this node & it's sub-tree covers"
+        return self.endMark - self.startMark
+
     def phrase(cls, type, label, *constituents):
         "appends constituents as a phrase subtree"
 
@@ -110,19 +117,7 @@ class ParseTree(object):
             for c in self.children:
                 c.pprint(level + 1, closer + (')' if c == self.children[-1] else ''))
 
-    # not sure if we need state to be a stack yet
-    # def pushState(self, state):
-    #     "pushes new state"
-    #
-    # def popState(self):
-    #     "pops and return top of state-stack"
-    #
-    # @property
-    # def state(self):
-    #     "pop & return last state"
-    #     return self.popState()
-
-ParseTree.nullNode = ParseTree('null', 'null', 0, 0)
+ParseTree.nullNode = ParseTree('null', 'null', 0, 0, None)
 
 # --------------
 
@@ -133,9 +128,13 @@ def grammarRule(rule):
     def backtrack_wrapper(self, *args, **kwargs):
         startMark = self.lexer.mark()
         print('--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
+        if rule in self.fails[startMark]:
+            print('    nope, failed this before')
+            return []
         result = rule(self, *args, **kwargs)
         node = self.makeNode(rule.__name__, startMark, result)
         if not node:
+            self.fails[startMark].add(rule) # note we failed this production at this point to break later recursive attempts at same thing
             self.lexer.backTrackTo(startMark)
             print('    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
             return []
@@ -154,25 +153,25 @@ def optional(rule):
 def anyOneOf(*rules):
     # eager match: eval all rules, take the longest matching
     longest = None; length = 0
-    for r in rules:
+    for i, r in enumerate(rules):
         node = eval(r)
         if node and node[0] != ParseTree.nullNode:
             l = sum(n.terminalSpan() for n in node)
             if not longest or l > length:
                 longest, length = node, l
             # restart matching
-            node[0].lexer.backTrack(node[0].startMark)
+            node[0].lexer.backTrackTo(node[0].startMark)
     #
     if longest:
         # seek to end of selected longes match
-        longest[0].lexer.backTrack(longest[-1].endMark)
+        longest[0].lexer.backTrackTo(longest[-1].endMark)
         return longest
 
 def oneOrMore(rule):
     nodes = []
     while True:
         node = eval(rule)
-        if node:
+        if node and node[0] != ParseTree.nullNode:
             nodes.extend(node)
         if not node or not callable(rule):
             break
@@ -185,7 +184,9 @@ def zeroOrMore(rule):
 def sequence(*rules):
     nodes = []
     for r in rules:
-        nodes.extend(eval(r))
+        node = eval(r)
+        if node:
+            nodes.extend(node)
     return nodes if all(nodes) and len(nodes) == len(rules) else []
 
 # ---------------
@@ -196,7 +197,7 @@ class Parser(object):
     def __init__(self, posList):
         self.posList = posList
         self.lexer = Lexer(posList)
-        self.state = 'start'
+        self.fails = defaultdict(set)  # tracks history of failed profuctions at each cursor position to break recursions
 
     def mark(self):
         "return marker for current parsing state"
@@ -219,7 +220,7 @@ class Parser(object):
     def makeNode(self, label, startMark, constituents):
         "makes a node with given label & constituents as children"
         label = label[0].capitalize() + label[1:]
-        nn = ParseTree('node', label, startMark, self.lexer.mark())
+        nn = ParseTree('node', label, startMark, self.lexer.mark(), self.lexer)
         constituents = constituents if type(constituents) == list else [constituents]
         for c in constituents:
             if c and c != ParseTree.nullNode:
@@ -233,160 +234,259 @@ class Parser(object):
     def sentence(self):
         "parses top-level sentence"
         # sentence ::=  [subordinateClause]* mainClause
-        # mainClause ::= clause (ending with a SENTENCE_END construct)
-        # subordinateClause ::= clase (ending with  SENTENCE_CONNECTOR construct)
+        # subordinateClause ::= [phrase]* verbPhrase CONNECTING_SUFFIX
+        # mainClause ::= [phrase]* predicate
+        # predicate ::= verbPhrase ENDING_SUFFIX
 
-        constituents = []
-        # loop getting clauses until sentence end
-        while True:
-            c = self.clause()
-            # add clause or current terminal if not recognized
-            constituents.extend(c or [self.lexer.next()])
-            if self.lexer.peek(r'(.*:SF)'):
-                break
-        #
-        return constituents
+        s = sequence(zeroOrMore(self.subordinateClause), self.mainClause)
+        return s
 
     @grammarRule
-    def clause(self):
-        "parse clause"
-        # clause ::= [phrase]* verbPhrase (CLAUSE_CONNECTOR | SENTENCE_END)
-        # sets 'end' or 'connect' state depending on clause was ended with a sentence final or clause connecting particle
+    def subordinateClause(self):
+        "subordinate clause"
+        # subordinateClause ::= [phrase]* verbPhrase CONNECTING_SUFFIX
+        sc = sequence(zeroOrMore(self.phrase), self.verbPhrase(), self.connectingSuffix())
+        return sc
 
-        p = self.phrase()
+    @grammarRule
+    def mainClause(self):
+        "main clause"
+        # mainClause ::= [phrase]* predicate
+        mc = sequence(zeroOrMore(self.phrase), self.predicate())
+        return mc
+
+    @grammarRule
+    def predicate(self):
+        "predicate"
+        # predicate ::= verbPhrase ENDING_SUFFIX
+        p = sequence(self.verbPhrase(), self.endingSuffix())
         return p
+
+    @grammarRule
+    def connectingSuffix(self):
+        return self.lexer.next(r'.*:(EC|ADVEC.*|CEC.*)')
+
+    @grammarRule
+    def endingSuffix(self):
+        return self.lexer.next(r'.*:(EF)')
 
     @grammarRule
     def phrase(self):
         "parse a phrase"
+        p = sequence(zeroOrMore(self.punctuation),
+                     anyOneOf(self.nounPhrase,
+                              self.objectPhrase,
+                              self.subjectPhrase,
+                              self.topicPhrase,
+                              self.adverbialPhrase,
+                              self.complementPhrase),
+                     zeroOrMore(self.punctuation))
+        return p
 
-        return anyOneOf(self.nounPhrase,
-                        self.objectPhrase,
-                        self.subjectPhrase,
-                        self.topicPhrase,
-                        self.verbPhrase,
-                        self.predicate)
+    @grammarRule
+    def punctuation(self):
+        return self.lexer.next(r'.*:(SP|SS|SE|SO|SW|SWK)')
 
     @grammarRule
     def nounPhrase(self):
         "parse a noun-phrase"
-        return sequence(optional(self.determiner), optional(self.adjectives), self.noun())
+        np = sequence(optional(self.determiner),
+                      anyOneOf(self.noun, self.count, self.adjectivalPhrase),
+                      zeroOrMore(self.noun),
+                      zeroOrMore(self.nounModifyingSuffix),
+                      zeroOrMore(self.auxiliaryParticle),
+                      optional(self.adverbialPhrase)
+                      )
+        return np
+
+    @grammarRule
+    def determiner(self):
+        return self.lexer.next(r'.*:(MM)')
+
+    @grammarRule
+    def noun(self):
+        "parse a noun"
+        n = anyOneOf(self.simpleNoun,
+                     self.nominalizedVerb)
+        return n
+
+    @grammarRule
+    def count(self):
+        "parse a count"
+        c = sequence(self.simpleNoun,
+                     self.number,
+                     optional(self.counter))
+        return c
+
+    @grammarRule
+    def number(self):
+        return self.lexer.next(r'.*:(MM|NUM.*|SN)')
+
+    @grammarRule
+    def counter(self):
+        return self.lexer.next(r'.*:(NNB|NNG)')
+
+    @grammarRule
+    def adjectivalPhrase(self):
+        "parse an adjectival phrase"
+        ap = sequence(oneOrMore(self.adjective),
+                      anyOneOf(self.noun, self.count))
+        return ap
+
+    @grammarRule
+    def adjective(self):
+        "parse an adjective"
+        a = anyOneOf(sequence(self.verbPhrase, self.adjectiveFormingSuffix),
+                     self.adverb(),
+                     self.possessive())
+        return a
+
+    @grammarRule
+    def verbPhrase(self):
+        "parse a verb phrase"
+        vp = sequence(zeroOrMore(anyOneOf(self.adverb, self.adverbialPhrase)),
+                      anyOneOf(self.verb, self.verbAndAuxiliary),
+                      optional(self.verbSuffix))
+        return vp
+
+    @grammarRule
+    def adverb(self):
+        "parse an adverb"
+        vp = anyOneOf(self.simpleAdverb(),
+                      sequence(self.descriptiveVerb, self.adverbFormingSuffix))
+        return vp
+
+    @grammarRule
+    def simpleAdverb(self):
+        return self.lexer.next(r'.*:(MAG)')
+
+    @grammarRule
+    def possessive(self):
+        "parse a possessive phrase"
+        pp = sequence(self.noun, self.possessiveParticle)
+        return pp
+
+    @grammarRule
+    def possessiveParticle(self):
+        return self.lexer.next(r'.*:(JKG)')
+
+    @grammarRule
+    def descriptiveVerb(self):
+        return self.lexer.next(r'.*:(VA|VAND.*)')
+
+    @grammarRule
+    def adverbFormingSuffix(self):
+        return self.lexer.next(r'.*:(EC)')
+
+    @grammarRule
+    def verbAndAuxiliary(self):
+        "parse a verb + auxiliary verb"
+        vpa = sequence(self.verb,
+                       self.auxiliaryVerb)
+        return vpa
+
+    @grammarRule
+    def auxiliaryVerb(self):
+        "parse an auxiliary verb"
+        av = anyOneOf(sequence(self.auxiliaryVerbConnector, self.verb),
+                      self.auxiliaryVerbPattern)
+        return av
+
+    @grammarRule
+    def auxiliaryVerbConnector(self):
+        return self.lexer.next(r'.*:(EC|NEC.*)')
+
+    @grammarRule
+    def auxiliaryVerbPattern(self):
+        return self.lexer.next(r'.*:(AUX.*)')
+
+    @grammarRule
+    def adjectiveFormingSuffix(self):
+        return self.lexer.next(r'.*:(ETM)')
+
+    @grammarRule
+    def verbSuffix(self):
+        return self.lexer.next(r'.*:(EP|PSX.*)')
+
+    @grammarRule
+    def simpleNoun(self):
+        return self.lexer.next(r'.*:(NN.*|NR|SL|NP)')
+
+    @grammarRule
+    def nominalizedVerb(self):
+        "parse a nominalized verb"
+        nv = sequence(self.verb, self.nominalizingSuffix)
+        return nv
+
+    @grammarRule
+    def verb(self):
+        "parse a verb"
+        v = anyOneOf(self.simpleVerb, self.descriptiveVerb)
+        return v
+
+    @grammarRule
+    def simpleVerb(self):
+        return self.lexer.next(r'.*:(VV|VX|VND.*)')
+
+    @grammarRule
+    def nominalizingSuffix(self):
+        return self.lexer.next(r'.*:(NOM.*)')
+
+    @grammarRule
+    def nounModifyingSuffix(self):
+        return self.lexer.next(r'.*:(XSN)')
+
+    @grammarRule
+    def auxiliaryParticle(self):
+        return self.lexer.next(r'.*:(JX|PRT.*)')
+
+    @grammarRule
+    def adverbialPhrase(self):
+        "parse an adverbial phrase - I think this should be called a prepostional phrase!"
+        ap = sequence(anyOneOf(self.adjectivalPhrase, self.noun),
+                      self.adverbialPhraseConnector,
+                      optional(self.auxiliaryParticle))
+        return ap
+
+    @grammarRule
+    def adverbialPhraseConnector(self):
+        return self.lexer.next(r'.*:(EC|ADVEC.*)')
 
     @grammarRule
     def objectPhrase(self):
         "parse a noun-phrase with object-marker"
-        return sequence(self.nounPhrase(), self.lexer.next(r'.*:JKO)'))
+        return sequence(self.nounPhrase(),
+                        self.lexer.next(r'.*:JKO'))
 
     @grammarRule
     def subjectPhrase(self):
         "parse a noun-phrase with subject-marker"
-        return sequence(self.nounPhrase(), self.lexer.next(r'.*:JKS)'))
-
+        return sequence(self.nounPhrase(),
+                        self.lexer.next(r'.*:JKS'))
+    @grammarRule
+    def complementPhrase(self):
+        "parse a complement-phrase with complement-marker"
+        return sequence(self.nounPhrase(),
+                        self.lexer.next(r'.*:JKC'))
     @grammarRule
     def topicPhrase(self):
         "parse a noun-phrase with topic-marker"
-        return sequence(self.nounPhrase(), self.lexer.next(r'(ㄴ|은|는):JX'))
-
-    @grammarRule
-    def adjectives(self):
-        "adjective sequence"
-        return sequence(zeroOrMore(self.adjective), optional(self.possessive), zeroOrMore(self.adjective))
-
-    @grammarRule
-    def adjective(self):
-        "adjective"
-        return sequence(self.descriptiveVerb(), self.adjectivalParticle())
-
-    @grammarRule
-    def descriptiveVerb(self):
-        "descriptive verb"
-        return self.lexer.next(r'.*:(VA|VCP|VCN)')
-
-    @grammarRule
-    def adjectivalParticle(self):
-        "adjective-forming particle"
-        return self.lexer.next(r'.*:(ETM)')
-
-    @grammarRule
-    def determiner(self):
-        "noun-phrase determiner"
-        return self.lexer.next(r'.*:(MM)')
-
-    @grammarRule
-    def possessive(self):
-        "possessive"
-        return sequence(self.noun(), self.possessiveMarker())
-
-    @grammarRule
-    def noun(self):
-        "noun"
-        return self.lexer.next(r'.*:(N.*)')
-
-    @grammarRule
-    def marker(self):
-        "noun marker"
-        return self.lexer.next(r'.*:(JKS|JKO|JKC)')
-
-    @grammarRule
-    def possessiveMarker(self):
-        "possessive marker"
-        return self.lexer.next(r'.*:(JKG)')
-
-    @grammarRule
-    def verbPhrase(self):
-        "verb phrase"
-        return sequence(self.verb(), self.verbConnectingParticle())
-
-    @grammarRule
-    def predicate(self):
-        "sentence-ending predicate"
-        return sequence(self.verb(), self.predicateEndingSuffix())
-
-    @grammarRule
-    def verb(self):
-        "verb"
-        return self.lexer.next(r'.*:(V.*)')
-
-    @grammarRule
-    def verbConnectingParticle(self):
-        "verb-connecting particle"
-        return self.lexer.next(r'.*:(JC)')
-
-    @grammarRule
-    def predicateEndingSuffix(self):
-        "sentence-ending suffix"
-        return self.lexer.next(r'.*:(EF)')
-
+        return sequence(self.nounPhrase(),
+                        self.lexer.next(r'.*:TOP.*'))
 
 if __name__ == "__main__":
     #
-    posList = ['저:MM',
-                 '작:VA',
-                 '은:ETM',
-                 '소년:NNG',
-                 '의:JKG',
-                 '남동생:NNG',
-                 '밥:NNG',
-                 '을:JKO',
-                 '먹:VV',
-                 '다:EF',
-                 '.:SF']
-    posList = ['저:MM', '작:VA', '은:ETM', '소년:NNG', '밥:NNG', '을:JKO', '먹:VV', '다:EF', '.:SF']
-    posList = ['저:NP',
-                 '의:JKG',
-                 '친구:NNG',
-                 '는:JX',
-                 '아주:MAG',
-                 '예쁘:VA',
-                 'ㄴ:ETM',
-                 '차:NNG',
-                 '를:JKO',
-                 '사:VV',
-                 '았:EP',
-                 '어요:EF',
-                 '.:SF']
+    posList = [('저', 'MM'),
+         ('작', 'VA'),
+         ('은', 'ETM'),
+         ('소년', 'NNG'),
+         ('밥', 'NNG'),
+         ('을', 'JKO'),
+         ('먹', 'VV'),
+         ('다', 'EF'),
+         ('.', 'SF')]
 
-    p = Parser(posList)
+    p = Parser([":".join(p) for p in posList])
     p.parse()
 
 
