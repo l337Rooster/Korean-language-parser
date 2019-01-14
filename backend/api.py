@@ -94,36 +94,40 @@ def parseInput(input, showAllLevels=False):
         # map POS through synthetic tag mapper & extract word groupings
         mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups']) #, disableMapping=True)
 
-        # perform chunk parsing
-        chunkTree = Chunker.parse(mappedPosList, trace=2)
-        chunkTree.pprint()
-
-        from rd_parser import Parser
-        p = Parser([":".join(p) for p in mappedPosList])
-        p.parse()
-
-        # apply any synthetic-tag-related node renamings
-        TagMap.mapNodeNames(chunkTree)
-
-        # extract popup wiki definitions & references links & notes for implicated nodes
-        references = TagMap.getReferences(chunkTree)
-
-        # build descriptive phrase list
-        phrases = Chunker.phraseList(chunkTree)
-
+        # # perform chunk parsing
+        # chunkTree = Chunker.parse(mappedPosList, trace=2)
+        # chunkTree.pprint()
         #
-        parseTree = buildParseTree(chunkTree, showAllLevels=showAllLevels)
+        # # apply any synthetic-tag-related node renamings
+        # TagMap.mapNodeNames(chunkTree)
+        #
+        # # extract popup wiki definitions & references links & notes for implicated nodes
+        # references = TagMap.getReferences(chunkTree)
+        #
+        # # build descriptive phrase list
+        # phrases = Chunker.phraseList(chunkTree)
+        #
+        # #
+        # parseTreeDict = buildParseTree(chunkTree, showAllLevels=showAllLevels)
+
+        from rd_grammar import KoreanParser
+        parser = KoreanParser([":".join(p) for p in mappedPosList])
+        parseTree = parser.parse()
+        parseTree.mapNodeNames()
+        references = parseTree.getReferences()
+        phrases = parseTree.phraseList()
+        parseTreeDict = parseTree.buildParseTree(showAllLevels=showAllLevels)
 
         debugging = dict(posList=pformat(s['posList']),
                          mappedPosList=pformat(mappedPosList),
                          phrases=pformat(phrases),
                          morphemeGroups=pformat(morphemeGroups),
-                         parseTree=pformat(parseTree),
+                         parseTree=pformat(parseTreeDict),
                          references=references)
 
         s.update(dict(mappedPosList=mappedPosList,
                       morphemeGroups=morphemeGroups,
-                      parseTree=parseTree,
+                      parseTree=parseTreeDict,
                       references=references,
                       phrases=phrases,
                       debugging=debugging
