@@ -94,6 +94,7 @@ def parseInput(input, showAllLevels=False):
         # map POS through synthetic tag mapper & extract word groupings
         mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups']) #, disableMapping=True)
 
+
         # # perform chunk parsing
         # chunkTree = Chunker.parse(mappedPosList, trace=2)
         # chunkTree.pprint()
@@ -110,6 +111,7 @@ def parseInput(input, showAllLevels=False):
         # #
         # parseTreeDict = buildParseTree(chunkTree, showAllLevels=showAllLevels)
 
+
         from rd_grammar import KoreanParser
         parser = KoreanParser([":".join(p) for p in mappedPosList])
         parseTree = parser.parse()
@@ -117,6 +119,7 @@ def parseInput(input, showAllLevels=False):
         references = parseTree.getReferences()
         phrases = parseTree.phraseList()
         parseTreeDict = parseTree.buildParseTree(showAllLevels=showAllLevels)
+
 
         debugging = dict(posList=pformat(s['posList']),
                          mappedPosList=pformat(mappedPosList),
@@ -295,7 +298,7 @@ testSamples = r"""
 저는 학교에 안 갔어요.
 날이 추워서 집에만 있는다.   
   아기가 있어서 강아지는 안 키워요.
-참기름을 넣어서 더 맛있게 만들었다.
+참기름을 넣어서 더 맛있게 만들었다.    <<<<
 탐은 공부하기를 싫어한다.
 기차가 떠나가 버렸어요.  
   인삼은 한국에서만 잘 자랍니다.

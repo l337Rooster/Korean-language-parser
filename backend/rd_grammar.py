@@ -18,7 +18,7 @@ class KoreanParser(Parser):
         # mainClause ::= [phrase]* predicate
         # predicate ::= verbPhrase ENDING_SUFFIX
 
-        s = sequence(zeroOrMore(self.subordinateClause), self.mainClause)
+        s = sequence(zeroOrMore(self.subordinateClause), self.mainClause())
         return s
 
 
@@ -69,11 +69,9 @@ class KoreanParser(Parser):
                      zeroOrMore(self.punctuation))
         return p
 
-
     @grammarRule
     def punctuation(self):
         return self.lexer.next(r'.*:(SP|SS|SE|SO|SW|SWK)')
-
 
     @grammarRule
     def nounPhrase(self):
@@ -87,11 +85,9 @@ class KoreanParser(Parser):
                       )
         return np
 
-
     @grammarRule
     def determiner(self):
         return self.lexer.next(r'.*:(MM)')
-
 
     @grammarRule
     def noun(self):
@@ -100,25 +96,21 @@ class KoreanParser(Parser):
                      self.nominalizedVerb)
         return n
 
-
     @grammarRule
     def count(self):
         "parse a count"
-        c = sequence(self.simpleNoun,
-                     self.number,
+        c = sequence(self.simpleNoun(),
+                     self.number(),
                      optional(self.counter))
         return c
-
 
     @grammarRule
     def number(self):
         return self.lexer.next(r'.*:(MM|NUM.*|SN)')
 
-
     @grammarRule
     def counter(self):
         return self.lexer.next(r'.*:(NNB|NNG)')
-
 
     @grammarRule
     def adjectivalPhrase(self):
@@ -127,107 +119,97 @@ class KoreanParser(Parser):
                       anyOneOf(self.noun, self.count))
         return ap
 
-
     @grammarRule
     def adjective(self):
         "parse an adjective"
-        a = anyOneOf(sequence(self.verbPhrase, self.adjectiveFormingSuffix),
+        a = anyOneOf(sequence(self.verbPhrase(), self.adjectiveFormingSuffix()),
                      self.adverb(),
                      self.possessive())
         return a
 
-
     @grammarRule
     def verbPhrase(self):
         "parse a verb phrase"
-        vp = sequence(zeroOrMore(anyOneOf(self.adverb, self.adverbialPhrase)),
+        vp = sequence(zeroOrMore(self.adverbial),
                       anyOneOf(self.verb, self.verbAndAuxiliary),
-                      optional(self.verbSuffix))
+                      zeroOrMore(self.verbSuffix))
         return vp
 
+    @grammarRule
+    def adverbial(self):
+        "parse an adverbial"
+        av = anyOneOf(self.adverb, self.adverbialPhrase)
+        return av
 
     @grammarRule
     def adverb(self):
         "parse an adverb"
         vp = anyOneOf(self.simpleAdverb(),
-                      sequence(self.descriptiveVerb, self.adverbFormingSuffix))
+                      sequence(self.descriptiveVerb(), self.adverbFormingSuffix()))
         return vp
-
 
     @grammarRule
     def simpleAdverb(self):
-        return self.lexer.next(r'.*:(MAG)')
-
+        sa = self.lexer.next(r'.*:(MAG)')
+        return sa
 
     @grammarRule
     def possessive(self):
         "parse a possessive phrase"
-        pp = sequence(self.noun, self.possessiveParticle)
+        pp = sequence(self.noun(), self.possessiveParticle())
         return pp
-
 
     @grammarRule
     def possessiveParticle(self):
         return self.lexer.next(r'.*:(JKG)')
 
-
     @grammarRule
     def descriptiveVerb(self):
         return self.lexer.next(r'.*:(VA|VCP|VCN|VAND.*)')
-
 
     @grammarRule
     def adverbFormingSuffix(self):
         return self.lexer.next(r'.*:(EC)')
 
-
     @grammarRule
     def verbAndAuxiliary(self):
         "parse a verb + auxiliary verb"
-        vpa = sequence(self.verb,
-                       self.auxiliaryVerb)
+        vpa = sequence(self.verb(),
+                       self.auxiliaryVerb())
         return vpa
-
 
     @grammarRule
     def auxiliaryVerb(self):
         "parse an auxiliary verb"
-        av = anyOneOf(sequence(self.auxiliaryVerbConnector, self.verb),
+        av = anyOneOf(sequence(self.auxiliaryVerbConnector(), self.verb()),
                       self.auxiliaryVerbPattern)
         return av
-
 
     @grammarRule
     def auxiliaryVerbConnector(self):
         return self.lexer.next(r'.*:(EC|NEC.*)')
 
-
     @grammarRule
     def auxiliaryVerbPattern(self):
         return self.lexer.next(r'.*:(AUX.*)')
-
 
     @grammarRule
     def adjectiveFormingSuffix(self):
         return self.lexer.next(r'.*:(ETM)')
 
-
     @grammarRule
     def verbSuffix(self):
         return self.lexer.next(r'.*:(EP|PSX.*)')
-
 
     @grammarRule
     def simpleNoun(self):
         return self.lexer.next(r'.*:(NN.*|NR|SL|NP)')
 
-
     @grammarRule
     def nominalizedVerb(self):
         "parse a nominalized verb"
-        nv = sequence(self.verb, self.nominalizingSuffix)
+        nv = sequence(self.verb(), self.nominalizingSuffix())
         return nv
-
 
     @grammarRule
     def verb(self):
@@ -235,40 +217,33 @@ class KoreanParser(Parser):
         v = anyOneOf(self.simpleVerb, self.descriptiveVerb)
         return v
 
-
     @grammarRule
     def simpleVerb(self):
         return self.lexer.next(r'.*:(VV|VX|VND.*)')
-
 
     @grammarRule
     def nominalizingSuffix(self):
         return self.lexer.next(r'.*:(NOM.*)')
 
-
     @grammarRule
     def nounModifyingSuffix(self):
         return self.lexer.next(r'.*:(XSN)')
-
 
     @grammarRule
     def auxiliaryParticle(self):
         return self.lexer.next(r'.*:(JX|PRT.*)')
 
-
     @grammarRule
     def adverbialPhrase(self):
         "parse an adverbial phrase - I think this should be called a prepostional phrase!"
         ap = sequence(anyOneOf(self.noun, self.adjectivalPhrase),
-                      self.adverbialPhraseConnector,
+                      self.adverbialPhraseConnector(),
                       optional(self.auxiliaryParticle))
         return ap
-
 
     @grammarRule
     def adverbialPhraseConnector(self):
         return self.lexer.next(r'.*:(EC|ADVEC.*)')
-
 
     @grammarRule
     def objectPhrase(self):
@@ -276,20 +251,17 @@ class KoreanParser(Parser):
         return sequence(self.nounPhrase(),
                         self.lexer.next(r'.*:JKO'))
 
-
     @grammarRule
     def subjectPhrase(self):
         "parse a noun-phrase with subject-marker"
         return sequence(self.nounPhrase(),
                         self.lexer.next(r'.*:JKS'))
 
-
     @grammarRule
     def complementPhrase(self):
         "parse a complement-phrase with complement-marker"
         return sequence(self.nounPhrase(),
                         self.lexer.next(r'.*:JKC'))
-
 
     @grammarRule
     def topicPhrase(self):

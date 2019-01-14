@@ -399,6 +399,7 @@ class Parser(object):
         self.lexer = Lexer(posList)
         self.fails = defaultdict(set)  # tracks history of failed profuctions at each cursor position to break recursions
         self.recursionState = []  # tracks recursion state to break recursive rules
+        print(posList)
 
     def mark(self):
         "return marker for current parsing state"
