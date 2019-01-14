@@ -126,20 +126,31 @@ ParseTree.nullNode = ParseTree('null', 'null', 0, 0, None)
 def grammarRule(rule):
     @functools.wraps(rule)
     def backtrack_wrapper(self, *args, **kwargs):
+        indent = '  ' * len(self.recursionState)
         startMark = self.lexer.mark()
-        print('--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
+        print(indent, '--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
         if rule in self.fails[startMark]:
-            print('    nope, failed this before')
+            print(indent, '    nope, failed this before')
             return []
+        if (rule, startMark) in self.recursionState:
+            print(indent, '    recursion on same token encountered, failing')
+            return []
+        #
+        self.recursionState.append((rule, startMark))
+        #
         result = rule(self, *args, **kwargs)
+        #
+        self.recursionState.pop(-1)
+        #
         node = self.makeNode(rule.__name__, startMark, result)
         if not node:
             self.fails[startMark].add(rule) # note we failed this production at this point to break later recursive attempts at same thing
             self.lexer.backTrackTo(startMark)
-            print('    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
+            print(indent, '    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
             return []
         else:
-            print('    found', node)
+            traceBack = " -> ".join(r.__name__ for r, m in reversed(self.recursionState))
+            print(indent, '**** found', node, traceBack)
             return [node]
     return backtrack_wrapper
 
@@ -179,7 +190,7 @@ def oneOrMore(rule):
     return nodes
 
 def zeroOrMore(rule):
-    return oneOrMore(rule) or [ParseTree.nullNode]
+    return rule and oneOrMore(rule) or [ParseTree.nullNode]
 
 def sequence(*rules):
     nodes = []
@@ -187,7 +198,10 @@ def sequence(*rules):
         node = eval(r)
         if node:
             nodes.extend(node)
-    return nodes if all(nodes) and len(nodes) == len(rules) else []
+        else:
+            # any miss fails whole seq
+            return []
+    return nodes
 
 # ---------------
 
@@ -198,6 +212,7 @@ class Parser(object):
         self.posList = posList
         self.lexer = Lexer(posList)
         self.fails = defaultdict(set)  # tracks history of failed profuctions at each cursor position to break recursions
+        self.recursionState = []  # tracks recursion state to break recursive rules
 
     def mark(self):
         "return marker for current parsing state"
@@ -443,7 +458,7 @@ class Parser(object):
     @grammarRule
     def adverbialPhrase(self):
         "parse an adverbial phrase - I think this should be called a prepostional phrase!"
-        ap = sequence(anyOneOf(self.adjectivalPhrase, self.noun),
+        ap = sequence(anyOneOf(self.noun, self.adjectivalPhrase),
                       self.adverbialPhraseConnector,
                       optional(self.auxiliaryParticle))
         return ap
@@ -477,14 +492,17 @@ class Parser(object):
 if __name__ == "__main__":
     #
     posList = [('저', 'MM'),
-         ('작', 'VA'),
-         ('은', 'ETM'),
-         ('소년', 'NNG'),
-         ('밥', 'NNG'),
-         ('을', 'JKO'),
-         ('먹', 'VV'),
-         ('다', 'EF'),
-         ('.', 'SF')]
+             ('작', 'VA'),
+             ('은', 'ETM'),
+             ('소년', 'NNG'),
+             ('의', 'JKG'),
+             ('남동생', 'NNG'),
+             ('은', 'TOP_6'),
+             ('밥', 'NNG'),
+             ('을', 'JKO'),
+             ('먹', 'VV'),
+             ('다', 'EF'),
+             ('.', 'SF')]
 
     p = Parser([":".join(p) for p in posList])
     p.parse()

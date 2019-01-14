@@ -98,6 +98,10 @@ def parseInput(input, showAllLevels=False):
         chunkTree = Chunker.parse(mappedPosList, trace=2)
         chunkTree.pprint()
 
+        # from rd_parser import Parser
+        # p = Parser([":".join(p) for p in mappedPosList])
+        # p.parse()
+
         # apply any synthetic-tag-related node renamings
         TagMap.mapNodeNames(chunkTree)
 
