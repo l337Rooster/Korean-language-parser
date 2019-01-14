@@ -94,31 +94,33 @@ def parseInput(input, showAllLevels=False):
         # map POS through synthetic tag mapper & extract word groupings
         mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups']) #, disableMapping=True)
 
+        if True:  # NLTK chunking
+            # perform chunk parsing
+            chunkTree = Chunker.parse(mappedPosList, trace=2)
+            chunkTree.pprint()
 
-        # # perform chunk parsing
-        # chunkTree = Chunker.parse(mappedPosList, trace=2)
-        # chunkTree.pprint()
-        #
-        # # apply any synthetic-tag-related node renamings
-        # TagMap.mapNodeNames(chunkTree)
-        #
-        # # extract popup wiki definitions & references links & notes for implicated nodes
-        # references = TagMap.getReferences(chunkTree)
-        #
-        # # build descriptive phrase list
-        # phrases = Chunker.phraseList(chunkTree)
-        #
-        # #
-        # parseTreeDict = buildParseTree(chunkTree, showAllLevels=showAllLevels)
+            # apply any synthetic-tag-related node renamings
+            TagMap.mapNodeNames(chunkTree)
 
+            # extract popup wiki definitions & references links & notes for implicated nodes
+            references = TagMap.getReferences(chunkTree)
 
-        from rd_grammar import KoreanParser
-        parser = KoreanParser([":".join(p) for p in mappedPosList])
-        parseTree = parser.parse()
-        parseTree.mapNodeNames()
-        references = parseTree.getReferences()
-        phrases = parseTree.phraseList()
-        parseTreeDict = parseTree.buildParseTree(showAllLevels=showAllLevels)
+            # build descriptive phrase list
+            phrases = Chunker.phraseList(chunkTree)
+
+            #
+            parseTreeDict = buildParseTree(chunkTree, showAllLevels=showAllLevels)
+
+        else:
+
+            # recursive-descent parser
+            from rd_grammar import KoreanParser
+            parser = KoreanParser([":".join(p) for p in mappedPosList])
+            parseTree = parser.parse()
+            parseTree.mapNodeNames()
+            references = parseTree.getReferences()
+            phrases = parseTree.phraseList()
+            parseTreeDict = parseTree.buildParseTree(showAllLevels=showAllLevels)
 
 
         debugging = dict(posList=pformat(s['posList']),

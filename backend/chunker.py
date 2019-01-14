@@ -177,12 +177,15 @@ class Chunker(object):
         #
         phrases = []
         for t in chunkTree:
+            # elide degenerate tree nodes (those with singleton children)
+            while isinstance(t, nltk.Tree) and len(t) == 1:
+                t = t[0]
             if isinstance(t, nltk.Tree):
                 phrase = flattenPhrase(t, [])
                 if t.label() not in hiddenTags:
                     phrase.append({"type": 'tree', "tag": t.label()})
                 phrases.append(phrase)
             else:
-                phrases.append({"type": 'word', "word": t[0].strip(), "tag": t[1]})
+                phrases.append([{"type": 'word', "word": t[0].strip(), "tag": t[1]}])
         #
         return phrases
