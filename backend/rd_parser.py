@@ -129,9 +129,9 @@ def grammarRule(rule):
         indent = '  ' * len(self.recursionState)
         startMark = self.lexer.mark()
         print(indent, '--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
-        if rule in self.fails[startMark]:
-            print(indent, '    nope, failed this before')
-            return []
+        # if rule in self.fails[startMark]:
+        #     print(indent, '    nope, failed this before')
+        #     return []
         if (rule, startMark) in self.recursionState:
             print(indent, '    recursion on same token encountered, failing')
             return []
@@ -387,7 +387,7 @@ class Parser(object):
 
     @grammarRule
     def descriptiveVerb(self):
-        return self.lexer.next(r'.*:(VA|VAND.*)')
+        return self.lexer.next(r'.*:(VA|VCP|VCN|VAND.*)')
 
     @grammarRule
     def adverbFormingSuffix(self):
