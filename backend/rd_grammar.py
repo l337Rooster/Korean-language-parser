@@ -66,12 +66,17 @@ class KoreanParser(Parser):
                               option(self.topicPhrase),
                               option(self.adverbialPhrase),
                               option(self.complementPhrase)),
+                     zeroOrMore(self.interjection),
                      zeroOrMore(self.punctuation))
         return p
 
     @grammarRule
     def punctuation(self):
         return self.lexer.next(r'.*:(SP|SS|SE|SO|SW|SWK)')
+
+    @grammarRule
+    def interjection(self):
+        return self.lexer.next(r'.*:(IC)')
 
     @grammarRule
     def conjunction(self):
@@ -186,7 +191,7 @@ class KoreanParser(Parser):
     def verbAndAuxiliary(self):
         "parse a verb + auxiliary verb"
         vpa = sequence(self.verb(),
-                       self.auxiliaryVerb())
+                       oneOrMore(self.auxiliaryVerb))
         return vpa
 
     @grammarRule

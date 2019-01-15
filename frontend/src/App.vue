@@ -33,12 +33,12 @@
                 <div id="naver-translation" v-if="naverTranslation"><span>Naver/Papago translation: </span>{{naverTranslation}}</div>
             </div>
 
+            <div v-if="error" class="error-msg">
+                {{ error }}
+            </div>
             <div v-for="s in sentences">
                 <div v-if="!parsing" class="output-row k-flexrow k-table">
-                    <div v-if="error" class="error-msg">
-                        {{ error }}
-                    </div>
-                    <template v-else>
+                    <template>
                         <div class="pos-list">
                             <div v-for="phrase in s.phrases">
                                 <template v-for="element, i in phrase">
@@ -143,7 +143,7 @@ export default {
 		return {
 		    APIHost: "http://localhost:9000", // "http://localhost:9000", // ""
 		    parsing: false,
-		    sentence: "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // "나는 요리하는 것에 대해서 책을 썼어요.", // "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: "한국어를 배우고 싶지 않아요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // "나는 요리하는 것에 대해서 책을 썼어요.", // "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
             naverTranslation: "",
             sentences: [],
@@ -197,12 +197,17 @@ export default {
                         self.buildDisplay();
                     }
                     else {
+                        self.parsing = false;
+                        self.parseButtonText = "Parse";
+                        self.error = "Sorry, unable to parse";
+                        self.sentences = [];
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     self.parsing = false;
                     self.parseButtonText = "Parse";
                     self.error = "Parsing failed - " + textStatus + ", " + errorThrown;
+                    self.sentences = [];
                 }
             });
             // and request translation
@@ -733,6 +738,12 @@ document.onmouseup = function (e) {
     @keyframes fadeIn {
       from {opacity: 0;}
       to {opacity:1 ;}
+    }
+    
+    .error-msg {
+        color: red;
+        font-style: italic;
+        padding-left: 30px;
     }
 
     /* useful CSS3 layout classes */

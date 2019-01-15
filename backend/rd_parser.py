@@ -27,6 +27,7 @@ class Lexer(object):
         self.posList = posList
         self.cursor = 0
         self.lexer = None
+        self.lastTriedToken = None
 
     # -------- parser API ---------
 
@@ -40,6 +41,7 @@ class Lexer(object):
     def peek(self, tokenPat=None):
         "yields but doesn't consume next token"
         token = self.posList[self.cursor]
+        self.lastTriedToken = token
         if tokenPat and not re.fullmatch(tokenPat, token):
             return None
         #
@@ -314,12 +316,14 @@ def grammarRule(rule):
     def backtrack_wrapper(self, *args, **kwargs):
         indent = '  ' * len(self.recursionState)
         startMark = self.lexer.mark()
-        print(indent, '--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
+        if self.verbose > 0:
+            print(indent, '--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
         # if rule in self.fails[startMark]:
         #     print(indent, '    nope, failed this before')
         #     return []
         if (rule, startMark) in self.recursionState:
-            print(indent, '    recursion on same token encountered, failing')
+            if self.verbose > 0:
+                print(indent, '    recursion on same token encountered, failing')
             return []
         #
         self.recursionState.append((rule, startMark))
@@ -332,11 +336,13 @@ def grammarRule(rule):
         if not node:
             self.fails[startMark].add(rule) # note we failed this production at this point to break later recursive attempts at same thing
             self.lexer.backTrackTo(startMark)
-            print(indent, '    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
+            if self.verbose > 0:
+                print(indent, '    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
             return []
         else:
             traceBack = " -> ".join(r.__name__ for r, m in reversed(self.recursionState))
-            print(indent, '**** found', node, traceBack)
+            if self.verbose > 0:
+                print(indent, '**** found', node, traceBack)
             return [node]
     return backtrack_wrapper
 
@@ -416,13 +422,14 @@ class Parser(object):
         # for now, just back-tracks lexer
         self.lexer.backTrackTo(marker)
 
-    def parse(self):
+    def parse(self, verbose=0):
         "begin parse, return ParseTree root node"
-
-        s = self.sentence()[0]
-        s.pprint()
-
-        return s
+        self.verbose = verbose
+        #
+        s = self.sentence()
+        if s:
+            s[0].pprint()
+            return s[0] # returns as a singleton list
 
     def makeNode(self, label, startMark, constituents):
         "makes a node with given label & constituents as children"
@@ -433,6 +440,9 @@ class Parser(object):
             if c and c != ParseTree.nullNode:
                 nn.append(c)
         return None if nn.isEmpty() else nn
+
+    def lastTriedToken(self):
+        return self.lexer.lastTriedToken()
 
 if __name__ == "__main__":
     #

@@ -67,7 +67,7 @@ def parse():
     # parse input & return parse results to client
     sentences = parseInput(input, showAllLevels=showAllLevels)
 
-    return jsonify(result="OK",
+    return jsonify(result="OK" if sentences else "FAIL",
                    sentences=sentences)
 
 def parseInput(input, showAllLevels=False):
@@ -76,7 +76,7 @@ def parseInput(input, showAllLevels=False):
     # build a string for the KHaiii phoneme analyzer
     if input.strip()[-1] not in ['.', '?', '!']:
         input += '.'
-    input = input.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ')
+    # input = input.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ') - adding a space before punctuation seems to mess tagging in Khaiii
 
     # run Khaiii, grab the parts-of-speech list it generates (morphemes + POS tags) and extract original word-to-morpheme groupings
     sentences = []  # handle possible multiple sentences
@@ -116,7 +116,9 @@ def parseInput(input, showAllLevels=False):
             # recursive-descent parser
             from rd_grammar import KoreanParser
             parser = KoreanParser([":".join(p) for p in mappedPosList])
-            parseTree = parser.parse()
+            parseTree = parser.parse(verbose=1)
+            if not parseTree:
+                return dict(parseTree=None, mappedPosList=mappedPosList, lastToken=parser.lastTriedToken())
             parseTree.mapNodeNames()
             references = parseTree.getReferences()
             phrases = parseTree.phraseList()
@@ -301,7 +303,7 @@ testSamples = r"""
 날이 추워서 집에만 있는다.   
   아기가 있어서 강아지는 안 키워요.
 남자와 소년과 여자는 걸었다.
-참기름을 넣어서 더 맛있게 만들었다.    <<<<
+참기름을 넣어서 더 맛있게 만들었다.   
 탐은 공부하기를 싫어한다.
 기차가 떠나가 버렸어요.  
   인삼은 한국에서만 잘 자랍니다.
