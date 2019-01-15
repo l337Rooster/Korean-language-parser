@@ -94,7 +94,7 @@ def parseInput(input, showAllLevels=False):
         # map POS through synthetic tag mapper & extract word groupings
         mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups']) #, disableMapping=True)
 
-        if True:  # NLTK chunking
+        if False:  # NLTK chunking
             # perform chunk parsing
             chunkTree = Chunker.parse(mappedPosList, trace=2)
             chunkTree.pprint()
@@ -300,6 +300,7 @@ testSamples = r"""
 저는 학교에 안 갔어요.
 날이 추워서 집에만 있는다.   
   아기가 있어서 강아지는 안 키워요.
+남자와 소년과 여자는 걸었다.
 참기름을 넣어서 더 맛있게 만들었다.    <<<<
 탐은 공부하기를 싫어한다.
 기차가 떠나가 버렸어요.  

@@ -347,11 +347,16 @@ def eval(rule):
 def optional(rule):
     return eval(rule) or [ParseTree.nullNode]
 
-def anyOneOf(*rules):
-    # eager match: eval all rules, take the longest matching
+def option(rule):
+    "must be used for each option in an anyOneOf pattern, so that evaluation order is properly controlled"
+    result = eval(rule)
+    yield result
+
+def anyOneOf(*options):
+    # eager match: eval all options, take the longest matching
     longest = None; length = 0
-    for i, r in enumerate(rules):
-        node = eval(r)
+    for i, o in enumerate(options):
+        node = o.__next__()
         if node and node[0] != ParseTree.nullNode:
             l = sum(n.terminalSpan() for n in node)
             if not longest or l > length:

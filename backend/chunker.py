@@ -41,11 +41,13 @@ class Chunker(object):
                                     
         Determiner:         {<MM>}
         
-        NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><Noun>*<XSN>*<JX|PRT.*>*<AdverbialPhrase>*}  # NounPhrase
-        TopicPhrase:        {<NounPhrase><TOP.*>}
-        SubjectPhrase:      {<NounPhrase><JKS>}
-        ComplementPhrase:   {<NounPhrase><JKC>}
-        ObjectPhrase:       {<NounPhrase><JKO>}     # ObjectPhrase
+        NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><Noun>*<XSN>*<JKB>*<JX|PRT.*>*<AdverbialPhrase>*}  # NounPhrase
+        Conjunction:        {<NounPhrase><JC|CON.*>}
+        
+        TopicPhrase:        {<Conjunction>*<NounPhrase><TOP.*>}
+        SubjectPhrase:      {<Conjunction>*<NounPhrase><JKS>}
+        ComplementPhrase:   {<Conjunction>*<NounPhrase><JKC>}
+        ObjectPhrase:       {<Conjunction>*<NounPhrase><JKO>}     # ObjectPhrase
         
         Phrase:             {<AdverbialPhrase|NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
                             {<Punctuation>*<Phrase><Phrase>*<Punctuation>} 
