@@ -442,7 +442,7 @@ class Parser(object):
         return None if nn.isEmpty() else nn
 
     def lastTriedToken(self):
-        return self.lexer.lastTriedToken()
+        return self.lexer.lastTriedToken
 
 if __name__ == "__main__":
     #

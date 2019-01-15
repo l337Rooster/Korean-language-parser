@@ -67,7 +67,7 @@ def parse():
     # parse input & return parse results to client
     sentences = parseInput(input, showAllLevels=showAllLevels)
 
-    return jsonify(result="OK" if sentences else "FAIL",
+    return jsonify(result="OK",
                    sentences=sentences)
 
 def parseInput(input, showAllLevels=False):
@@ -98,32 +98,32 @@ def parseInput(input, showAllLevels=False):
             # perform chunk parsing
             chunkTree = Chunker.parse(mappedPosList, trace=2)
             chunkTree.pprint()
-
             # apply any synthetic-tag-related node renamings
             TagMap.mapNodeNames(chunkTree)
-
             # extract popup wiki definitions & references links & notes for implicated nodes
             references = TagMap.getReferences(chunkTree)
-
             # build descriptive phrase list
             phrases = Chunker.phraseList(chunkTree)
-
             #
             parseTreeDict = buildParseTree(chunkTree, showAllLevels=showAllLevels)
 
-        else:
-
-            # recursive-descent parser
+        else:  # recursive-descent parser
             from rd_grammar import KoreanParser
             parser = KoreanParser([":".join(p) for p in mappedPosList])
             parseTree = parser.parse(verbose=1)
-            if not parseTree:
-                return dict(parseTree=None, mappedPosList=mappedPosList, lastToken=parser.lastTriedToken())
-            parseTree.mapNodeNames()
-            references = parseTree.getReferences()
-            phrases = parseTree.phraseList()
-            parseTreeDict = parseTree.buildParseTree(showAllLevels=showAllLevels)
-
+            if parseTree:
+                # apply any synthetic-tag-related node renamings
+                parseTree.mapNodeNames()
+                # extract popup wiki definitions & references links & notes for implicated nodes
+                references = parseTree.getReferences()
+                # build descriptive phrase list
+                phrases = parseTree.phraseList()
+                parseTreeDict = parseTree.buildParseTree(showAllLevels=showAllLevels)
+            else:
+                # parsing failed, return unrecognized token
+                parseTree = references = parseTreeDict = phrases = None
+                s.update(dict(error="Sorry, failed to parse sentence",
+                              lastToken=parser.lastTriedToken()))
 
         debugging = dict(posList=pformat(s['posList']),
                          mappedPosList=pformat(mappedPosList),
@@ -312,12 +312,12 @@ testSamples = r"""
   비가 올 것이라고 걱정된다.
   나는 뭐, 심각한 일이라고.   <<--- this one is odd, Khaiii says in "뭐," 뭐 is an IC, but with a space "뭐 ," 뭐 is an NP, wtf?
   사실이 아니라고 몇 번을 해명했지만 통하지 않았다.
-  나는 비가 온 것을 보았다.<---  up to here with new grammar
+  나는 비가 온 것을 보았다.
 한국어를 배우고 싶지 않아요.
 저는 숙제를 끝내고 나서 집으로 갈 거예요
 나는 저녁으로 빵과 물과 밥을 먹었어요.    나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.
 
-khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다.
+khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다. <---  up to here with new grammar
 
 내일 일요일인데, 뭐 할 거예요?
 

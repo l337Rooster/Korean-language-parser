@@ -36,65 +36,78 @@
             <div v-if="error" class="error-msg">
                 {{ error }}
             </div>
-            <div v-for="s in sentences">
-                <div v-if="!parsing" class="output-row k-flexrow k-table">
-                    <template>
-                        <div class="pos-list">
-                            <div v-for="phrase in s.phrases">
-                                <template v-for="element, i in phrase">
-                                    <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
-                                    <span v-if="element.type == 'word'" class="leaf-word"
-                                          v-on:mouseenter="mouseEnterNode(element, $event)"
-                                          v-on:click="nodeClick(element, $event)">{{ element.word }}</span>
-                                    <span v-if="element.type == 'tree'" class="leaf-tag">({{ element.tag }})</span>
-                                </template>
-                            </div>
+            <div v-if="!parsing">
+                <div v-for="s in sentences">
+                    <template v-if="s.error">
+                        <div class="k-flexrow parse-fail-msg"> {{ s.error }} </div>
+                        <div class="k-flexrow parse-fail-unrec">Unreconized: {{ s.lastToken.split(':')[0] }}</div>
+                        <div class="k-flexrow parse-fail-poslist">
+                            Parts of speech:
+                            <span v-for="pos in s.posList">
+                                <span class="parse-fail-word">{{ pos.split(':')[0] }}:</span>
+                                <span class="parse-fail-tag">{{ pos.split(':')[1] }}, </span>
+                            </span>
                         </div>
-                        <svg class="parse-tree tree-svg" :width="s.treeWidth" :height="s.treeHeight" style="background-color: rgba(0,0,0,0);">
-                            <g v-for="word in s.words">
-                                <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
-                                    <tspan class="word-word">{{ word.word }}</tspan>
-                                </text>
-                                <line :x1="word.x + 2" :y1="word.y + 7" class="word-line"
-                                      :x2="word.x + word.width - 4" :y2="word.y + 7"/>
-                            </g>
-                            <g v-for="node in s.terminals">
-                                <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
-                                    <template v-if="node.word">
-                                        <tspan class="leaf-word" v-on:mouseenter="mouseEnterNode(node, $event)"
-                                                                 v-on:click="nodeClick(node, $event)">{{ node.word }}</tspan>
-                                        <tspan :x="node.x + node.width / 2" :dy="terminalHeight - 4" class="leaf-tag">{{ node.tagLabel[0] }}</tspan>
-                                        <tspan v-if="node.tagLabel.length > 1"
-                                               :x="node.x + node.width / 2" :dy="tagLabelHeight" class="leaf-tag">{{ node.tagLabel[1] }}</tspan>
-                                    </template>
-                                    <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
-                                </text>
-                                <line :x1="node.x + node.width / 2" :y1="node.y + tagLabelHeight * node.tagLabel.length + 6" class="link-line"
-                                      :x2="node.x + node.width / 2" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
-                            </g>
-                            <g v-for="layer in s.layers">
-                                <g v-for="node in layer">
-                                    <text :x="node.x" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
-                                        <tspan class="node-tag" v-on:mouseenter="mouseEnterNode(node, $event)"
-                                                                v-on:click="nodeClick(node, $event)">{{ node.tag }}</tspan>
-                                    </text>
-                                    <line v-if="node.parent" :x1="node.x" :y1="node.y + 8" class="link-line"
-                                                             :x2="node.x" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
-                                    <path :d="childrenConnector(node)" class="link-line"></path>
-                                    <line :x1="node.x" :y1="node.y - 14" class="link-line"
-                                          :x2="node.x" :y2="node.y - 28"/>
-                                </g>
-                            </g>
-                        </svg>
                     </template>
-                </div>
-                <div v-if="!parsing && debugOutput && s.debugging" class="debug-row k-flexrow k-table">
-                    <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{s.debugging.posList}}</pre></div>
-                    <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{s.debugging.mappedPosList}}</pre></div>
-                    <div class="k-row"><div class="k-cell">MorphemeGroups</div><pre class="k-cell">{{s.debugging.morphemeGroups}}</pre></div>
-                    <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{s.debugging.phrases}}</pre></div>
-                    <div class="k-row"><div class="k-cell">ParseTree</div><pre class="k-cell">{{s.debugging.parseTree}}</pre></div>
-                    <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{s.debugging.references}}</pre></div>
+                    <tenplate v-else>
+                        <div class="output-row k-flexrow k-table">
+                            <div class="pos-list">
+                                <div v-for="phrase in s.phrases">
+                                    <template v-for="element, i in phrase">
+                                        <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
+                                        <span v-if="element.type == 'word'" class="leaf-word"
+                                              v-on:mouseenter="mouseEnterNode(element, $event)"
+                                              v-on:click="nodeClick(element, $event)">{{ element.word }}</span>
+                                        <span v-if="element.type == 'tree'" class="leaf-tag">({{ element.tag }})</span>
+                                    </template>
+                                </div>
+                            </div>
+                            <svg class="parse-tree tree-svg" :width="s.treeWidth" :height="s.treeHeight" style="background-color: rgba(0,0,0,0);">
+                                <g v-for="word in s.words">
+                                    <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
+                                        <tspan class="word-word">{{ word.word }}</tspan>
+                                    </text>
+                                    <line :x1="word.x + 2" :y1="word.y + 7" class="word-line"
+                                          :x2="word.x + word.width - 4" :y2="word.y + 7"/>
+                                </g>
+                                <g v-for="node in s.terminals">
+                                    <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
+                                        <template v-if="node.word">
+                                            <tspan class="leaf-word" v-on:mouseenter="mouseEnterNode(node, $event)"
+                                                                     v-on:click="nodeClick(node, $event)">{{ node.word }}</tspan>
+                                            <tspan :x="node.x + node.width / 2" :dy="terminalHeight - 4" class="leaf-tag">{{ node.tagLabel[0] }}</tspan>
+                                            <tspan v-if="node.tagLabel.length > 1"
+                                                   :x="node.x + node.width / 2" :dy="tagLabelHeight" class="leaf-tag">{{ node.tagLabel[1] }}</tspan>
+                                        </template>
+                                        <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
+                                    </text>
+                                    <line :x1="node.x + node.width / 2" :y1="node.y + tagLabelHeight * node.tagLabel.length + 6" class="link-line"
+                                          :x2="node.x + node.width / 2" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
+                                </g>
+                                <g v-for="layer in s.layers">
+                                    <g v-for="node in layer">
+                                        <text :x="node.x" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
+                                            <tspan class="node-tag" v-on:mouseenter="mouseEnterNode(node, $event)"
+                                                                    v-on:click="nodeClick(node, $event)">{{ node.tag }}</tspan>
+                                        </text>
+                                        <line v-if="node.parent" :x1="node.x" :y1="node.y + 8" class="link-line"
+                                                                 :x2="node.x" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
+                                        <path :d="childrenConnector(node)" class="link-line"></path>
+                                        <line :x1="node.x" :y1="node.y - 14" class="link-line"
+                                              :x2="node.x" :y2="node.y - 28"/>
+                                    </g>
+                                </g>
+                            </svg>
+                        </div>
+                        <div v-if="debugOutput && s.debugging" class="debug-row k-flexrow k-table">
+                            <div class="k-row"><div class="k-cell">POS list</div><pre class="k-cell">{{s.debugging.posList}}</pre></div>
+                            <div class="k-row"><div class="k-cell">Mapped POS List</div><pre class="k-cell">{{s.debugging.mappedPosList}}</pre></div>
+                            <div class="k-row"><div class="k-cell">MorphemeGroups</div><pre class="k-cell">{{s.debugging.morphemeGroups}}</pre></div>
+                            <div class="k-row"><div class="k-cell">Phrases</div><pre class="k-cell">{{s.debugging.phrases}}</pre></div>
+                            <div class="k-row"><div class="k-cell">ParseTree</div><pre class="k-cell">{{s.debugging.parseTree}}</pre></div>
+                            <div class="k-row"><div class="k-cell">References</div><pre class="k-cell">{{s.debugging.references}}</pre></div>
+                        </div>
+                    </tenplate>
                 </div>
             </div>
 
@@ -143,7 +156,7 @@ export default {
 		return {
 		    APIHost: "http://localhost:9000", // "http://localhost:9000", // ""
 		    parsing: false,
-		    sentence: "한국어를 배우고 싶지 않아요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // "나는 요리하는 것에 대해서 책을 썼어요.", // "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
+		    sentence: "khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // "나는 요리하는 것에 대해서 책을 썼어요.", // "저의 딸도 행복해요", // "저는 비싼 음식을 좋아해요", // "나는 요리하는 것에 대해서 책을 썼어요.", // "모두 와줘서 고마워요.", "중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.", // "나는 요리하는 것에 대해서 책을 쓸 거예요.", // "나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.", // null, // "나는 그것에 대해서 책을 쓸 거야",
 		    error: "",
             naverTranslation: "",
             sentences: [],
@@ -221,131 +234,132 @@ export default {
             for (var si = 0; si < self.sentences.length; si++) {
                 // prepare each sentence separately
                 var s = self.sentences[si];
+                if (!s.error) {
+                    // build layer node-id lookup tables
+                    var nodes = {}
 
-                // build layer node-id lookup tables
-                var nodes = {}
-                function addID(n) {
-                    nodes[n.id] = n;
-                    n.parent = nodes[n.parent];
-                    n.sentence = s;
-                    for (var i = 0; i < n.children.length; i++)
-                        addID(n.children[i]);
-                }
-                addID(s.parseTree.tree)
-
-                // grab terminals list
-                var terminalIDs = s.parseTree.layers[0],
-                    terminals = [];
-                for (var i = 0; i < terminalIDs.length; i++) {
-                    var t = nodes[terminalIDs[i]];
-                    terminals.push(t);
-                }
-
-                // add owning-sentence object to phrase elements
-                for (var pi = 0; pi < s.phrases.length; pi++)
-                    for (var ei = 0; ei < s.phrases[pi].length; ei++)
-                        s.phrases[pi][ei].sentence = s;
-
-                // lay out original-text word line based on morphemeGroup word-groupings
-                var x = self.treeMarginX, y = self.treeMarginY + 30;
-                var words = [], height = 0;
-                var wi = 0, wci = 0,  // word & word-char indexes
-                    ti = 0, tci = 0;      // terminal & terminal-char indexes
-                var t = null, ttw, ttt, ts, tcsx, tcex;  // current terminal & its SVG laytout text elements for word & terminal char start & end x positions
-                // run over words in morpheme-groupings, tracking character positions in terminals, picking up coords as original words are traversed
-                for (wi = 0; wi < s.morphemeGroups.length; wi++) {
-                    var g = s.morphemeGroups[wi];
-                    var word = {word: g[0], y: y}, chars = g[1];
-                    for (wci = 0; wci < chars.length;) {
-                        // track chars in terminal
-                        if (!t || tci >= t.word.length) {
-                            // end of terminal, grab next & update terminal layout vars
-                            t = terminals[ti];
-                            ti += 1;
-                            tci = 0;
-                            ttw = self.getLayoutElement(t.word, "leaf-word");
-                            ttt = self.getLayoutElement(self.longestLabel(t.tagLabel), "leaf-tag");
-                            var wWidth = ttw.getComputedTextLength(), tWidth = ttt.getComputedTextLength(),
-                                width = Math.max(wWidth, tWidth);
-                            var dw = (width - wWidth) / 2;  // word-start delta
-                            ts = x + dw;  // record this terminal's start & bump along for next terminal's pos
-                            x += width + self.terminalGap;  // bump along terminal x pos using prior terminals' width
-                        }
-                        // update current terminal chars pos
-                        tcsx = ts + ttw.getStartPositionOfChar(tci).x;
-                        tcex = ts + ttw.getEndPositionOfChar(tci).x;
-                        if (wci == 0) // start of word
-                            word.x = tcsx;
-                        if (wci == chars.length - 1) { // end of word, figure width, track max height
-                            word.width = tcex - word.x;
-                            height = Math.max(height, self.textBBox(word.word, "word-word").height);
-                        }
-                        //
-                        tci += 1;  // bump along terminal & word characters
-                        wci += 1;
+                    function addID(n) {
+                        nodes[n.id] = n;
+                        n.parent = nodes[n.parent];
+                        n.sentence = s;
+                        for (var i = 0; i < n.children.length; i++)
+                            addID(n.children[i]);
                     }
-                    // collect layed-out words
-                    words.push(word);
-                }
 
-                s.words = words;
-                x = self.treeMarginX;
-                y += height + self.lineGap;
+                    addID(s.parseTree.tree)
 
-                // lay out terminals line
-                self.terminalHeight = self.tagLabelHeight = height = 0;
-                for (var i = 0; i < terminals.length; i++) {
-                    var t = terminals[i];
-                    t.x = x;
-                    t.y = y;
-                    var tew = self.getLayoutElement(t.word, "leaf-word"),
-                        tet = self.getLayoutElement(self.longestLabel(t.tagLabel), "leaf-tag");
-                    t.width = Math.max(tew.getComputedTextLength(), tet.getComputedTextLength());
-                    self.terminalHeight = Math.max(self.terminalHeight, self.textBBox(t.word, "leaf-word").height)
-                    self.tagLabelHeight = Math.max(self.tagLabelHeight, self.textBBox(t.tagLabel[0], "leaf-tag").height)
-                    height = Math.max(height, self.terminalHeight + 4 + self.tagLabelHeight * (t.tagLabel.length + 1));
-                    x += t.width + self.terminalGap;
-                }
-                //
-                s.terminals = terminals;
-
-                // compute tree layout coords
-                y += self.lineGap + height;
-                // draw an inverted tree from the terminal layer down; start at layer above terminals,
-                //   find parent & siblings & layout parent midway between siblings
-                var layerIDs = s.parseTree.layers,
-                    layers = [];
-                for (var i = 1; i < layerIDs.length; i++) {
-                    layers.push([]);
-                    var entryIDs = layerIDs[i];
-                    for (var j = 0; j < entryIDs.length; j++) {
-                        var node = nodes[entryIDs[j]];
-                        layers[i - 1].push(node);
-                        node.y = y + (i - 1) * self.levelHeight;
-                        // get children bounds & center me within that
-                        var c0 = node.children[0], cn = node.children[node.children.length - 1],
-                            x0, xn = 0;
-                        if (node.children.length > 0) {
-                            x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
-                            xn = cn.level >= 0 ? xn = cn.x : cn.x + cn.width / 2;
-                        }
-                        else
-                            x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
-                        node.x = (x0 + xn) / 2;
-                        node.x0 = x0;
-                        node.xn = xn;
+                    // grab terminals list
+                    var terminalIDs = s.parseTree.layers[0],
+                        terminals = [];
+                    for (var i = 0; i < terminalIDs.length; i++) {
+                        var t = nodes[terminalIDs[i]];
+                        terminals.push(t);
                     }
+
+                    // add owning-sentence object to phrase elements
+                    for (var pi = 0; pi < s.phrases.length; pi++)
+                        for (var ei = 0; ei < s.phrases[pi].length; ei++)
+                            s.phrases[pi][ei].sentence = s;
+
+                    // lay out original-text word line based on morphemeGroup word-groupings
+                    var x = self.treeMarginX, y = self.treeMarginY + 30;
+                    var words = [], height = 0;
+                    var wi = 0, wci = 0,  // word & word-char indexes
+                        ti = 0, tci = 0;      // terminal & terminal-char indexes
+                    var t = null, ttw, ttt, ts, tcsx, tcex;  // current terminal & its SVG laytout text elements for word & terminal char start & end x positions
+                    // run over words in morpheme-groupings, tracking character positions in terminals, picking up coords as original words are traversed
+                    for (wi = 0; wi < s.morphemeGroups.length; wi++) {
+                        var g = s.morphemeGroups[wi];
+                        var word = {word: g[0], y: y}, chars = g[1];
+                        for (wci = 0; wci < chars.length;) {
+                            // track chars in terminal
+                            if (!t || tci >= t.word.length) {
+                                // end of terminal, grab next & update terminal layout vars
+                                t = terminals[ti];
+                                ti += 1;
+                                tci = 0;
+                                ttw = self.getLayoutElement(t.word, "leaf-word");
+                                ttt = self.getLayoutElement(self.longestLabel(t.tagLabel), "leaf-tag");
+                                var wWidth = ttw.getComputedTextLength(), tWidth = ttt.getComputedTextLength(),
+                                    width = Math.max(wWidth, tWidth);
+                                var dw = (width - wWidth) / 2;  // word-start delta
+                                ts = x + dw;  // record this terminal's start & bump along for next terminal's pos
+                                x += width + self.terminalGap;  // bump along terminal x pos using prior terminals' width
+                            }
+                            // update current terminal chars pos
+                            tcsx = ts + ttw.getStartPositionOfChar(tci).x;
+                            tcex = ts + ttw.getEndPositionOfChar(tci).x;
+                            if (wci == 0) // start of word
+                                word.x = tcsx;
+                            if (wci == chars.length - 1) { // end of word, figure width, track max height
+                                word.width = tcex - word.x;
+                                height = Math.max(height, self.textBBox(word.word, "word-word").height);
+                            }
+                            //
+                            tci += 1;  // bump along terminal & word characters
+                            wci += 1;
+                        }
+                        // collect layed-out words
+                        words.push(word);
+                    }
+
+                    s.words = words;
+                    x = self.treeMarginX;
+                    y += height + self.lineGap;
+
+                    // lay out terminals line
+                    self.terminalHeight = self.tagLabelHeight = height = 0;
+                    for (var i = 0; i < terminals.length; i++) {
+                        var t = terminals[i];
+                        t.x = x;
+                        t.y = y;
+                        var tew = self.getLayoutElement(t.word, "leaf-word"),
+                            tet = self.getLayoutElement(self.longestLabel(t.tagLabel), "leaf-tag");
+                        t.width = Math.max(tew.getComputedTextLength(), tet.getComputedTextLength());
+                        self.terminalHeight = Math.max(self.terminalHeight, self.textBBox(t.word, "leaf-word").height)
+                        self.tagLabelHeight = Math.max(self.tagLabelHeight, self.textBBox(t.tagLabel[0], "leaf-tag").height)
+                        height = Math.max(height, self.terminalHeight + 4 + self.tagLabelHeight * (t.tagLabel.length + 1));
+                        x += t.width + self.terminalGap;
+                    }
+                    //
+                    s.terminals = terminals;
+
+                    // compute tree layout coords
+                    y += self.lineGap + height;
+                    // draw an inverted tree from the terminal layer down; start at layer above terminals,
+                    //   find parent & siblings & layout parent midway between siblings
+                    var layerIDs = s.parseTree.layers,
+                        layers = [];
+                    for (var i = 1; i < layerIDs.length; i++) {
+                        layers.push([]);
+                        var entryIDs = layerIDs[i];
+                        for (var j = 0; j < entryIDs.length; j++) {
+                            var node = nodes[entryIDs[j]];
+                            layers[i - 1].push(node);
+                            node.y = y + (i - 1) * self.levelHeight;
+                            // get children bounds & center me within that
+                            var c0 = node.children[0], cn = node.children[node.children.length - 1],
+                                x0, xn = 0;
+                            if (node.children.length > 0) {
+                                x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
+                                xn = cn.level >= 0 ? xn = cn.x : cn.x + cn.width / 2;
+                            } else
+                                x0 = c0.level >= 0 ? c0.x : c0.x + c0.width / 2;
+                            node.x = (x0 + xn) / 2;
+                            node.x0 = x0;
+                            node.xn = xn;
+                        }
+                    }
+
+                    // figure graph bounds
+                    var lt = terminals[terminals.length - 1];
+                    s.treeWidth = self.treeMarginX * 2 + lt.x + lt.width;
+                    s.treeHeight = y + (layers.length - 1) * self.levelHeight + self.treeMarginY;
+                    s.layers = layers;
+
+                    //console.log(layers);
                 }
-
-                // figure graph bounds
-                var lt = terminals[terminals.length - 1];
-                s.treeWidth = self.treeMarginX * 2 + lt.x + lt.width;
-                s.treeHeight = y + (layers.length - 1) * self.levelHeight + self.treeMarginY;
-                s.layers = layers;
-
-                //console.log(layers);
             }
-
         },
 
         childrenConnector: function (node) {
@@ -743,7 +757,32 @@ document.onmouseup = function (e) {
     .error-msg {
         color: red;
         font-style: italic;
+        font-size: 14px;
         padding-left: 30px;
+    }
+
+    .parse-fail-msg {
+        color: red;
+        font-size: 18px;
+        padding-left: 30px;
+    }
+    .parse-fail-unrec {
+        font-size: 16px;
+        padding-left: 30px;
+        color: rgb(82, 82, 82);;
+    }
+    .parse-fail-poslist {
+        color: rgb(82, 82, 82);;
+        font-size: 16px;
+        padding-left: 30px;
+    }
+    .parse-fail-word {
+        color: #346f8d;;
+        padding-left: 5px;
+    }
+    .parse-fail-tag {
+        color: rgb(127, 140, 144);
+        font-size:14px;
     }
 
     /* useful CSS3 layout classes */
