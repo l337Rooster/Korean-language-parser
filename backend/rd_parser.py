@@ -80,8 +80,12 @@ class ParseTree(object):
         #
         self.children = []
 
+    # def __repr__(self):
+    #     return '{0}: {1} [{2}]'.format(self.type, self.label, ', '.join(c.label for c in self.children if not c.isEmpty()))
+
     def __repr__(self):
-        return '{0}: {1} [{2}]'.format(self.type, self.label, ', '.join(c.label for c in self.children))
+        return '{0}{1}'.format(self.label,
+                               " [{0}]".format(', '.join(c.__repr__() for c in self.children)) if not self.isEmpty() else "")
 
     def append(self, node):
         "adds child node"
@@ -255,7 +259,7 @@ class ParseTree(object):
             if st.isSubtree():
                 tag = st.label
                 # ad-hoc label mappings
-                if tag == 'S':
+                if tag == 'S' or level == 0 and tag == 'Main Clause':
                     tag = 'Sentence'
                 elif tag == 'Predicate' and not isLastChild:
                     tag = 'Verb Phrase'

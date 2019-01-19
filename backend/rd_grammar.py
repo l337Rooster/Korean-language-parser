@@ -26,7 +26,10 @@ class KoreanParser(Parser):
     def subordinateClause(self):
         "subordinate clause"
         # subordinateClause ::= [phrase]* verbPhrase CONNECTING_SUFFIX
-        sc = sequence(zeroOrMore(self.phrase), self.verbPhrase(), self.connectingSuffix())
+        sc = sequence(zeroOrMore(self.phrase),
+                      self.verbPhrase(),
+                      self.connectingSuffix(),
+                      optional(self.punctuation))
         return sc
 
 

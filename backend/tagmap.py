@@ -332,14 +332,6 @@ tm(  # numbers
     tagPat=r'(.*):NR', repl=r'\1:NUM', basePOS="NR", posLabel="Number",
 )
 
-tm(  # ~라고 subordinate clause connector  CEC.*
-    tagPat=r'(라고):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
-)
-
-tm(  # ~지만 subordinate clause connector  CEC.*  # todo: these will probably move into specific pattern definitions
-    tagPat=r'(지만):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
-)
-
 tm(  # V 지:EC negation connector  NEC.*
     tagPat=r'(지):EC', repl=r'\1:NEC', basePOS="EC", posLabel="Negation\nConnector",
 )
@@ -444,6 +436,21 @@ tm( # ~ㄹ/을 때부터 "since the time when ~" adverbial verb-phrase suffix
     #nodeRename="Adverbial Phrase:Since When Phrase",
     refs={},
 )
+
+# ------ sequential connectors --------------  mapping to CEC.*
+
+tm(  # ~라고 subordinate clause connector  CEC.*
+    tagPat=r'(라고):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
+)
+
+tm(  # ~지만 subordinate clause connector  CEC.*  # todo: these will probably move into specific pattern definitions
+    tagPat=r'(지만):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
+)
+
+tm(  # ~ㄴ/는 데:EC subordinate clause connector  CEC.*
+    tagPat=r'(ㄴ데|은 데|는 데):EC', repl=r'\1:CEC', basePOS="EC", posLabel="Clause\nConnector",
+)
+
 
 # ----- prepositional phrase suffix patterns -------  mapping to PRP.* & renaming PrepositionalPhrase
 
