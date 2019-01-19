@@ -307,43 +307,60 @@ class ParseTree(object):
 
 ParseTree.nullNode = ParseTree('null', 'null', 0, 0, None)
 
-# --------------
+# --------------  utility grammar-definition functions ---------------
 
-# define decorator for grammar-rule methods on Parser
-#   will automatically handle backtracking if rule returns False result
+# define the main decorator for grammar-rule methods on Parser
+#   will automatically handle dynamic-programming caching & backtracking if rule returns False result
 def grammarRule(rule):
+    #
     @functools.wraps(rule)
     def backtrack_wrapper(self, *args, **kwargs):
         indent = '  ' * len(self.recursionState)
         startMark = self.lexer.mark()
-        if self.verbose > 0:
+        startToken = self.lexer.peek()
+        # check already-parsed cache
+        priorParse =  self.parsedPhraseCache.get((rule, startMark))
+        if priorParse:
+            # found prior parsing of requested rule at this phoneme, push lexer past prior parsing & return prior parsing
+            parsing, endMark = priorParse
+            self.lexer.backTrackTo(endMark)
+            return parsing
+        #
+        if self.verbose > 2:
             print(indent, '--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
         # if rule in self.fails[startMark]:
         #     print(indent, '    nope, failed this before')
         #     return []
         if (rule, startMark) in self.recursionState:
-            if self.verbose > 0:
+            if self.verbose > 2:
                 print(indent, '    recursion on same token encountered, failing')
-            return []
-        #
-        self.recursionState.append((rule, startMark))
-        #
-        result = rule(self, *args, **kwargs)
-        #
-        self.recursionState.pop(-1)
-        #
-        node = self.makeNode(rule.__name__, startMark, result)
-        if not node:
-            self.fails[startMark].add(rule) # note we failed this production at this point to break later recursive attempts at same thing
-            self.lexer.backTrackTo(startMark)
-            if self.verbose > 0:
-                print(indent, '    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
-            return []
+            parsing = []
         else:
-            traceBack = " -> ".join(r.__name__ for r, m in reversed(self.recursionState))
-            if self.verbose > 0:
-                print(indent, '**** found', node, traceBack)
-            return [node]
+            #
+            self.recursionState.append((rule, startMark))
+            # actually apply the grammar rule function
+            result = rule(self, *args, **kwargs)
+            #
+            self.recursionState.pop(-1)
+            #
+            node = self.makeNode(rule.__name__, startMark, result)
+            if not node:
+                self.fails[startMark].add(rule) # note we failed this production at this point to break later recursive attempts at same thing
+                self.lexer.backTrackTo(startMark)
+                if self.verbose > 1:
+                    print(indent, '    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
+                parsing = []
+            else:
+                traceBack = " -> ".join(r.__name__ for r, m in reversed(self.recursionState))
+                if self.verbose > 0:
+                    print(indent, '**** found', node, 'at', startToken, traceBack)
+                parsing = [node]
+                # cache parse result & it's end-mark
+                self.parsedPhraseCache[(rule, startMark)] = (parsing, self.lexer.mark())
+        #
+        #
+        return parsing
+    #
     return backtrack_wrapper
 
 # parser helper functions
@@ -410,6 +427,8 @@ class Parser(object):
         self.lexer = Lexer(posList)
         self.fails = defaultdict(set)  # tracks history of failed profuctions at each cursor position to break recursions
         self.recursionState = []  # tracks recursion state to break recursive rules
+        self.parsedPhraseCache = {}
+        #
         print(posList)
 
     def mark(self):
