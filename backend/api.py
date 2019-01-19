@@ -238,36 +238,44 @@ def tranlsate():
     "call the Naver/Papago NMT API for a translation of the given text"
     #
     sentence = request.form.get('text')
+    words = request.form.get('words')
     if not sentence:
         return jsonify(result="FAIL", msg="Missing text")
-    # make Naver API call
-    data = urllib.parse.urlencode({"source": "ko", "target": "en", "text": sentence, })
-    headers = {"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-               "X-Naver-Client-Id": "P3YGzu2suEI1diX0DarY",
-               "X-Naver-Client-Secret": "9yhV2ea0wC"}
-    conn = http.client.HTTPSConnection("openapi.naver.com")
-    conn.request("POST", "/v1/papago/n2mt", data, headers)
-    response = conn.getresponse()
-    #
-    if response.status != 200:
-        failReason = response.reason
-    else:
-        try:
-            data = response.read()
-            result = json.loads(data).get("message", {}).get("result")
-            if result:
-                translatedText = result.get('translatedText')
-                if translatedText:
-                    return jsonify(dict(result="OK", translatedText=translatedText))
+
+    def getTranslation(s):
+        # make Naver translation API call
+        failReason = translatedText = None
+        data = urllib.parse.urlencode({"source": "ko", "target": "en", "text": sentence, })
+        headers = {"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                   "X-Naver-Client-Id": "P3YGzu2suEI1diX0DarY",
+                   "X-Naver-Client-Secret": "9yhV2ea0wC"}
+        conn = http.client.HTTPSConnection("openapi.naver.com")
+        conn.request("POST", "/v1/papago/n2mt", data, headers)
+        response = conn.getresponse()
+        #
+        if response.status != 200:
+            failReason = response.reason
+        else:
+            try:
+                data = response.read()
+                result = json.loads(data).get("message", {}).get("result")
+                if result:
+                    translatedText = result.get('translatedText')
+                    if not translatedText:
+                        failReason = "Naver result missing translateText"
                 else:
-                    failReason = "Naver result missing translateText"
-            else:
-                failReason = "Naver response missing result"
-        except:
-            failReason = "Ill-formed JSON response from Naver API"
-    conn.close()
-    # fall through to failure response
-    return jsonify(dict(result="FAIL", reason=failReason))
+                    failReason = "Naver response missing result"
+            except:
+                failReason = "Ill-formed JSON response from Naver API"
+        conn.close()
+        #
+        return translatedText, failReason
+
+    translatedText, failReason = getTranslation(sentence)
+    if failReason:
+        return jsonify(dict(result="FAIL", reason=failReason))
+    #
+    return jsonify(dict(result="OK", translatedText=translatedText))
 
 #
 if __name__ == "__main__":
@@ -324,8 +332,8 @@ khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고�
 창문 열어도 돼요?
 
 중국음식을 먹었다. 중국음식을 좋아하기 때문이에요.      중국음식을 먹었다. 왜냐하면 중국음식을 좋아하기 때문이에요.  (written)
-중국 음식을 좋아하기 때문에 중국 음식을 먹었어요.   중국 음식은 좋아하기 때문에 중국 음식을 먹었어요.
-여기 오기 전에 뭐 했어요?     밥을 먹은 후에 손을 씻다.     그는 일하기 전에 달렸다.
+중국 음식을 좋아하기 때문에 중국 음식을 먹었어요.   중국 음식은 좋아하기 때문에 중국 음식을 먹었어요. <---  up to here with new grammar
+여기 오기 전에 뭐 했어요?     밥을 먹은 후에 손을 씻는다.     그는 일하기 전에 달렸다.
 나는 그것에 대해서 책을 쓸 거야
 그 회계사는 정부에 대해서 나쁜 말을 했어요
 네가 요리하는 것 좋아해요
