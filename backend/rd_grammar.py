@@ -61,12 +61,10 @@ class KoreanParser(Parser):
         "parse a phrase"
         p = sequence(zeroOrMore(self.punctuation),
                      anyOneOf(option(self.nounPhrase),
-                              option(self.combinedNounPhrase),
                               option(self.objectPhrase),
                               option(self.subjectPhrase),
                               option(self.topicPhrase),
                               option(self.adverbialPhrase),
-                              option(self.prepositionalPhrase),
                               option(self.complementPhrase)),
                      zeroOrMore(self.interjection),
                      zeroOrMore(self.punctuation))
@@ -83,7 +81,7 @@ class KoreanParser(Parser):
     @grammarRule
     def conjunction(self):
         "parse a conjunction of connected noun phrases"
-        c = sequence(self.nounPhrase(), self.connector())
+        c = sequence(self.simpleNounPhrase(), self.connector())
         return c
 
     @grammarRule
@@ -93,21 +91,41 @@ class KoreanParser(Parser):
     @grammarRule
     def combinedNounPhrase(self):
         "parse a conjunction-combined noun-phrase"
-        snp = sequence(zeroOrMore(self.conjunction), self.nounPhrase)
+        snp = sequence(zeroOrMore(self.conjunction), self.simpleNounPhrase)
         return snp
+
+    @grammarRule
+    def prepositionalPhrase(self):
+        "parse a prepositional phrase"
+        pp = sequence(self.simpleNounPhrase(),
+                      self.prepositionalSuffix())
+        return pp
+
+    @grammarRule
+    def prepositionalSuffix(self):
+        return self.lexer.next(r'.*:(PRP.*)')
 
     @grammarRule
     def nounPhrase(self):
         "parse a noun-phrase"
-        np = sequence(optional(self.determiner),
-                      anyOneOf(option(self.noun), option(self.count), option(self.adjectivalPhrase)),
-                      zeroOrMore(self.noun),
-                      zeroOrMore(self.nounModifyingSuffix),
-                      zeroOrMore(self.adverbialParticle),
-                      zeroOrMore(self.auxiliaryParticle),
-                      optional(self.adverbialPhrase)
-                      )
+        np = anyOneOf(option(self.simpleNounPhrase),
+                      option(self.combinedNounPhrase),
+                      option(self.prepositionalPhrase))
         return np
+
+    @grammarRule
+    def simpleNounPhrase(self):
+        "parse a simple noun-phrase"
+        snp = sequence(optional(self.determiner),
+                     anyOneOf(option(self.noun),
+                              option(self.count),
+                              option(self.adjectivalPhrase)),
+                     zeroOrMore(self.noun),
+                     zeroOrMore(self.nounModifyingSuffix),
+                     zeroOrMore(self.adverbialParticle),
+                     zeroOrMore(self.auxiliaryParticle),
+                     optional(self.adverbialPhrase))
+        return snp
 
     @grammarRule
     def determiner(self):
@@ -232,7 +250,9 @@ class KoreanParser(Parser):
     @grammarRule
     def nominalizedVerb(self):
         "parse a nominalized verb"
-        nv = sequence(self.verb(), self.nominalizingSuffix())
+        nv = sequence(self.verb(),
+                      optional(self.verbSuffix),
+                      self.nominalizingSuffix())
         return nv
 
     @grammarRule
@@ -272,17 +292,6 @@ class KoreanParser(Parser):
     @grammarRule
     def adverbialPhraseConnector(self):
         return self.lexer.next(r'.*:(EC|ADVEC.*)')
-
-    @grammarRule
-    def prepositionalPhrase(self):
-        "parse a prepositional phrase"
-        pp = sequence(anyOneOf(option(self.nounPhrase), option(self.combinedNounPhrase)),
-                      self.prepositionalSuffix())
-        return pp
-
-    @grammarRule
-    def prepositionalSuffix(self):
-        return self.lexer.next(r'.*:(PRP.*)')
 
     @grammarRule
     def objectPhrase(self):
