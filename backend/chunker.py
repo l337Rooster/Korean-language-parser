@@ -14,113 +14,111 @@ class Chunker(object):
 
 
     grammar = r"""
-    
+
         Punctuation:        {<SP|SS|SE|SO|SW|SWK>}
-    
+
         DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
         Verb:               {<VV|VX|DescriptiveVerb|VND.*>}
         NominalizedVerb:    {<Verb><PNOM.*>}
         AuxiliaryVerb:      {<EC|NEC.*><Verb>}
                             {<AUX.*>}
         VerbAndAuxiliary:   {<Verb><AuxiliaryVerb>}
-        
+
         Adverb:             {<MAG>}
                             {<VA|VAND.*><EC>}
         VerbPhrase:         {<Adverb|AdverbialPhrase>*<Verb|VerbAndAuxiliary><EP|PSX.*>*}
-        
+
         Count:              {<NN.*><MM|NUM.*|SN><NNB|NNG>*}  # Count
         Noun:               {<NN.*|NR|SL|NP|NominalizedVerb>}       # Noun
-                            
+
         Possessive:         {<Noun><JKG>}
         Adjective:          {<VerbPhrase><ETM>}
                             {<Adverb>}
                             {<Possessive>}
         AdjectivalPhrase:   {<Adjective><Adjective>*<Noun|Count>}
-        
+
         AdverbialPhrase:    {<AdjectivalPhrase|Noun><EC|ADVEC.*><JX>*}
-                                    
+
         Determiner:         {<MM>}
-        
+
         NounPhrase:         {<Determiner>*<Noun|Count|AdjectivalPhrase><Noun>*<XSN>*<JKB>*<JX|PRT.*>*<AdverbialPhrase>*}  # NounPhrase
         Conjunction:        {<NounPhrase><JC|CON.*>}
-        
+
         TopicPhrase:        {<Conjunction>*<NounPhrase><TOP.*>}
         SubjectPhrase:      {<Conjunction>*<NounPhrase><JKS>}
         ComplementPhrase:   {<Conjunction>*<NounPhrase><JKC>}
         ObjectPhrase:       {<Conjunction>*<NounPhrase><JKO>}     # ObjectPhrase
-        
+
         Phrase:             {<AdverbialPhrase|NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase>}
-                            {<Punctuation>*<Phrase><Phrase>*<Punctuation>} 
-        
+                            {<Punctuation>*<Phrase><Phrase>*<Punctuation>}
+
         EndingSuffix:       {<EF>}
         ConnectingSuffix:   {<EC|ADVEC.*|CEC.*>}
-        
+
         SubordinateClause:  {<Phrase><Phrase>*<VerbPhrase><ConnectingSuffix>}
         Predicate:          {<VerbPhrase><EndingSuffix>}
         MainClause:         {<Phrase><Phrase>*<Predicate>}
         Sentence:           {<SubordinateClause>*<MainClause>}
-            
+
 
     """
 
-
-    # grammarXXX = r"""
+    # the following is an attempt to reproduce the recursive-descent grammar.  It doesn't work, largely because of ambiguities that are
+    #  resolved in the R.D. parser by full backtracking and looking for longest alternatives in all 'anyOneOf' rules
+    #  may still be usable with some re-ordering effort & further context-sensitve tag-mapping
     #
-    #      NounDerivedVerb:    {<VND.*>}
-    #      AuxiliaryVerb:      {<EC><VX|VV>}
-    #                          {<AUX.*>}
-    #      Adverb:             {<MAG>}
-    #      NounDerivedAdjective: {<VAND.*>}
-    #      AdjectivalPhrase:   {<Adverb>*<Object>*<VA|VV|AuxiliaryVerbForm|NounDerivedAdjective|NounDerivedVerb><ETM>}
-    #      DescriptiveVerb:    {<VA|NounDerivedAdjective>}
-    #      Verb:               {<VV|VCN|VX|NounDerivedVerb|DescriptiveVerb>}
-    #      NominalizedVerb:    {<Verb><EP|PSX.*>*<PNOM.*>}
-    #                          {<AuxiliaryVerbForm><PNOM.*>}
+    # grammar = r"""
+    #     AdverbialPhrase:    {<AdjectivalPhrase|Noun><EC|ADVEC.*><JX|PRT.*>*}
     #
-    #      VerbSuffix:         {<EP|PSX.*>*<EF|EC>*}
+    #     NominalizedVerb:    {<Verb><EP|PSX.*>*<PNOM.*>}
+    #     SimpleNoun:         {<NN.*|NR|SL|NP>}
     #
-    #      Noun:               {<NN.*|NR|SL>}
-    #      Pronoun:            {<NP>}
-    #      Substantive:        {<Noun><Noun>*}
-    #                          {<Pronoun>}
-    #                          {<NominalizedVerb>}
-    #      NounPhrase:         {<MM>*<XPN>*<Adverb>*<AdjectivalPhrase>*<Substantive><XSN>*<JKB>*<JX|PRT.*>*}
+    #     Possessive:         {<Noun><JKG>}
     #
-    #      Component:          {<NounPhrase|Possessive><JC|CON.*>}
-    #      Connection:         {<Component><Component>*<NounPhrase|Possessive>}
+    #     AuxiliaryVerbPattern: {<AUX.*>}
+    #     AuxiliaryVerb:      {<EC|NEC.*><Verb>}
+    #                         {<AuxiliaryVerbPattern>}
+    #     VerbAndAuxiliary:   {<Verb><AuxiliaryVerb><AuxiliaryVerb>*}
+    #     Adverb:             {<MAG>}
+    #                         {<VA|VCP|VCN|VAND.*><EC>}
+    #     Adverbial:          {<Adverb|AdverbialPhrase>}
+    #     VerbPhrase:         {<Adverbial>*<Verb|VerbAndAuxiliary><EP|PSX.*>*}
+    #     Adjective:          {<VerbPhrase><ETM>}
+    #                         {<Adverb>}
+    #                         {<Possessive>}
+    #     AdjectivalPhrase:   {<Adjective><Adjective>*<Noun|Count>}
     #
-    #      Possessive:         {<NounPhrase><JKG><NounPhrase>}
-    #      Constituent:        {<NounPhrase|Possessive|Connection>}
     #
-    #      PrepositionalPhrase: {<Constituent|Object|AdjectivalPhrase>*<Constituent|Object|AdjectivalPhrase><PRP.*>}
-    #      AdverbialPhrase:    {<Verb><AuxiliaryVerb>*<VerbSuffix>*<ADVEC.*>}
+    #     Counter:            {<NNB|NNG>}
+    #     Number:             {<MM|NUM.*|SN>}
+    #     Count:              {<SimpleNoun><Number><Counter>*}
+    #     Noun:               {<SimpleNoun|NominalizedVerb>}       # Noun
+    #     Determiner:         {<MM>}
     #
-    #      Complement:         {<Constituent><JKC>}
-    #      Object:             {<Constituent|PrepositionalPhrase><JKO>}
-    #      Subject:            {<Constituent|PrepositionalPhrase><JKS>}
-    #      Topic:              {<Constituent|PrepositionalPhrase><TOP.*>}
+    #     SimpleNounPhrase:   {<Determiner>*<Noun|Count|AdjectivalPhrase><Noun>*<XSN>*<JKB>*<JX|PRT.*>*<AdverbialPhrase>*}  # NounPhrase
+    #     NounPhrase:         {<SimpleNounPhrase|CombinedNounPhrase|PrepositionalPhrase>}
+    #     PrepositionalPhrase: {<SimpleNounPhrase><PRP.*>}
+    #     Conjunction:        {<NounPhrase><JC|CON.*>}
+    #     CombinedNounPhrase: {<Conjunction>*<SimpleNounPhrase>}
     #
-    #      Copula:             {<Constituent><Adverb>*<VCP><AuxiliaryVerb>*<VerbSuffix>}
-    #      AuxiliaryVerbForm:  {<Verb><AuxiliaryVerb>}
-    #      NominalVerbForm:    {<Verb|AuxiliaryVerbForm><NMF.*>}
-    #      Predicate:          {<Adverb|AdverbialPhrase>*<Verb|AuxiliaryVerbForm|NominalVerbForm>*<VerbSuffix>}
+    #     Interjection:       {<IC>}
+    #     Punctuation:        {<SP|SS|SE|SO|SW|SWK>}
     #
-    #      """
-
-    # Location:           {<JKB>}
-    # Title:              {<XSN>}
-    # Possessive:         {<JKG>}
-    # Particle:           {<JX|PRT.*>}
-
-    # NounPhrase:     {<MM>*<XPN>*<MAG>*<Adjective>*<Substantive>}
-    #                    {<Location_|Possessive_|Title_|NounWithParticle_>}
-    # Title_:                  {<NounPhrase><XSN>}
-    # Possessive_:                   {<NounPhrase><JKG>}
-    #  Location_:                   {<NounPhrase><JKB>}
-    #  NounWithParticle_: {<NounPhrase><JX|PRT.*><JX|PRT.*>*}
-
-
-    #         Possessive:         {<NounPhrase><JKG><NounPhrase>}
+    #     TopicPhrase:        {<Conjunction>*<NounPhrase><TOP.*>}
+    #     SubjectPhrase:      {<Conjunction>*<NounPhrase><JKS>}
+    #     ComplementPhrase:   {<Conjunction>*<NounPhrase><JKC>}
+    #     ObjectPhrase:       {<Conjunction>*<NounPhrase><JKO>}     # ObjectPhrase
+    #
+    #     Phrase:             {<Punctuation>*<AdverbialPhrase|NounPhrase|ObjectPhrase|ComplementPhrase|SubjectPhrase|TopicPhrase><Interjection>*<Punctuation>*}
+    #
+    #     EndingSuffix:       {<EF>}
+    #     ConnectingSuffix:   {<EC|ADVEC.*|CEC.*>}
+    #
+    #     Predicate:          {<VerbPhrase><EndingSuffix>}
+    #     MainClause:         {<Phrase><Phrase>*<Predicate>}
+    #     SubordinateClause:  {<Phrase>*<VerbPhrase><ConnectingSuffix><Punctuation>*}
+    #     Sentence:           {<SubordinateClause>*<MainClause>}
+    # """
 
     # annotations for above rules will appear in hover popups in displayedp arse tree
     ruleAnnotations = {

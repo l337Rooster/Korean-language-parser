@@ -100,7 +100,7 @@ class KoreanParser(Parser):
     @grammarRule
     def prepositionalPhrase(self):
         "parse a prepositional phrase"
-        pp = sequence(self.simpleNounPhrase(),
+        pp = sequence(anyOneOf(option(self.simpleNounPhrase), option(self.adjective)),
                       self.prepositionalSuffix())
         return pp
 

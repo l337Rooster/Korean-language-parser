@@ -301,6 +301,7 @@ tm(tagPat="(ㄴ|은|는|ㄹ):ETM", posLabel="Adjectival\nSuffix", )
 tm(tagPat="(와|과):JC",       posLabel="And/With\nParticle", )
 tm(tagPat="만약:NNG",         posLabel="If\nPrefix", )
 tm(tagPat="보다:JKB",         posLabel="Comparison\nParticle", )
+tm(tagPat="으로:JKB",         posLabel="To/At/For\nParticle", )
 tm(tagPat="부터:JX",          posLabel="Since\nParticle", )
 
 # -------------- synthetic tag patterns ----------------
@@ -464,7 +465,7 @@ tm( # 전 "before X-ing" prepositional suffix
 )
 
 tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
-    tagPat=r'(후|다음|뒤):NNG;에:JKB', repl=r'\1에:PRP',
+    tagPat=r'(후|다음|뒤|연후):NNG;에:JKB', repl=r'\1에:PRP',
     basePOS="MAG", descr="Adverbial phrase", posLabel="After\nSuffix",
     nodeRename="Prepositional Phrase:After Phrase",
     wikiKey='후',

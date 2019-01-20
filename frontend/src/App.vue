@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.6.2 - JBW - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a></div>
+                <div id="attribution">v0.7.1 - <a href="mailto:johnw3d@gmail.com">JBW</a> - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a> and JBW's phrase parser</div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -51,7 +51,7 @@
                     </template>
                     <tenplate v-else>
                         <div class="output-row k-flexrow k-table">
-                            <div class="pos-list">
+                            <!-- div class="pos-list">
                                 <div v-for="phrase in s.phrases">
                                     <template v-for="element, i in phrase">
                                         <span v-if="element.type == 'word' && i > 0" class="phrase-plus"> + </span>
@@ -61,7 +61,7 @@
                                         <span v-if="element.type == 'tree'" class="leaf-tag">({{ element.tag }})</span>
                                     </template>
                                 </div>
-                            </div>
+                            </div -->
                             <svg class="parse-tree tree-svg" :width="s.treeWidth" :height="s.treeHeight" style="background-color: rgba(0,0,0,0);">
                                 <g v-for="word in s.words">
                                     <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
