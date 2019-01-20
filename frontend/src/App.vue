@@ -77,7 +77,7 @@
                                                                      v-on:click="nodeClick(node, $event)">{{ node.word }}</tspan>
                                             <tspan :x="node.x + node.width / 2" :dy="terminalHeight - 4" class="leaf-tag">{{ node.tagLabel[0] }}</tspan>
                                             <tspan v-if="node.tagLabel.length > 1"
-                                                   :x="node.x + node.width / 2" :dy="tagLabelHeight" class="leaf-tag">{{ node.tagLabel[1] }}</tspan>
+                                                   :x="node.x + node.width / 2" :dy="tagLabelHeight" :class="leafTagClass(node)">{{ node.tagLabel[1] }}</tspan>
                                         </template>
                                         <tspan v-else class="node-tag" >{{ node.tag }}</tspan>
                                     </text>
@@ -396,6 +396,11 @@ export default {
             return t.getBBox();
         },
 
+        leafTagClass: function(node) {
+            // return class for 2nd line in terminal node tag-label, a word definition if noun or verb
+            return node.tag[0] == 'N' || node.tag[0] == 'V' ? "leaf-tag-def" : "leaf-tag";
+        },
+
         // deprecated. now wiki link is in def popup
         lookupWord: function (node) {
             // lookup word in wiktionary, open in iframe
@@ -637,6 +642,12 @@ document.onmouseup = function (e) {
     .leaf-tag {
         fill: #8d8c86;
         color: #8d8c86;
+        font-size: 12px;
+    }
+
+    .leaf-tag-def {
+        fill: #ab5405;
+        color: #ab5405;
         font-size: 12px;
     }
 

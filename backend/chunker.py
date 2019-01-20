@@ -19,7 +19,7 @@ class Chunker(object):
     
         DescriptiveVerb:    {<VA|VCP|VCN|VAND.*>}
         Verb:               {<VV|VX|DescriptiveVerb|VND.*>}
-        NominalizedVerb:    {<Verb><NOM.*>}
+        NominalizedVerb:    {<Verb><PNOM.*>}
         AuxiliaryVerb:      {<EC|NEC.*><Verb>}
                             {<AUX.*>}
         VerbAndAuxiliary:   {<Verb><AuxiliaryVerb>}
@@ -74,8 +74,8 @@ class Chunker(object):
     #      AdjectivalPhrase:   {<Adverb>*<Object>*<VA|VV|AuxiliaryVerbForm|NounDerivedAdjective|NounDerivedVerb><ETM>}
     #      DescriptiveVerb:    {<VA|NounDerivedAdjective>}
     #      Verb:               {<VV|VCN|VX|NounDerivedVerb|DescriptiveVerb>}
-    #      NominalizedVerb:    {<Verb><EP|PSX.*>*<NOM.*>}
-    #                          {<AuxiliaryVerbForm><NOM.*>}
+    #      NominalizedVerb:    {<Verb><EP|PSX.*>*<PNOM.*>}
+    #                          {<AuxiliaryVerbForm><PNOM.*>}
     #
     #      VerbSuffix:         {<EP|PSX.*>*<EF|EC>*}
     #

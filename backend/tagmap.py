@@ -38,7 +38,7 @@ class TagMap(object):
         "NP":       ("Pronoun",     "Substantive",      "Pronoun",                          "체언	: 대명사"),
         "NR":       ("Noun",        "Substantive",      "Number",                           "체언	: 수사"),
         "VV":       ("Verb",        "Inflectional",     "Verb",                             "용언	: 동사"),
-        "VA":       ("Descriptive\nVerb", "Inflectional", "Descriptive verb / Adjective",   "용언	: 형용사"),
+        "VA":       ("Adjective",   "Inflectional", "Descriptive verb / Adjective",   "용언	: 형용사"),
         "VX":       ("Verb",        "Inflectional",     "Auxiliary or supplimental verb",   "용언: 보조 용언"),
         "VCP":      ("Adjective",   "Inflectional",     "The positive copula - 이다",        "용언: 긍정 지정사"),
         "VCN":      ("Adjective",   "Inflectional",     "The negative copula - 아니다",       "용언: 부정 지정사"),
@@ -369,16 +369,16 @@ tm( # ~도 as-well/also/too particle
 )
 
 
-# ----- nominal forms -- transforming verbs & adjectives to nouns ---------  mapping (usually) to NOM.*
+# ----- nominal forms -- transforming verbs & adjectives to nouns ---------  mapping (usually) to PNOM.*
 
 tm( # 기/음 nominalizer
-    tagPat=r'(기|음):(ETN|NNG)', repl=r'\1:NOM',
+    tagPat=r'(기|음):(ETN|NNG)', repl=r'\1:PNOM',
     basePOS="VMS", descr="Suffix transforming a verb into a noun",
     refs={"ttmik": "/lessons/level-2-lesson-19", "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-29"},
 )
 
 tm( # 는것 nominalizer
-    tagPat=r'(ㄴ|는|ㄹ):ETM;것:NNB', repl=r'\1 것:NOM',
+    tagPat=r'(ㄴ|는|ㄹ):ETM;것:NNB', repl=r'\1 것:PNOM',
     basePOS="VMS", descr="Suffix transforming a verb into a noun",
     wikiKey='것',
     refs={"ttmik": "/lessons/level-2-lesson-19", "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-26/"},

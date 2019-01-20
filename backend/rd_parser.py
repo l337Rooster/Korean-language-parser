@@ -242,7 +242,7 @@ class ParseTree(object):
         #
         return phrases
 
-    def buildParseTree(self, showAllLevels=False):
+    def buildParseTree(self, wordDefs={}, showAllLevels=False):
         "constructs display structures from parse-tree"
         # first, recursively turn the parse tree into a Python nested dict so it can be JSONified
         #  gathering terminals list & adding level from root & parent links along the way
@@ -257,6 +257,7 @@ class ParseTree(object):
                 while st.isSubtree() and st.length() == 1:
                     st = st.children[0]
             if st.isSubtree():
+                # build subtree node
                 tag = st.label
                 # ad-hoc label mappings
                 if tag == 'S' or level == 0 and tag == 'Main Clause':
@@ -273,10 +274,14 @@ class ParseTree(object):
                 allNodes.append(node)
                 return node
             else:
+                # build terminal node
                 word = st.word().strip()
                 tag = st.tag()
                 tm = TagMap.POS_labels.get(word + ":" + tag)
                 tagLabel = (tm.posLabel if tm else TagMap.partsOfSpeech.get(tag)[0]).split('\n')
+                # add word definition for nouns & verbs if available
+                if tag[0] in ('V', 'N') and word in wordDefs:
+                    tagLabel.append(wordDefs[word])
                 node = dict(type='word', word=word, tag=tag, tagLabel=tagLabel, children=[], parent=parent, level=-1, layer=0)
                 nodeID = nodeIDs.get(id(node))
                 if not nodeID:

@@ -270,7 +270,7 @@ class KoreanParser(Parser):
 
     @grammarRule
     def nominalizingSuffix(self):
-        return self.lexer.next(r'.*:(NOM.*)')
+        return self.lexer.next(r'.*:(PNOM.*)')
 
     @grammarRule
     def nounModifyingSuffix(self):

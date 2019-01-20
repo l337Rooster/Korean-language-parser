@@ -53,7 +53,9 @@ def analyzer():
     "Konlpy analyzer main page"
     return render_template("/index.html")
 
-# -------- API handlers ----------------
+# ============== API handlers ==============
+
+# ------------ main sentence parser -------------------
 
 @parserApp.route('/parse/', methods=['POST'])
 def parse():
@@ -69,6 +71,49 @@ def parse():
 
     return jsonify(result="OK",
                    sentences=sentences)
+
+# ------------ wikitionary definition lookup --------------
+
+wiktionary = WiktionaryParser()
+# include Korean parts-of-speech
+for pos in ('suffix', 'particle', 'determiners', 'counters', 'morphemes', 'prefix', ):
+    wiktionary.include_part_of_speech(pos)
+
+# hangul & english unicode ranges
+ranges = [(0, 0x036f), (0x3130, 0x318F), (0xAC00, 0xD7AF), (0x1100, 0x11FF), (0x1e00, 0x2c00), (0x2022, 0x2022)]
+isHangulOrEnglish = lambda s: all(any(ord(c) >= r[0] and ord(c) <= r[1] for r in ranges) for c in s)
+
+@parserApp.route('/definition/<word>', methods=['GET'])
+def definition(word):
+    "return the wiktionary definition(s) for the given word"
+    definitions = []
+    # fetch defs, reformat layout & filter out hanja (for now)
+    print("sending def request to wiktionary for ", word)
+    for defs in wiktionary.fetch(word, 'korean'):
+        print("   received wiktionary response for ", word)
+        for d in defs['definitions']:
+            definitions.append(dict(partOfSpeech = d['partOfSpeech'].capitalize(),
+                                    text = [t for t in d['text'] if isHangulOrEnglish(t)]))
+    #
+    return jsonify(definitions)
+
+# ------------ Naver/Papgo NMT translation --------------
+
+@parserApp.route('/translate/', methods=['POST'])
+def tranlsate():
+    "call the Naver/Papago NMT API for a translation of the given text"
+    #
+    sentence = request.form.get('text')
+    if not sentence:
+        return jsonify(result="FAIL", msg="Missing text")
+
+    translatedText, failReason = getTranslation(sentence)
+    if failReason:
+        return jsonify(dict(result="FAIL", reason=failReason))
+    #
+    return jsonify(dict(result="OK", translatedText=translatedText))
+
+# ---------  API utility functions ---------------
 
 def parseInput(input, showAllLevels=False):
     "parse input string into list of parsed contained sentence structures"
@@ -118,7 +163,10 @@ def parseInput(input, showAllLevels=False):
                 references = parseTree.getReferences()
                 # build descriptive phrase list
                 phrases = parseTree.phraseList()
-                parseTreeDict = parseTree.buildParseTree(showAllLevels=showAllLevels)
+                # get noun & verb translations from Naver
+                wordDefs = getWordDefs(mappedPosList)
+                # build JSONable parse-tree dict
+                parseTreeDict = parseTree.buildParseTree(wordDefs=wordDefs, showAllLevels=showAllLevels)
             else:
                 # parsing failed, return unrecognized token
                 parseTree = references = parseTreeDict = phrases = None
@@ -205,79 +253,49 @@ def buildParseTree(chunkTree, showAllLevels=False):
     #
     return dict(tree=tree, layers=layers)
 
-
-# ------------ wikitionary definition handler --------------
-
-wiktionary = WiktionaryParser()
-# include Korean parts-of-speech
-for pos in ('suffix', 'particle', 'determiners', 'counters', 'morphemes', 'prefix', ):
-    wiktionary.include_part_of_speech(pos)
-
-# hangul & english unicode ranges
-ranges = [(0, 0x036f), (0x3130, 0x318F), (0xAC00, 0xD7AF), (0x1100, 0x11FF), (0x1e00, 0x2c00), (0x2022, 0x2022)]
-isHangulOrEnglish = lambda s: all(any(ord(c) >= r[0] and ord(c) <= r[1] for r in ranges) for c in s)
-
-@parserApp.route('/definition/<word>', methods=['GET'])
-def definition(word):
-    "return the wiktionary definition(s) for the given word"
-    definitions = []
-    # fetch defs, reformat layout & filter out hanja (for now)
-    print("sending def request to wiktionary for ", word)
-    for defs in wiktionary.fetch(word, 'korean'):
-        print("   received wiktionary response for ", word)
-        for d in defs['definitions']:
-            definitions.append(dict(partOfSpeech = d['partOfSpeech'].capitalize(),
-                                    text = [t for t in d['text'] if isHangulOrEnglish(t)]))
+def getTranslation(s):
+    "retrieves Naver/Papago NMT translation for the given string"
     #
-    return jsonify(definitions)
-
-# ------------ Naver NMT translation request --------------
-
-@parserApp.route('/translate/', methods=['POST'])
-def tranlsate():
-    "call the Naver/Papago NMT API for a translation of the given text"
+    failReason = translatedText = None
+    data = urllib.parse.urlencode({"source": "ko", "target": "en", "text": s, })
+    headers = {"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+               "X-Naver-Client-Id": "P3YGzu2suEI1diX0DarY",
+               "X-Naver-Client-Secret": "9yhV2ea0wC"}
+    conn = http.client.HTTPSConnection("openapi.naver.com")
+    conn.request("POST", "/v1/papago/n2mt", data, headers)
+    response = conn.getresponse()
     #
-    sentence = request.form.get('text')
-    words = request.form.get('words')
-    if not sentence:
-        return jsonify(result="FAIL", msg="Missing text")
+    if response.status != 200:
+        failReason = response.reason
+    else:
+        try:
+            data = response.read()
+            result = json.loads(data).get("message", {}).get("result")
+            if result:
+                translatedText = result.get('translatedText')
+                if not translatedText:
+                    failReason = "Naver result missing translateText"
+            else:
+                failReason = "Naver response missing result"
+        except:
+            failReason = "Ill-formed JSON response from Naver API"
+    conn.close()
+    #
+    return translatedText, failReason
 
-    def getTranslation(s):
-        # make Naver translation API call
-        failReason = translatedText = None
-        data = urllib.parse.urlencode({"source": "ko", "target": "en", "text": sentence, })
-        headers = {"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-                   "X-Naver-Client-Id": "P3YGzu2suEI1diX0DarY",
-                   "X-Naver-Client-Secret": "9yhV2ea0wC"}
-        conn = http.client.HTTPSConnection("openapi.naver.com")
-        conn.request("POST", "/v1/papago/n2mt", data, headers)
-        response = conn.getresponse()
-        #
-        if response.status != 200:
-            failReason = response.reason
-        else:
-            try:
-                data = response.read()
-                result = json.loads(data).get("message", {}).get("result")
-                if result:
-                    translatedText = result.get('translatedText')
-                    if not translatedText:
-                        failReason = "Naver result missing translateText"
-                else:
-                    failReason = "Naver response missing result"
-            except:
-                failReason = "Ill-formed JSON response from Naver API"
-        conn.close()
-        #
-        return translatedText, failReason
-
-    translatedText, failReason = getTranslation(sentence)
+def getWordDefs(mappedPosList):
+    "retrieve definitions for nouns & verbs from Naver"
+    # pl = [(wpos.split(':')[0], wpos.split(':')[1]) for wpos in posList.split(';')]
+    pl = mappedPosList
+    wordsToTranslate = [w + ('다' if pos[0] == 'V' else '') for w, pos in pl if pos[0] in ('V', 'N')]
+    words = [w for w, pos in pl if pos[0] in ('V', 'N')]
+    translatedText, failReason = getTranslation('\n'.join(wordsToTranslate))
     if failReason:
-        return jsonify(dict(result="FAIL", reason=failReason))
-    #
-    return jsonify(dict(result="OK", translatedText=translatedText))
+        return {}
+    else:
+        return {w: d.lower().strip('.') for w, d in zip(words, translatedText.split('\n'))}
 
-#
+
 if __name__ == "__main__":
     #
     run_dev_server()
@@ -325,7 +343,7 @@ testSamples = r"""
 저는 숙제를 끝내고 나서 집으로 갈 거예요
 나는 저녁으로 빵과 물과 밥을 먹었어요.    나는 저녁으로 매운 김치와 국과 밥을 먹고 싶어요.
 
-khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다. <---  up to here with new grammar
+khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고하시기 바랍니다. 
 
 내일 일요일인데, 뭐 할 거예요?
 
@@ -333,7 +351,9 @@ khaiii의 빌드 및 설치에 관해서는 빌드 및 설치 문서를 참고�
 
 중국음식을 먹었다. 중국음식을 좋아하기 때문이에요.      중국음식을 먹었다. 왜냐하면 중국음식을 좋아하기 때문이에요.  (written)
 중국 음식을 좋아하기 때문에 중국 음식을 먹었어요.   중국 음식은 좋아하기 때문에 중국 음식을 먹었어요. <---  up to here with new grammar
-여기 오기 전에 뭐 했어요?     밥을 먹은 후에 손을 씻는다.     그는 일하기 전에 달렸다.
+여기 오기 전에 뭐 했어요?     
+  밥을 먹은 후에 손을 씻는다.     
+  그는 일하기 전에 달렸다.
 나는 그것에 대해서 책을 쓸 거야
 그 회계사는 정부에 대해서 나쁜 말을 했어요
 네가 요리하는 것 좋아해요
@@ -404,7 +424,7 @@ multiple-clause examples (아/어서, ~면, ...)
 """
 
 # Verb: { < VV | VX | DescriptiveVerb | VND. * > }
-# NominalizedVerb: { < Verb > < NOM. * > }
+# NominalizedVerb: { < Verb > < PNOM. * > }
 # AuxiliaryVerb: { < EC > < VX | VV > }
 # { < AUX. * > }
 # AuxiliaryVerbForm: { < Verb > < AuxiliaryVerb > }
