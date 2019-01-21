@@ -5,7 +5,7 @@
         <div class="k-flexcol">
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.7.1 - <a href="mailto:johnw3d@gmail.com">JBW</a> - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a> and JBW's phrase parser</div>
+                <div id="attribution">v0.7.2 - <a href="mailto:johnw3d@gmail.com">JBW</a> - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a> and JBW's phrase parser</div>
             </div>
             <div class="k-flexrow">
                 <table>
@@ -262,7 +262,7 @@ export default {
                             s.phrases[pi][ei].sentence = s;
 
                     // lay out original-text word line based on morphemeGroup word-groupings
-                    var x = self.treeMarginX, y = self.treeMarginY + 30;
+                    var x = self.treeMarginX, y = self.treeMarginY + 10;
                     var words = [], height = 0;
                     var wi = 0, wci = 0,  // word & word-char indexes
                         ti = 0, tci = 0;      // terminal & terminal-char indexes

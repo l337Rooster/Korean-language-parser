@@ -5,7 +5,7 @@ __author__ = 'jwainwright'
 
 import re, json
 from pprint import pprint, pformat
-from collections import defaultdict, namedtuple
+from datetime import datetime
 import http.client, urllib.parse
 
 from flask import (Flask, request, abort, render_template, Response, jsonify)
@@ -43,17 +43,16 @@ def run_dev_server():
                port = 9000, #80, # 9000,
                debug = True)
 
-# -------- page request handlers --------
+logFile = None
 
-parser = None
-nodeData = {}
+# ------------- main parser page ----------------------
 
 @parserApp.route('/analyzer')
 def analyzer():
-    "Konlpy analyzer main page"
+    "analyzer main page"
     return render_template("/index.html")
 
-# ============== API handlers ==============
+# ============== API handlers =========================
 
 # ------------ main sentence parser -------------------
 
@@ -108,6 +107,8 @@ def tranlsate():
         return jsonify(result="FAIL", msg="Missing text")
 
     translatedText, failReason = getTranslation(sentence)
+    log("  translate {0}: {1}".format(sentence.strip(), translatedText.strip() or failReason))
+    #
     if failReason:
         return jsonify(dict(result="FAIL", reason=failReason))
     #
@@ -119,9 +120,11 @@ def parseInput(input, showAllLevels=False):
     "parse input string into list of parsed contained sentence structures"
 
     # build a string for the KHaiii phoneme analyzer
-    if input.strip()[-1] not in ['.', '?', '!']:
+    input = input.strip()
+    if input[-1] not in ['.', '?', '!']:
         input += '.'
     # input = input.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ') - adding a space before punctuation seems to mess tagging in Khaiii
+    log("* parse {0}".format(input))
 
     # run Khaiii, grab the parts-of-speech list it generates (morphemes + POS tags) and extract original word-to-morpheme groupings
     sentences = []  # handle possible multiple sentences
@@ -138,6 +141,8 @@ def parseInput(input, showAllLevels=False):
     for s in sentences:
         # map POS through synthetic tag mapper & extract word groupings
         mappedPosList, morphemeGroups = TagMap.mapTags(s['posString'], s['morphemeGroups']) #, disableMapping=True)
+        log("  {0}".format(s['posString']))
+        log("  mapped to {0}".format(mappedPosList))
 
         if False:  # NLTK chunking
             # perform chunk parsing
@@ -167,11 +172,13 @@ def parseInput(input, showAllLevels=False):
                 wordDefs = getWordDefs(mappedPosList)
                 # build JSONable parse-tree dict
                 parseTreeDict = parseTree.buildParseTree(wordDefs=wordDefs, showAllLevels=showAllLevels)
+                log("  {0}".format(parseTree))
             else:
                 # parsing failed, return unrecognized token
                 parseTree = references = parseTreeDict = phrases = None
                 s.update(dict(error="Sorry, failed to parse sentence",
                               lastToken=parser.lastTriedToken()))
+                log("  ** failed.  Unexpected token {0}".format(parser.lastTriedToken()))
 
         debugging = dict(posList=pformat(s['posList']),
                          mappedPosList=pformat(mappedPosList),
@@ -256,7 +263,7 @@ def buildParseTree(chunkTree, showAllLevels=False):
 def getTranslation(s):
     "retrieves Naver/Papago NMT translation for the given string"
     #
-    failReason = translatedText = None
+    failReason = translatedText = ''
     data = urllib.parse.urlencode({"source": "ko", "target": "en", "text": s, })
     headers = {"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
                "X-Naver-Client-Id": "P3YGzu2suEI1diX0DarY",
@@ -295,6 +302,16 @@ def getWordDefs(mappedPosList):
     else:
         return {w: d.lower().strip('.') for w, d in zip(words, translatedText.split('\n'))}
 
+def log(msg):
+    "logs message"
+    global logFile
+    if not logFile:
+        # open log file
+        logFile = open("analyzer.log", "a")
+        logFile.write("\n------ Analyzer start {0} -----\n\n".format(datetime.now().isoformat(' ')))
+    #
+    logFile.write("{0}: {1}\n".format(datetime.now().isoformat(sep=' ', timespec='milliseconds'), msg))
+    logFile.flush()
 
 if __name__ == "__main__":
     #
@@ -308,7 +325,8 @@ if __name__ == "__main__":
 # -d "source=ko&target=en&text=만나서 반갑습니다." -v
 
 testSamples = r"""
-# ---- test phrases
+
+# ---- test phrases -----
 
 저 작은 소년 밥을 먹다.
 저 작은 소년의 남동생은 밥을 먹다.
@@ -422,38 +440,3 @@ multiple-clause examples (아/어서, ~면, ...)
 병아리나 물고기도 키워 본 적 없어요?  - gets 키워 본 intermixed wrongly
 
 """
-
-# Verb: { < VV | VX | DescriptiveVerb | VND. * > }
-# NominalizedVerb: { < Verb > < PNOM. * > }
-# AuxiliaryVerb: { < EC > < VX | VV > }
-# { < AUX. * > }
-# AuxiliaryVerbForm: { < Verb > < AuxiliaryVerb > }
-#
-# Adverb: { < MAG > }
-# { < VA | VAND. * > < EC > }
-# VerbPhrase: { < Adverb > * < Verb | AuxiliaryVerbForm > < EP | PSX. * > * }
-#
-# Count: { < NN. * > < MM | NUM. * | SN > < NNB | NNG > * }  # Count
-# Noun: { < NN. * | NR | SL | NP | NominalizedVerb > }  # Noun
-#
-# Possessive: { < Noun > < JKG > }
-# DescriptiveVerb: { < VA | VCP | VCN | VAND. * > }
-# Adjective: { < VerbPhrase > < ETM > }
-# AdjectivalPhrase: { < Adverb > * < Adjective > * < Possessive > * < Adjective > * }
-# Determiner: { < MM > }
-#
-# NounPhrase: { < Determiner > * < AdjectivalPhrase > * < Noun | Count > < XSN > * < JX | PRT. * > * }  # NounPhrase
-# TopicPhrase: { < NounPhrase > < TOP. * > }
-# SubjectPhrase: { < NounPhrase > < JKS > }
-# ComplementPhrase: { < NounPhrase > < JKC > }
-# ObjectPhrase: { < NounPhrase > < JKO > }  # ObjectPhrase
-#
-# Phrase: { < NounPhrase | ObjectPhrase | ComplementPhrase | SubjectPhrase | TopicPhrase > }
-#
-# EndingSuffix: { < EF > }
-# ConnectingSuffix: { < EC | ADVEC. * > }
-#
-# SubordinateClause: { < Phrase > < Phrase > * < VerbPhrase > < ConnectingSuffix > }
-# Predicate: { < VerbPhrase > < EndingSuffix > }
-# MainClause: { < Phrase > < Phrase > * < Predicate > }
-# Sentence: { < SubordinateClause > * < MainClause > }
