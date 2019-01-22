@@ -458,7 +458,7 @@ tm(  # ~ㄴ/는 데:EC subordinate clause connector  CEC.*
 tm( # 전 "before X-ing" prepositional suffix
     tagPat=r'전:NNG;에:JKB', repl=r'전에:PRP',
     basePOS="MAG", descr="Adverbial phrase", posLabel="Before\nSuffix",
-    nodeRename="Prepositional Phrase:Before Phrase",
+    nodeRename="Prepositional Phrase:Before",
     wikiKey='전',
     refs={"ttmik": "/lessons/level-3-lesson-10", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/#242"},
     notes="a time prepositional phrase suffix attached to a series of noun forms to indicate a time before that implied associated with the noun sequence",
@@ -467,7 +467,7 @@ tm( # 전 "before X-ing" prepositional suffix
 tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
     tagPat=r'(후|다음|뒤|연후):NNG;에:JKB', repl=r'\1에:PRP',
     basePOS="MAG", descr="Adverbial phrase", posLabel="After\nSuffix",
-    nodeRename="Prepositional Phrase:After Phrase",
+    nodeRename="Prepositional Phrase:After",
     wikiKey='후',
     refs={"ttmik": "/lessons/level-3-lesson-19;ticket=153893", "htsk": "/unit1/unit-1-lessons-17-25-2/lesson-24/"},
 )
@@ -475,7 +475,7 @@ tm( # 후|다음|뒤)에 "after X-ing" prepositional suffix
 tm( # 때문에 "because X" prepositional suffix
     tagPat=r'때문:NNB;에:JKB', repl=r'때문에:PRP',
     basePOS="MAG", descr="Adverbial phrase",
-    nodeRename="Prepositional Phrase:Because Phrase",
+    nodeRename="Prepositional Phrase:Because",
     wikiKey='때문',
     refs={"htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-34-41/lesson-38/"},
 )
@@ -483,9 +483,17 @@ tm( # 때문에 "because X" prepositional suffix
 tm( # 에대해 "about X" prepositional suffix
     tagPat=r'에:JKB;(대하|관하):VV;([^:]+):(EC|ETM)', repl=r'에 \1\2:PRP',
     basePOS="EC", descr="Prepositional connecting suffix",
-    nodeRename="Prepositional Phrase:About Phrase",
+    nodeRename="Prepositional Phrase:About",
     wikiKey='대하다',
     refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-13/#kp6"},
+)
+
+tm( # X 부:JX;터:NNG => "부터:PRP" fixing a khaiii error "starting at X" prepositional particle
+    tagPat=r'부:JX;터:NNG', repl=r'부터:PRP',
+    basePOS="EC", posLabel="Starting at", descr="Prepositional connecting suffix",
+    #nodeRename="Prepositional Phrase:Starting at",
+    wikiKey='부터',
+    refs={"htsk": "/unit1/unit-1-lessons-9-16/lesson-12/#kp4"},
 )
 
 # ------ auxiliary verb forms ---------  usually mapping to AUX.*
@@ -526,17 +534,17 @@ tm( # 고 싶다 want-to auxiliary form
 # A/V + 아/어 버리다
 #
 
-# ------ nominal verb forms V 기 ... ---------  usually mapping to NMF.*
+# ------ nominal verb forms V 기 ... ---------  usually mapping to FNV.*
 
 tm( # ~기는 하- indeed
-    tagPat=r'기:ETN;는:JX;하:VX', repl=r'기는 하:NMF',
+    tagPat=r'기:ETN;는:JX;하:VX', repl=r'기는 하:FNV',
     basePOS="VX", posLabel="Indeed", descr="Nominal verb pattern: indicates an emphatic feeling and is used when the speaker realizes, accepts or concedes that a piece of information (often provided by the interlocutor) is indeed correct.",
     wikiKey='',
     refs={"kacg": "Section 2.2.4.12, pp 64" },
 )
 
 tm( # ~기나 하-  just
-    tagPat=r'기:ETN;나:JX;하:VX', repl=r'기나 하:NMF',
+    tagPat=r'기:ETN;나:JX;하:VX', repl=r'기나 하:FNV',
     basePOS="VX", posLabel="Just",
     wikiKey='',
     refs={ },

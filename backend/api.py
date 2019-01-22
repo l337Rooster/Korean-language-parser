@@ -414,7 +414,7 @@ multiple-clause examples (아/어서, ~면, ...)
 근데 가서 뭐 하지?
 날이 추워서 집에만 있는다.
 참기름을 넣어서 더 맛있게 만들었다.
-그녀는 어느 모로나 그녀의 여동생처럼 총명하다. - what ios the 나:JC connector here?
+그녀는 어느 모로나 그녀의 여동생처럼 총명하다. - what is the 나:JC connector here?
 나는 일하러 달려갈 것이다. 그렇지 않으면 나는 거기에 차를 몰고 갈 것이다.   - the "그렇지 않으면" is just "Or,"
 추우면 못 뛰니까 안 뛰겠다.  - two conditionals in one sentene
 

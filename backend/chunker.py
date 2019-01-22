@@ -1,4 +1,4 @@
-#  backend/chunker.py  - takes a mapped POS list and builds an NLTK chunk under a Korean chunking grammar
+#  backend/chunker.py  - takes a mapped POS list and builds an NLTK chunking under a RegExp Korean chunking grammar
 #
 #
 __author__ = 'jwainwright'

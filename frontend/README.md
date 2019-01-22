@@ -1,38 +1,47 @@
-# parser
+# Korean Sentence Parser
+Based on the [Kakao Hangul Analyzer III](https://github.com/kakao/khaiii) (khaiii) and JBW's phrase parser.  The parser webapp is built using
+the [Flask](http://flask.pocoo.org) Python app-server, [Vue JS](https://vuejs.org) for the front-end, and [Webpack](https://webpack.js.org) for build-management
 
-> front-end for KoNLPy Korean parser framework
+#### *NOTE: this readme is not complete, will add setup, build & driving instructions soon.*
 
-## *NOTE: this readme is not complete, will add setup, build & driving instructions soon.*
---
-## building template
-
-$ npm install -g vue-cli
-
-$ mkdir app
-$ cd app
-$ vue init webpack frontend
-
-Go through installation wizard. Suggested:
-Vue build — Runtime only
-Install vue-router? — No
-Use ESLint to lint your code? — No
-Setup unit tests with Karma + Mocha? — No
-Setup e2e tests with Nightwatch? — No
 
 ## Build Setup
 
+If needed, install node.js from [here](https://nodejs.org/) and Python 3.6 or greater from here, or as part of the Anaconda Python bundling here.  
+
+Clone or download this repo, ``cd`` into the repo's top-level directory and run:
+```
+# install Python requirements
+$ pip3 install -r requirements.txt
+```
+To install front-end and webpack dependencies, ``cd`` into the ``frontend`` subdirectory and run:
 ``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
+# install front-end and webpack dependencies
+$ npm install
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Running the development build
+
+The dev build can be run in two modes:
+1. With a statically-built production front-end and the Python-based API server running and listening on port 9000, serving both the main index.html and handling API requests from the front end.
+2. WIth a hot-reloading front-end being served on port 8080 and the Python API server handling API calls alone on port 9000.
+
+In both cases, start the API server in its own shell by ``cd``ing into the top-level directory for this repo and run:
+```
+# start the API dev server
+$ python3 backend/api.py
+```
+Open a separate shell to build & optionally run the front-end.
+
+To statically-build the front-end, ``cd`` into the ``frontend`` subdirectory and run:
+```
+# build for production with minification
+$ npm run build
+```
+To run the hot-reloading development version of the front-end, in the same directory run:
+
+```
+# serve with hot reload at localhost:8080
+$ npm run dev
+```
+In this case, 

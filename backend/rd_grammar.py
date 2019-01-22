@@ -3,10 +3,12 @@
 #
 __author__ = 'jwainwright'
 
+import functools
+
 from rd_parser import *
 
 class KoreanParser(Parser):
-    "performs ad-hoc recursive descent of a given Korean sentence POS-list"
+    "The following grammar-rule methods implement an ad-hoc, recursive-descent given a Korean sentence POS-list"
 
     # -----------  grammar rules ---------
 
@@ -21,7 +23,6 @@ class KoreanParser(Parser):
         s = sequence(zeroOrMore(self.subordinateClause), self.mainClause())
         return s
 
-
     @grammarRule
     def subordinateClause(self):
         "subordinate clause"
@@ -32,14 +33,12 @@ class KoreanParser(Parser):
                       optional(self.punctuation))
         return sc
 
-
     @grammarRule
     def mainClause(self):
         "main clause"
         # mainClause ::= [phrase]* predicate
         mc = sequence(zeroOrMore(self.phrase), self.predicate())
         return mc
-
 
     @grammarRule
     def predicate(self):
@@ -48,21 +47,18 @@ class KoreanParser(Parser):
         p = sequence(self.verbPhrase(), self.endingSuffix())
         return p
 
-
     @grammarRule
     def connectingSuffix(self):
         return self.lexer.next(r'.*:(EC|ADVEC.*|CEC.*)')
-
 
     @grammarRule
     def endingSuffix(self):
         return self.lexer.next(r'.*:(EF)')
 
-
     @grammarRule
     def phrase(self):
         "parse a phrase"
-        p = sequence(zeroOrMore(self.punctuation),
+        p = sequence(# zeroOrMore(self.punctuation),
                      anyOneOf(option(self.nounPhrase),
                               option(self.objectPhrase),
                               option(self.subjectPhrase),
@@ -70,7 +66,7 @@ class KoreanParser(Parser):
                               option(self.adverbialPhrase),
                               option(self.complementPhrase)),
                      zeroOrMore(self.interjection),
-                     zeroOrMore(self.punctuation))
+                     ) #zeroOrMore(self.punctuation))
         return p
 
     @grammarRule
@@ -119,15 +115,16 @@ class KoreanParser(Parser):
     @grammarRule
     def simpleNounPhrase(self):
         "parse a simple noun-phrase"
-        snp = sequence(optional(self.determiner),
-                     anyOneOf(option(self.noun),
+        snp = sequence(zeroOrMore(self.punctuation),
+                       optional(self.determiner), zeroOrMore(self.punctuation),
+                       anyOneOf(option(self.noun),
                               option(self.count),
-                              option(self.adjectivalPhrase)),
-                     zeroOrMore(self.noun),
-                     zeroOrMore(self.nounModifyingSuffix),
-                     zeroOrMore(self.adverbialParticle),
-                     zeroOrMore(self.auxiliaryParticle),
-                     optional(self.adverbialPhrase))
+                              option(self.adjectivalPhrase)), zeroOrMore(self.punctuation),
+                       zeroOrMore(self.noun), zeroOrMore(self.punctuation),
+                       zeroOrMore(self.nounModifyingSuffix),
+                       zeroOrMore(self.adverbialParticle),
+                       zeroOrMore(self.auxiliaryParticle),
+                       optional(self.adverbialPhrase), zeroOrMore(self.punctuation),)
         return snp
 
     @grammarRule
@@ -177,6 +174,7 @@ class KoreanParser(Parser):
         "parse a verb phrase"
         vp = sequence(zeroOrMore(self.adverbial),
                       anyOneOf(option(self.verb), option(self.verbAndAuxiliary)),
+                      optional(self.nominallVerbForm),
                       zeroOrMore(self.verbSuffix))
         return vp
 
@@ -242,13 +240,18 @@ class KoreanParser(Parser):
     def adjectiveFormingSuffix(self):
         return self.lexer.next(r'.*:(ETM)')
 
+
+    @grammarRule
+    def nominallVerbForm(self):
+        return self.lexer.next(r'.*:(FNV.*)')
+
     @grammarRule
     def verbSuffix(self):
         return self.lexer.next(r'.*:(EP|PSX.*)')
 
     @grammarRule
     def simpleNoun(self):
-        return self.lexer.next(r'.*:(NN.*|NR|SL|NP)')
+        return self.lexer.next(r'.*:(NN.*|NR|SL|NP|SN)')
 
     @grammarRule
     def nominalizedVerb(self):

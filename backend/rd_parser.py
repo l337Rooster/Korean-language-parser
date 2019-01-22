@@ -318,8 +318,8 @@ ParseTree.nullNode = ParseTree('null', 'null', 0, 0, None)
 
 # --------------  utility grammar-definition functions ---------------
 
-# define the main decorator for grammar-rule methods on Parser
-#   will automatically handle dynamic-programming caching & backtracking if rule returns False result
+# define the main decorator for grammar-rule methods on Parser subclasses
+#   automatically handles dynamic-programming caching & backtracking
 def grammarRule(rule):
     #
     @functools.wraps(rule)
@@ -337,21 +337,21 @@ def grammarRule(rule):
         #
         if self.verbose > 2:
             print(indent, '--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
-        # if rule in self.fails[startMark]:
-        #     print(indent, '    nope, failed this before')
-        #     return []
+        # recursion into the same rule at the same token implies match failure (for now).  Recursive rules should generally be right-recursive.
         if (rule, startMark) in self.recursionState:
             if self.verbose > 2:
                 print(indent, '    recursion on same token encountered, failing')
             parsing = []
         else:
-            #
+            # track recursion
             self.recursionState.append((rule, startMark))
+
             # actually apply the grammar rule function
             result = rule(self, *args, **kwargs)
-            #
+
             self.recursionState.pop(-1)
-            #
+
+            # make a ParseTree node for the result, backtracking on rule failure (empty result)
             node = self.makeNode(rule.__name__, startMark, result)
             if not node:
                 self.fails[startMark].add(rule) # note we failed this production at this point to break later recursive attempts at same thing
@@ -372,19 +372,24 @@ def grammarRule(rule):
     #
     return backtrack_wrapper
 
-# parser helper functions
+# ----------- rule construction helper functions --------------
+
 def eval(rule):
+    "evaluate rule, either a parser rule method or ParseTree node"
     return rule() if callable(rule) else rule
 
 def optional(rule):
+    "marks the rule as optional, zero or one instances"
     return eval(rule) or [ParseTree.nullNode]
 
 def option(rule):
-    "must be used for each option in an anyOneOf pattern, so that evaluation order is properly controlled"
+    "wraps alternates in anyOneOf rules"
     result = eval(rule)
     yield result
 
 def anyOneOf(*options):
+    """match the longest match of the options supplied.
+      Note that each option MUST BE a rule wrapped in the option() generator in order to ensure correct evaluation"""
     # eager match: eval all options, take the longest matching
     longest = None; length = 0
     for i, o in enumerate(options):
@@ -402,6 +407,7 @@ def anyOneOf(*options):
         return longest
 
 def oneOrMore(rule):
+    "one or more instances of the rule"
     nodes = []
     while True:
         node = eval(rule)
@@ -413,9 +419,13 @@ def oneOrMore(rule):
     return nodes
 
 def zeroOrMore(rule):
+    "zero or more instances of the rule"
     return rule and oneOrMore(rule) or [ParseTree.nullNode]
 
 def sequence(*rules):
+    """an ordered sequence of rule calls.
+       Note that the argument rules MUST ALL be invocations of other helper functions above OR a call of a bare rule
+       in order to ensure correct order of sequence matching"""
     nodes = []
     for r in rules:
         node = eval(r)
@@ -429,7 +439,8 @@ def sequence(*rules):
 # ---------------
 
 class Parser(object):
-    "performs ad-hoc recursive descent of a given sentence POS-list"
+    """Performs ad-hoc recursive descent of a given sentence POS-list.
+       Subclasses usually provide grammar rule methods and at least a 'sentence' rule method to start the parsing."""
 
     def __init__(self, posList):
         self.posList = posList
