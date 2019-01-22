@@ -199,7 +199,7 @@ class KoreanParser(Parser):
     @grammarRule
     def possessive(self):
         "parse a possessive phrase"
-        pp = sequence(self.noun(), self.possessiveParticle())
+        pp = sequence(oneOrMore(self.noun), self.possessiveParticle())
         return pp
 
     @grammarRule
