@@ -70,11 +70,48 @@ useful display
 This parse-tree and various reference tables are returned in JSON form by the /parse/ API call to the front-end JavaScript AJAX call
 for processing and display by the Vue js template and methods in ``frontend/src/App.vue``.
  
-### Morpheme analysis
+#### Morpheme analysis
 
 The input string is run through the ``khaiiiAPI.analyze()`` morpheme analyzer function.  This returns a sequence of ``KhaiiiWord`` objects,
 one for each word & punctuation symbol in the input string, including sentence-end markers for each sentence it finds in the input string.
-These objects themselves contain a sequence of ``KhaiiiMorph`` morpheme objects, one for each distinct lexical morhpheme in the input word,
+These word objects themselves contain a sequence of ``KhaiiiMorph`` morpheme objects, one for each distinct lexical morhpheme in the input word,
 separating out things like verb-stems, honorific markers, particles and other basic lexical components making up the word.  The returned
 word-sequence is broken into sentences and each sentence is further processed in the following steps.
+
+그 작은 소년은 빨리 달렸다.
+
+|Word   |  Morpheme | POS tag |  |
+|:------:|:-----:|:-----:|-----|
+| 그     | 그 | MM |  Determiner  |
+| 작은    | 작 | VA  |  Descriptive verb|
+|        | 은 | ETM |  Adjective-forming particle |   
+| 소년은  | 소년 |  NNG |  General noun |
+|        | 은 | JX  |  Topic-marking particle |
+| 빨리   | 빨리 | MAG |  Adverb |
+| 달렸다  | 달리 | VV |  Verb  |
+|         |었 | EP | Predicate suffix |
+|         | 다 | EF  |  Predicate final |
+| .     | . | SF   |   Sentence final |
+ 
+ ['그:MM',
+ '작:VA',
+ '은:ETM',
+ '소년:NNG',
+ '은:JX',
+ '빨리:MAG',
+ '달리:VV',
+ '었:EP',
+ '다:EF',
+ '.:SF']
+ 
+ [('그', 'MM'),
+ ('작', 'VA'),
+ ('은', 'ETM'),
+ ('소년', 'NNG'),
+ ('은', 'TOP_4'),
+ ('빨리', 'MAG'),
+ ('달리', 'VV'),
+ ('었', 'PSX_31'),
+ ('다', 'EF'),
+ ('.', 'SF')]
 
