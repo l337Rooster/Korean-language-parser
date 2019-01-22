@@ -1,12 +1,14 @@
-<!-- main KoNLPy parser    -->
+<!-- main Korean sentence parser UI -->
 
 <template>
     <div id="app" v-on:mouseup="appMouseUp($event)">
         <div class="k-flexcol">
+            <!-- header row -->
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.7.2 - <a href="mailto:johnw3d@gmail.com">JBW</a> - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a> and JBW's phrase parser</div>
+                <div id="attribution">v0.7.3 - <a href="mailto:johnw3d@gmail.com">JBW</a> - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a> and JBW's phrase parser</div>
             </div>
+            <!-- input row -->
             <div class="k-flexrow">
                 <table>
                     <tr id="text-row">
@@ -29,6 +31,7 @@
                     </tr>
                 </table>
             </div>
+            <!-- Naver/Papago translation -->
             <div class="k-flexrow">
                 <div id="naver-translation" v-if="naverTranslation"><span>Naver/Papago translation: </span>{{naverTranslation}}</div>
             </div>
@@ -36,6 +39,7 @@
             <div v-if="error" class="error-msg">
                 {{ error }}
             </div>
+            <!-- parse-tree display, primarily one large SVG element -->
             <div v-if="!parsing">
                 <div v-for="s in sentences">
                     <template v-if="s.error">
@@ -63,6 +67,7 @@
                                 </div>
                             </div -->
                             <svg class="parse-tree tree-svg" :width="s.treeWidth" :height="s.treeHeight" style="background-color: rgba(0,0,0,0);">
+                                <!-- input word list -->
                                 <g v-for="word in s.words">
                                     <text :x="word.x + word.width / 2" :y="word.y" text-anchor="middle" alignment-baseline="hanging">
                                         <tspan class="word-word">{{ word.word }}</tspan>
@@ -70,6 +75,7 @@
                                     <line :x1="word.x + 2" :y1="word.y + 7" class="word-line"
                                           :x2="word.x + word.width - 4" :y2="word.y + 7"/>
                                 </g>
+                                <!-- the terminal morphemes -->
                                 <g v-for="node in s.terminals">
                                     <text :x="node.x + node.width / 2" :y="node.y" text-anchor="middle" alignment-baseline="hanging">
                                         <template v-if="node.word">
@@ -84,6 +90,7 @@
                                     <line :x1="node.x + node.width / 2" :y1="node.y + tagLabelHeight * node.tagLabel.length + 6" class="link-line"
                                           :x2="node.x + node.width / 2" :y2="node.parent.y - (endChild(node) ? 35 : 28)"/>
                                 </g>
+                                <!-- the phrase structure node-and-connector graph, drawn in layers -->
                                 <g v-for="layer in s.layers">
                                     <g v-for="node in layer">
                                         <text :x="node.x" :y="node.y" text-anchor="middle" alignment-baseline="hanging">

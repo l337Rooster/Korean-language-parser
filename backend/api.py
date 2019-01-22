@@ -66,7 +66,7 @@ def parse():
     showAllLevels = request.form.get('showAllLevels') == 'true'
 
     # parse input & return parse results to client
-    sentences = parseInput(input, showAllLevels=showAllLevels)
+    sentences = parseInput(input, parser="RD", showAllLevels=showAllLevels)
 
     return jsonify(result="OK",
                    sentences=sentences)
@@ -116,8 +116,9 @@ def tranlsate():
 
 # ---------  API utility functions ---------------
 
-def parseInput(input, showAllLevels=False):
+def parseInput(input, parser="RD", showAllLevels=False):
     "parse input string into list of parsed contained sentence structures"
+    # parser can be RD for recusrsive descent (currently the most-developed) or "NLTK" for the original NLTK chunking-grammar parser
 
     # build a string for the KHaiii phoneme analyzer
     input = input.strip()
@@ -144,7 +145,7 @@ def parseInput(input, showAllLevels=False):
         log("  {0}".format(s['posString']))
         log("  mapped to {0}".format(mappedPosList))
 
-        if False:  # NLTK chunking
+        if parser == "NLTK":  # NLTK chunking parser
             # perform chunk parsing
             chunkTree = Chunker.parse(mappedPosList, trace=2)
             chunkTree.pprint()
@@ -180,6 +181,7 @@ def parseInput(input, showAllLevels=False):
                               lastToken=parser.lastTriedToken()))
                 log("  ** failed.  Unexpected token {0}".format(parser.lastTriedToken()))
 
+        # format debugging daat
         debugging = dict(posList=pformat(s['posList']),
                          mappedPosList=pformat(mappedPosList),
                          phrases=pformat(phrases),
@@ -187,6 +189,7 @@ def parseInput(input, showAllLevels=False):
                          parseTree=pformat(parseTreeDict),
                          references=references)
 
+        # add parsing results to response structure
         s.update(dict(mappedPosList=mappedPosList,
                       morphemeGroups=morphemeGroups,
                       parseTree=parseTreeDict,
