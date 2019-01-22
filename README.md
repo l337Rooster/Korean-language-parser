@@ -7,13 +7,17 @@ the [Flask](http://flask.pocoo.org) Python app-server, [Vue JS](https://vuejs.or
 
 ## Build Setup
 
-If needed, install node.js from [here](https://nodejs.org/) and Python 3.6 or greater from here, or as part of the Anaconda Python bundling here.  
+If needed, install node.js from [here](https://nodejs.org/) and Python 3.6 or greater from [here](https://www.python.org/downloads/), or as part of the highly-recommended Anaconda Python distribution
+ [here](https://www.anaconda.com/download/).  
 
-Clone or download this repo, ``cd`` into the repo's top-level directory and run:
+Clone or download the [Korean sentence parser](https://github.com/johnw3d/Korean-language-parser) repo, ``cd`` into its top-level directory and run:
 ```
 # install Python requirements
 $ pip3 install -r requirements.txt
 ```
+The *Kakao Hangul Analyzer III* needs to be downloaded from the [kakao/khaiii github page](https://github.com/kakao/khaiii) and 
+prepared according to its [build and installation instructions](https://github.com/kakao/khaiii/wiki/빌드-및-설치). 
+
 To install front-end and webpack dependencies, ``cd`` into the ``frontend`` subdirectory and run:
 ``` bash
 # install front-end and webpack dependencies
@@ -31,6 +35,8 @@ In both cases, start the API server in its own shell by ``cd``ing into the top-l
 # start the API dev server
 $ python3 backend/api.py
 ```
+You can launch the parser web-app by pointing a browser at [http://localhost:9000/analyzer](http://localhost:9000/analyzer).
+
 Open a separate shell to build & optionally run the front-end.
 
 To statically-build the front-end, ``cd`` into the ``frontend`` subdirectory and run:
@@ -44,4 +50,4 @@ To run the hot-reloading development version of the front-end, in the same direc
 # serve with hot reload at localhost:8080
 $ npm run dev
 ```
-In this case, 
+In this case, point a browser at [http://localhost:8080/analyzer](http://localhost:9000/analyzer) to lauch the parser front end.
