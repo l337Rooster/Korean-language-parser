@@ -78,10 +78,16 @@ These word objects themselves contain a sequence of ``KhaiiiMorph`` morpheme obj
 separating out things like verb-stems, honorific markers, particles and other basic lexical components making up the word.  The returned
 word-sequence is broken into sentences and each sentence is further processed in the following steps.
 
-그 작은 소년은 빨리 달렸다.
+As an example, consider the following sentence:
 
-|Word   |  Morpheme | POS tag |  |
-|:------:|:-----:|:-----:|-----|
+>####그 작은 소년은 빨리 달렸다.
+
+The Khaiii analyzer returns the following breakdown of words in the sentence into one or more lexical phonemes and assigns each a part-of-speech (POS)
+tag, as shown in the table below. Note how it separates transforming and topic particles from their stems and even 'decompresses' common 
+conjugation shortenings as it does in the past-tense predicate of that sentence.
+
+|Word   |  Morpheme | POS tag |     |
+|:-----:|:---------:|:-------:|-----|
 | 그     | 그 | MM |  Determiner  |
 | 작은    | 작 | VA  |  Descriptive verb|
 |        | 은 | ETM |  Adjective-forming particle |   
