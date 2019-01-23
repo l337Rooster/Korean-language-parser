@@ -96,7 +96,7 @@ In this case, point a browser at [http://localhost:8080/analyzer](http://localho
 
 ## Implementation notes
 
-The main parsing operation is performed by the ``backend.api.parseInput()`` function, most-often called by the handler for 
+The main parsing operation is performed by the ``backend.api.parseInput()`` function, mostly called by the handler for 
 the front-end's AJAX ``/parse/`` REST API call, also in the ``backend.api`` module.
 
 The parsing process has 4 stages, explained in further detail below:
@@ -139,9 +139,16 @@ conjugation shortenings as it does in the past-tense predicate of that sentence.
 |       | 다  | EF  |  Predicate final |
 | .     | .  | SF   |   Sentence final |
 
-(The ``backend.tagmap.py`` module contains a fill list of the POS tags that can be emitted by the Khaiii analyzer)
+(The ``backend.tagmap.py`` module contains a fill list of the POS tags that can be emitted by the Khaiii analyzer.)
 
+#### Morpheme mapping and common pattern-detection
 
+The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morhpeme tags and does not give any 
+markings of common, multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is marked with the
+generic predicate-ending tag **"EP"**.  The mapper recognizes this specific morpheme-tag group as a past-tense suffix and replaces the **EP**
+tag with a custom synthetic tag that allows it to be labeled as a past-tense suffix in the parse-tree.
+
+An example of a grammar pattern is the  
  
  ['그:MM',
  '작:VA',
