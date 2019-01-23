@@ -8,7 +8,7 @@ a learning tool for students of
 the Korean language. It is still a work-in-progress and so may not give correct or even any parsing for a particular sentence, and may be 
 offline at times.
 
-###Example UI
+### Example UI
 
 Below is screen-shot of the front-end UI and an example sentence-parsing output.  You enter one or more sentences in the text-box at the top 
 and hit the ``Parse`` button.  The main output is a parse-tree showing the original words in the sentence in black at the top sitting over the 
@@ -25,7 +25,7 @@ online references.
 
 ![Parsing example](frontend/static/example-parse.png)
 
-####Parse-tree form
+#### Parse-tree form
 The current parse-tree form, its descriptive labels and other annotations, are a work-in-progress and are an attempt at an explication of Korean
 grammar with a decided English bent, for English learners, and it's not clear if a more formal, Korean set of grammatical phrasings & annotations
 would be pedagogically preferred.  This is one of the areas of active development and discussion.
@@ -119,7 +119,7 @@ word-sequence is broken into sentences and each sentence is further processed in
 
 As an example, consider the following sentence:
 
->####그 작은 소년은 빨리 달렸다.
+>#### 그 작은 소년은 빨리 달렸다.
 
 The Khaiii analyzer returns the breakdown of words in the sentence into one or more lexical phonemes and assigns each a part-of-speech
 (POS)
