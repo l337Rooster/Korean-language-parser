@@ -290,7 +290,7 @@ class KoreanParser(Parser):
     @grammarRule
     def adverbialPhrase(self):
         "parse an adverbial phrase - I think this should be called a prepostional phrase!"
-        ap = sequence(anyOneOf(option(self.noun), option(self.adjectivalPhrase)),
+        ap = sequence(anyOneOf(option(self.nounPhrase), option(self.adjectivalPhrase)),
                       self.adverbialPhraseConnector(),
                       optional(self.auxiliaryParticle))
         return ap

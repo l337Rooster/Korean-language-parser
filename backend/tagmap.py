@@ -356,9 +356,11 @@ tm( # 들 pluralizer
 
 tm( # 밖에 other-than particle
     tagPat=r'밖에:JX', repl=r'밖에:PRT',
-    basePOS="JX",
-    nodeRename="Noun Phrase:Other Than", annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
-    refs={"ttmik": "/lessons/level-2-lesson-13", "htsk": "/unit-3-intermediate-korean-grammar/lessons-67-75/lesson-69/#691", },
+    basePOS="JX", posLabel="Other-than\nParticle",
+    nodeRename="Noun Phrase:Other Than",
+    annotation="Noun + 밖에 + negative predicate implies the predicate applies to everything outside or other-than the noun",
+    refs={"ttmik": "/lessons/level-2-lesson-13",
+          "htsk": "/unit-3-intermediate-korean-grammar/lessons-67-75/lesson-69/#691", },
 )
 
 tm( # ~도 as-well/also/too particle
@@ -374,8 +376,9 @@ tm( # ~도 as-well/also/too particle
 
 tm( # 기/음 nominalizer
     tagPat=r'(기|음):(ETN|NNG)', repl=r'\1:PNOM',
-    basePOS="VMS", descr="Suffix transforming a verb into a noun",
-    refs={"ttmik": "/lessons/level-2-lesson-19", "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-29"},
+    basePOS="ETN", posLabel="Nominalizing\nParticle", descr="Suffix transforming a verb into a noun",
+    refs={"ttmik": "/lessons/level-2-lesson-19",
+          "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-29"},
 )
 
 tm( # 는것 nominalizer

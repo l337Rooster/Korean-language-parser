@@ -126,7 +126,7 @@ The Khaiii analyzer returns the breakdown of words in the sentence into one or m
 tag, as shown in the table below. Note how it separates transforming and topic particles from their stems and even 'decompresses' common 
 conjugation shortenings as it does in the past-tense predicate of that sentence.
 
-|Word   |  Morpheme | POS tag |     |
+|Word   |  Morphemes | POS tag |     |
 |:-----:|:---------:|:-------:|-----|
 | 그     | 그   | MM |  Determiner  |
 | 작은   | 작   | VA  |  Descriptive verb|
@@ -146,20 +146,36 @@ conjugation shortenings as it does in the past-tense predicate of that sentence.
 The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morhpeme tags and does not give any 
 markings of common, multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is marked with the
 generic predicate-ending tag **"EP"**.  The mapper recognizes this specific morpheme-tag group as a past-tense suffix and replaces the **EP**
-tag with a custom synthetic tag that allows it to be labeled as a past-tense suffix in the parse-tree.
+tag with a specific custom tag that allows it to be labeled as a past-tense suffix in the parse-tree.
 
-An example of a grammar pattern is the  
+An example of a grammar pattern worth detecting is shown in opening example, where the **V-고 싶다** pattern is recognized and labeled as 
+the "want-to" pattern.
+
+The phoneme and POS tags returned from the Khaiii analyzer are formed into a single string of the form 
+``"<phoneme>:<POS_tag>;<phoneme>:<POS_tag>..."`` and sent to the tag-mapper, making it easier to build tag-recognition RE patterns that span
+multiple phonemes.  So, the above examples is sent as:
+
+```
+"그:MM;작:VA;은:ETM;소년:NNG;은:JX;빨리:MAG;달리:VV;었:EP;다:EF;.:SF"
+```
+
+All the custom-tag mapping and grammar-pattern recognition is driven by specs in the ``backend.tagmap`` module.  Theses specs are all provided 
+using the ``tm()`` tag-map spec utility function.  An example is shown below:
+
+```
+tm( # 기/음 nominalizer
+    tagPat=r'(기|음):(ETN|NNG)', repl=r'\1:PNOM',
+    basePOS="ETN", posLabel="Nominalizing\nParticle", 
+    descr="Suffix transforming a verb into a noun",
+    refs={"ttmik": "/lessons/level-2-lesson-19",
+          "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-29"},
+)
+```
+This function takes several keyword parameters, all of them optional except ``tagPat`` which is a Python RE pattern to match the desired
+phonemem/tag sequence.  The other parameters specify various mappings and labeling and reference detail for that pattern.  In this case, 
+
  
- ['그:MM',
- '작:VA',
- '은:ETM',
- '소년:NNG',
- '은:JX',
- '빨리:MAG',
- '달리:VV',
- '었:EP',
- '다:EF',
- '.:SF']
+
  
  [('그', 'MM'),
  ('작', 'VA'),
