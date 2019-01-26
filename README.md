@@ -1,12 +1,21 @@
 # Korean Sentence Parser
-Based on the [Kakao Hangul Analyzer III](https://github.com/kakao/khaiii) (khaiii) and JBW's phrase parser.  The parser webapp is built using
-the [Flask](http://flask.pocoo.org) Python app-server, [Vue JS](https://vuejs.org) for the front-end, and [Webpack](https://webpack.js.org) for 
-build-management
-
-The parser, currently accessible online in development form at [http://hangugeo.org/analyzer](http://hangugeo.org/analyzer), is meant to be
+The parser implemented in this repo is meant to be
 a learning tool for students of 
-the Korean language. It is still a work-in-progress and so may not give correct or even any parsing for a particular sentence, and may be 
+the Korean language.  It is currently accessible online in development form at [http://hangugeo.org/analyzer](http://hangugeo.org/analyzer). 
+It is currently still very-much a work-in-progress and so may not give correct or even any parsing for a particular sentence, and may be 
 offline at times.
+
+The parser depends on several crucial 3rd-party components, foremost being the [Kakao Hangul Analyzer III](https://github.com/kakao/khaiii) (Khaiii), 
+a neural-net-based Korean phoneme analyzer made available by Kakao.  The parser web-app is built using
+the [Flask](http://flask.pocoo.org) Python app-server, [Vue JS](https://vuejs.org) for the front-end, and [Webpack](https://webpack.js.org) for 
+build-management. 
+
+The main contribution made here is a phrase parser that takes the phonemes and low-level parts-of-speech derived by Khaiii to produce a hierarchical
+phrase parse-tree, representing syntactic constructs such as predicates, subject, object & topic phrases, common conjugation and connecting patterns,
+an so on.
+In addition, a web-based front is included that provides easy access to the parser and attempts to show the parsing in a understeandable graphical form
+along with helpful annotations, word definitions, translations and links to various references for the key constructs in a sentence, hopefully
+useful to learners of the Korean language. 
 
 ### Example UI
 
@@ -27,10 +36,10 @@ online references.
 
 #### Parse-tree form
 The current parse-tree form, its descriptive labels and other annotations, are a work-in-progress and are an attempt at an explication of Korean
-grammar with a decided English bent, for English learners, and it's not clear if a more formal, Korean set of grammatical phrasings & annotations
+grammar with a decided English bent, for English-speaking learners, and it may be the case that a more formal Korean set of grammatical phrasings & annotations
 would be pedagogically preferred.  This is one of the areas of active development and discussion.
 
-Korean, of course, is a language of myriad special connective, conjugational, ending and other forms; Korean grammar books are mostly filled
+Korean, of course, is a language of myriad special connective, conjugational, sentence-ending and other forms; Korean grammar books are mostly filled
 not with syntax-rules as you'd find in an English grammar text, but with lists of these patterns, describing their form, the way the should be attached
 or applied and the particular meaning or nuance they impart.  The hope is to have this parser detect and show these patterns in the parse-tree.  
 
@@ -41,17 +50,13 @@ is a start at a set of pattern-specs that allow the parser to detect these patte
 this set will be filled out by open-source contributions, along with other improvements that open-sourcing should bring.  
 
 
-#### *NOTE: this readme is not complete, the setup, build & driving instructions and implementation notes will be completed soon.*
-
-
 ## Build Setup
 
-If needed, install node.js from [here](https://nodejs.org/) and Python 3.6 or greater either from [here](https://www.python.org/downloads/) or 
-as part of the highly-recommended Anaconda Python distribution
- [here](https://www.anaconda.com/download/).  
+If needed, install [node.js](https://nodejs.org/) and Python 3.6 or greater either from [here](https://www.python.org/downloads/) or 
+as part of the highly-recommended [Anaconda Python distribution](https://www.anaconda.com/download/).  
 
 Clone or download the [Korean sentence parser](https://github.com/johnw3d/Korean-language-parser) repo, ``cd`` into its top-level directory and 
-run:
+run the following pip command to install required Python libraries:
 ```
 # install Python requirements
 $ pip3 install -r requirements.txt
@@ -59,7 +64,7 @@ $ pip3 install -r requirements.txt
 Download the *Kakao Hangul Analyzer III* from the [kakao/khaiii github page](https://github.com/kakao/khaiii) and 
 prepare according to its [build and installation instructions](https://github.com/kakao/khaiii/wiki/빌드-및-설치). 
 
-To install front-end and webpack dependencies, ``cd`` into the ``frontend`` subdirectory and run:
+To install front-end and webpack dependencies, ``cd`` into the ``frontend`` subdirectory and run the following npm command:
 ``` bash
 # install front-end and webpack dependencies
 $ npm install
@@ -68,11 +73,11 @@ $ npm install
 ## Running the development build
 
 The dev build can be run in two modes:
-1. With a statically-built production front-end and the Python-based API server running and listening on port 9000, serving both the main 
+1. With a statically-built production front-end and the Python-based API server running and listening on port **9000**, serving both the main 
 index.html and handling API requests from the front end.
-2. WIth a hot-reloading front-end being served on port 8080 and the Python API server handling API calls alone on port 9000.
+2. WIth a hot-reloading front-end being served on port **8080** and the Python API server handling API calls alone on port **9000**.
 
-In both cases, start the API server in its own shell by ``cd``ing into the top-level directory for this repo and run:
+In both cases, start the API server in its own shell by ``cd``ing into the top-level directory for this repo and running the api.py module:
 ```
 # start the API dev server
 $ python3 backend/api.py
@@ -81,12 +86,12 @@ You can launch the parser web-app by pointing a browser at [http://localhost:900
 
 Open a separate shell to build & optionally run the front-end.
 
-To statically-build the front-end, ``cd`` into the ``frontend`` subdirectory and run:
+To statically-build the front-end, ``cd`` into the ``frontend`` subdirectory and run the npm build script:
 ```
 # build for production with minification
 $ npm run build
 ```
-To run the hot-reloading development version of the front-end, in the same directory run:
+To run the hot-reloading development version of the front-end, in the same directory run the npm dev script:
 
 ```
 # serve with hot reload at localhost:8080
@@ -139,12 +144,12 @@ conjugation shortenings as it does in the past-tense predicate of that sentence.
 |       | 다  | EF  |  Predicate final |
 | .     | .  | SF   |   Sentence final |
 
-(The ``backend.tagmap.py`` module contains a fill list of the POS tags that can be emitted by the Khaiii analyzer.)
+(The ``backend.tagmap.py`` module contains a full list of the POS tags that can be emitted by the Khaiii analyzer.)
 
 #### Morpheme mapping and common pattern-detection
 
-The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morhpeme tags and does not give any 
-markings of common, multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is marked with the
+The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morhpeme tags and often does not distinguish between
+particular particles or tag multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is marked with the
 generic predicate-ending tag **"EP"**.  The mapper recognizes this specific morpheme-tag group as a past-tense suffix and replaces the **EP**
 tag with a specific custom tag that allows it to be labeled as a past-tense suffix in the parse-tree.
 
@@ -172,7 +177,7 @@ and returned in list form as:
  ('.':SF')]
 ```
 with the **"은"** re-tagged as **TOP_4**, indicating it is definitely a topic-marking particle, and **"었"** re-tagged as **PSX_31** indicating
-it a specific past-tense conjugating predicate suffix.  These remappings help the parsers described later and link to custom annotations and 
+it is a specific past-tense conjugating predicate suffix.  These remappings help the parsers described later and link to custom annotations and 
 labels and references to be displlayed in the parser front-end.
 
 All the custom-tag mapping and grammar-pattern recognition is driven by specs in the ``backend.tagmap`` module.  Theses specs are all provided 
@@ -199,14 +204,17 @@ will be gradually expanded over time and the hope is that open-sourcing will pro
 The phrase parse-tree graph that appears under the phonemes is derived by a syntax-parsing phase that analyzes the mapped phoneme & POS tag
 sequence generated by the prior step.  Two alternate parsers have been developed, the first built on the [NLTK](http://www.nltk.org) Python 
 library's "chunking" 
-capabilities and is driven by a RegExp-based chunking grammar located in the ``backend.chunker`` module.  Documentation on the NLTK components
+capabilities and is driven by a RegExp-based chunking grammar located in the ``backend.chunker`` module.  Documentation on the 
+relevant NLTK components
 used is available [here](http://www.nltk.org/book_1ed/ch07.html) and [here](http://www.nltk.org/api/nltk.chunk.html#module-nltk.chunk).  
-The second parser is a so-called ad-hoc,
-recursive-descent parser hand-coded in Python, and is the one currently in use by the parser hosted on hangugeo.org.   
 
-The NTLK chunking grammar is certainly simpler and more declarative, but as grammars get large and recursive, controlling parsing sequencing
+The second parser is a so-called ad-hoc,
+recursive-descent parser, hand-coded in Python, and is the parser currently in use by the parser hosted on hangugeo.org.   
+
+The NTLK chunking grammar is certainly simpler and more declarative than the r-d parser, but as chunking grammars get large and recursive, 
+controlling parsing sequencing
 becomes very challenging.  It's other main advantage is that it will always give a parsing of some kind, leaving phoneme sequences it doesn't
-understand just as singleton words in a sentence.
+understand just as singleton words in the resulting parse-tree.
 
 The recursive-descent parser provides precise control over sequencing and has sophisticated back-tracking so it tries to match all possible
 parsings and then pick the ones that look most-complete.  Being ad-hoc allows for custom logic and context-sensitive parsing in any rule, 
@@ -275,40 +283,42 @@ predicate          ::= verbPhrase ENDING_SUFFIX
 phrase             ::= ( nounPhrase | objectPhrase | subjectPhrase | topicPhrase | adverbialPhrase | complementPhrase ) { INTERJECTION }
 ```
 
-and make heavy use of the grammar-helper functions ``sequence``, ``zeroOrMore``, ``optional``, ``anyOneOf`` imported from ``backend.ed_parser``.
+The grammar-rule methods make heavy use of the grammar-helper functions ``sequence``, ``zeroOrMore``, ``optional`` and ``anyOneOf``,
+all imported from ``backend.ed_parser``.
 There are specific usage rules for these helper functions regarding argument forms, see the comments in each of the helper-function
-definitions.  Perhaps the key attributes of this parser are that it will eagerly match all options in an ``anyOneOf`` rule component and
+definitions.  
+
+Perhaps the key attributes of this parser are that it will eagerly match all options in an ``anyOneOf`` rule component and
 pick the longest match, and it will match along ``sequence`` rules, back-tracking and retrying on failures as it explores all possible
 combinations implied by optional components in the sequence.
 
-The terminal tokens in the grammar are the phoneme:tag tuples returned by the tag-mapping phase.  A rule in the grammar would use 
-the lexical analyzer ``next()`` and ``peek()`` and ``backtrack()`` methods to test for and navigate the phoneme:tag token sequence.  
-For example:
+The terminal tokens in the grammar are the ``phoneme:tag`` tuples returned by the tag-mapping phase.  A rule in the grammar would use 
+the lexical analyzer ``next()`` or ``peek()`` or ``backtrack()`` methods to test for and navigate the ``phoneme:tag`` token sequence.  For example:
 
 ```
     @grammarRule
     def number(self):
         return self.lexer.next(r'.*:(MM|NUM.*|SN)')
 ```
-uses the lexer's next() method giving it a phoneme:tag Python RE expression to match the next token, in this case taking any phoneme (``.*``) and 
-any of the tag ``MM``, ``NUM.*`` or ``SN``.
+uses the lexer's next() method giving it a ``phoneme:tag`` Python RE expression to match the next token, in this case taking any phoneme (``.*``) and 
+any of the tags ``MM``, ``NUM.*`` or ``SN`` to match a number terminal.
 
 #### Web UI
 The webapp front-end to the parser is a simple single-page app, implemented on the [Vue JS](https://vuejs.org) Javascript framework.  It
-uses a REST-like API, implemented on the [Flask](http://flask.pocoo.org) server framework, to access the parser packend.
+uses a REST-like API, implemented on the [Flask](http://flask.pocoo.org) server framework, to access the parser back-end.
 
 The Flask server and HTTP request handlers are in ``backend.api``.
-The main page ``index.html`` lives in the ``frontend`` directory and is a typcial Vue JS skeleton index.html.
+The main page ``index.html`` lives in the ``frontend`` directory and is a typical Vue JS skeleton index.html.
 The SPA is a single Vue template component ``KoreanParser`` defined in ``frontend/src/KoreanParser.vue`` with the top-level Vue
 Javascript in ``frontend/src/main.js``.
 
 When the Vue SPA is built with ``npm run build`` or ``npm run dev`` as described in the build sections above, distribution versions 
-of the generated HTML & Javascript are placed in the top-level ``dist`` directory and servedfrom there as static files by the Flask server.
+of the generated HTML & Javascript are placed in the top-level ``dist`` directory and served from there as static files by the Flask server.
 
-The main parser UI page is served by the Flask server in response to a ``/analyzer``.  The Vue JS client-side runtime constructs the 
+The main parser UI page is served by the Flask server in response to a ``/analyzer`` HTTP request.  The Vue JS client-side runtime constructs the 
 builk of the UI from the templates & Javascript in ``frontend/src/KoreanParser.vue``.  When the ``Parse`` button is pressed, the entered
 sentence is sent via HTTP POST to the ``/parse/`` request-handler in ``backend.api`` and invokes the parsing phases described above.
 The resultant parse-tree and other supporting material is returned in a JSON object to the JavaScript in the Vue code, which interprets
-it to build the final out displays, as dynamically-generated HTML and SVG elements.
+it to build the final output displays as dynamically-generated HTML and SVG elements.
 
 Some of the Javascript code constructing the parsing display is tricky and I will write more on that soon.
