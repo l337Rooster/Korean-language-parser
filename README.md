@@ -55,7 +55,7 @@ this set will be filled out by open-source contributions, along with other impro
 If needed, install [node.js](https://nodejs.org/) and Python 3.6 or greater either from [here](https://www.python.org/downloads/) or 
 as part of the highly-recommended [Anaconda Python distribution](https://www.anaconda.com/download/).  
 
-Clone or download the [Korean sentence parser](https://github.com/johnw3d/Korean-language-parser) repo, ``cd`` into its top-level directory and 
+Clone or download this repo, ``cd`` into its top-level directory and 
 run the following pip command to install required Python libraries:
 ```
 # install Python requirements
