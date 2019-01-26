@@ -15,7 +15,7 @@ build-management.
 The main contribution made here is a phrase parser that takes the phonemes and low-level parts-of-speech derived by Khaiii to produce a hierarchical
 phrase parse-tree, representing syntactic constructs such as predicates, subject, object & topic phrases, common conjugation and connecting patterns,
 an so on.
-In addition, a web-based front is included that provides easy access to the parser and attempts to show the parsing in a understeandable graphical form
+ In addition, a web-based front-end is included that provides easy access to the parser and attempts to show the parsing in a understeandable graphical form
 along with helpful annotations, word definitions, translations and links to various references for the key constructs in a sentence, hopefully
 useful to learners of the Korean language. 
 
