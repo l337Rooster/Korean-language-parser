@@ -160,19 +160,19 @@ multiple phonemes.  So, the above examples is sent as:
 ```
 and returned in list form as:
 ``` 
-[('그', 'MM'),
- ('작', 'VA'),
- ('은', 'ETM'),
- ('소년', 'NNG'),
- ('은', 'TOP_4'),
- ('빨리', 'MAG'),
- ('달리', 'VV'),
- ('었', 'PSX_31'),
- ('다', 'EF'),
- ('.', 'SF')]
+[('그:MM'),
+ ('작:VA'),
+ ('은:ETM'),
+ ('소년:NNG'),
+ ('은:TOP_4'),
+ ('빨리:MAG'),
+ ('달리:VV'),
+ ('었:PSX_31'),
+ ('다:'EF'),
+ ('.':SF')]
 ```
-with the **"은"** re-tagged as **TOP_4**, indicating it is definitely a topic-marking particle, and **""** re-tagged as **PSX_31** indicating
-it a past-tense conjugating predicate suffix.  These remappings help the parsers described later and link to custom annotations and 
+with the **"은"** re-tagged as **TOP_4**, indicating it is definitely a topic-marking particle, and **"었"** re-tagged as **PSX_31** indicating
+it a specific past-tense conjugating predicate suffix.  These remappings help the parsers described later and link to custom annotations and 
 labels and references to be displlayed in the parser front-end.
 
 All the custom-tag mapping and grammar-pattern recognition is driven by specs in the ``backend.tagmap`` module.  Theses specs are all provided 
@@ -281,3 +281,34 @@ definitions.  Perhaps the key attributes of this parser are that it will eagerly
 pick the longest match, and it will match along ``sequence`` rules, back-tracking and retrying on failures as it explores all possible
 combinations implied by optional components in the sequence.
 
+The terminal tokens in the grammar are the phoneme:tag tuples returned by the tag-mapping phase.  A rule in the grammar would use 
+the lexical analyzer ``next()`` and ``peek()`` and ``backtrack()`` methods to test for and navigate the phoneme:tag token sequence.  
+For example:
+
+```
+    @grammarRule
+    def number(self):
+        return self.lexer.next(r'.*:(MM|NUM.*|SN)')
+```
+uses the lexer's next() method giving it a phoneme:tag Python RE expression to match the next token, in this case taking any phoneme (``.*``) and 
+any of the tag ``MM``, ``NUM.*`` or ``SN``.
+
+#### Web UI
+The webapp front-end to the parser is a simple single-page app, implemented on the [Vue JS](https://vuejs.org) Javascript framework.  It
+uses a REST-like API, implemented on the [Flask](http://flask.pocoo.org) server framework, to access the parser packend.
+
+The Flask server and HTTP request handlers are in ``backend.api``.
+The main page ``index.html`` lives in the ``frontend`` directory and is a typcial Vue JS skeleton index.html.
+The SPA is a single Vue template component ``KoreanParser`` defined in ``frontend/src/KoreanParser.vue`` with the top-level Vue
+Javascript in ``frontend/src/main.js``.
+
+When the Vue SPA is built with ``npm run build`` or ``npm run dev`` as described in the build sections above, distribution versions 
+of the generated HTML & Javascript are placed in the top-level ``dist`` directory and servedfrom there as static files by the Flask server.
+
+The main parser UI page is served by the Flask server in response to a ``/analyzer``.  The Vue JS client-side runtime constructs the 
+builk of the UI from the templates & Javascript in ``frontend/src/KoreanParser.vue``.  When the ``Parse`` button is pressed, the entered
+sentence is sent via HTTP POST to the ``/parse/`` request-handler in ``backend.api`` and invokes the parsing phases described above.
+The resultant parse-tree and other supporting material is returned in a JSON object to the JavaScript in the Vue code, which interprets
+it to build the final out displays, as dynamically-generated HTML and SVG elements.
+
+Some of the code constructing the parsing display is tricky and I will write more on that soon.

@@ -156,7 +156,7 @@
 
 <script>
 export default {
-    name: 'App',
+    name: 'KoreanParser',
 
     // ------------ component local data ------------
 	data: function() {
@@ -771,7 +771,7 @@ document.onmouseup = function (e) {
       from {opacity: 0;}
       to {opacity:1 ;}
     }
-    
+
     .error-msg {
         color: red;
         font-style: italic;
