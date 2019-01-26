@@ -312,7 +312,7 @@ any of the tags ``MM``, ``NUM.*`` or ``SN`` to match a number terminal.
 
 #### State of the grammar
 The current R-D grammar is certainly incomplete and almost-certainly wrong is several ways, being developed to date by 
-a non-native, intermediate-level Korean language student.  The hope is that open-source contributors with much more extensive Korean experience will help refine & extend the grammar, as well as adding to the common-pattern recognizers & 
+a non-native, intermediate-level Korean language student.  The hope is that open-source contributors with much more extensive Korean experience will help refine & extend the grammar, and add to the common-pattern recognizers & 
 reference material in the tag-mapper.
 
 #### Web UI
