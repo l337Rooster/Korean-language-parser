@@ -143,8 +143,9 @@ conjugation shortenings as it does in the past-tense predicate of that sentence.
 
 #### Morpheme mapping and common pattern-detection
 
-The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morhpeme tags and does not give any 
-markings of common, multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is marked with the
+The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morhpeme tags and does not mark in any
+particular way common, multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is marked 
+with the
 generic predicate-ending tag **"EP"**.  The mapper recognizes this specific morpheme-tag group as a past-tense suffix and replaces the **EP**
 tag with a specific custom tag that allows it to be labeled as a past-tense suffix in the parse-tree.
 
@@ -159,7 +160,7 @@ multiple phonemes.  So, the above examples is sent as:
 "그:MM;작:VA;은:ETM;소년:NNG;은:JX;빨리:MAG;달리:VV;었:EP;다:EF;.:SF"
 ```
 
-All the custom-tag mapping and grammar-pattern recognition is driven by specs in the ``backend.tagmap`` module.  Theses specs are all provided 
+All the custom-tag mapping and grammar-pattern recognition is driven by specs in the ``backend.tagmap`` module.  Theses specs are defined 
 using the ``tm()`` tag-map spec utility function.  An example is shown below:
 
 ```
@@ -171,8 +172,15 @@ tm( # 기/음 nominalizer
           "htsk": "/unit-2-lower-intermediate-korean-grammar/unit-2-lessons-26-33/lesson-29"},
 )
 ```
-This function takes several keyword parameters, all of them optional except ``tagPat`` which is a Python RE pattern to match the desired
-phonemem/tag sequence.  The other parameters specify various mappings and labeling and reference detail for that pattern.  In this case, 
+This function takes several keyword parameters, all of them optional except ``tagPat`` which is a Python re pattern to match the desired
+phonemem/tag sequence.  The other parameters specify various mappings and labeling and reference detail for that pattern.  In this example,
+recognizing a verb nominalizer suffix as either **"기"** or **"음"** with POS tag **"ETN"** or **"NNG"**, replacing the tag with 
+the custom tag **"PNOM"** to distinguish the phoneme as a nominalizer for the phrase parser that will run later in the parsing process.  In
+addition, label, descriptive and reference information for the construct is also supplied.  The ``refs`` parameter provides 
+pathnames on the Talk To Me In Korean (ttmik) and How to Study Korean (htsk) sites to pages which contain reference material on this 
+nominalizer form.
+
+
 
  
 

@@ -6,7 +6,7 @@
             <!-- header row -->
             <div id="input-row" class="k-flexrow ">
                 <div id="input-title" >Korean sentence parser</div>
-                <div id="attribution">v0.7.3 - <a href="mailto:johnw3d@gmail.com">JBW</a> - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a> and JBW's phrase parser</div>
+                <div id="attribution">v0.7.4 - <a href="mailto:johnw3d@gmail.com">JBW</a> - based on the <a href="https://github.com/kakao/khaiii">Kakao Hangul Analyzer III</a> and JBW's phrase parser</div>
             </div>
             <!-- input row -->
             <div class="k-flexrow">
