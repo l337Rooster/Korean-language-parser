@@ -2,7 +2,7 @@
 The parser implemented in this repo is meant to be
 a learning tool for students of 
 the Korean language.  It is currently accessible online in development form at [http://hangugeo.org/analyzer](http://hangugeo.org/analyzer). 
-It is currently still very-much a work-in-progress and so may not give correct or even any parsing for a particular sentence, and may be 
+It is still very-much a work-in-progress and so may not give correct or even any parsing for a particular sentence, and may be 
 offline at times.
 
 The parser depends on several crucial 3rd-party components, foremost being the [Kakao Hangul Analyzer III](https://github.com/kakao/khaiii) (Khaiii), 
