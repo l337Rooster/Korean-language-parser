@@ -1,4 +1,6 @@
 # Korean Sentence Parser
+John Wainwright
+
 The parser implemented in this repo is meant to be
 a learning tool for students of 
 the Korean language.  It is currently accessible online in development form at [http://hangugeo.org/analyzer](http://hangugeo.org/analyzer). 
@@ -307,6 +309,11 @@ the lexical analyzer ``next()`` or ``peek()`` or ``backtrack()`` methods to test
 ```
 uses the lexer's next() method giving it a ``phoneme:tag`` Python RE expression to match the next token, in this case taking any phoneme (``.*``) and 
 any of the tags ``MM``, ``NUM.*`` or ``SN`` to match a number terminal.
+
+#### State of the grammar
+The current R-D grammar is certainly incomplete and almost-certainly wrong is several ways, being developed to date by 
+a non-native, intermediate-level Korean language student.  The hope is that open-source contributors with much more extensive Korean experience will help refine & extend the grammar, as well as adding to the common-pattern recognizers & 
+reference material in the tag-mapper.
 
 #### Web UI
 The webapp front-end to the parser is a simple single-page app, implemented on the [Vue JS](https://vuejs.org) Javascript framework.  It
