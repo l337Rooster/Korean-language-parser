@@ -311,4 +311,4 @@ sentence is sent via HTTP POST to the ``/parse/`` request-handler in ``backend.a
 The resultant parse-tree and other supporting material is returned in a JSON object to the JavaScript in the Vue code, which interprets
 it to build the final out displays, as dynamically-generated HTML and SVG elements.
 
-Some of the code constructing the parsing display is tricky and I will write more on that soon.
+Some of the Javascript code constructing the parsing display is tricky and I will write more on that soon.
