@@ -20,7 +20,8 @@ class KoreanParser(Parser):
         # mainClause ::= [phrase]* predicate
         # predicate ::= verbPhrase ENDING_SUFFIX
 
-        s = sequence(zeroOrMore(self.subordinateClause), self.mainClause())
+        s = sequence(zeroOrMore(self.subordinateClause),
+                     self.mainClause())
         return s
 
     @grammarRule
