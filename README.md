@@ -23,8 +23,8 @@ Below is screen-shot of the front-end UI and an example sentence-parsing output.
 and hit the ``Parse`` button.  The main output is a parse-tree showing the original words in the sentence in black at the top sitting over the 
 lexical phonemes & phoneme-patterns that make up the sentence, in teal.  Under each phoneme is a descriptive part-of-speech and under the
 nouns & verbs are English
-translations from the Naver/Papago translator public API in orange.  In cases where a word has multiple meanings, the one picked by Naver as its 
-favorite meaning for the word out-of-context is shown.
+translations from the Naver/Papago translator public API in orange.  In cases where a word has multiple meanings, the one shown is that which is selected by Naver as its 
+default meaning for the word out-of-context is shown.
 
 Descending from that is a putative phrase-structure tree, showing the construction of larger phrases and clauses and the final predicate from
 smaller ones.  If you hover the mouse over one of the teal phonemes or phoneme patterns, a gray box pops up showing the definition and any 
