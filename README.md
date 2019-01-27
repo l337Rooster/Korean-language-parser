@@ -64,7 +64,8 @@ run the following pip command to install required Python libraries:
 $ pip3 install -r requirements.txt
 ```
 Download the *Kakao Hangul Analyzer III* from the [kakao/khaiii github page](https://github.com/kakao/khaiii) and 
-prepare according to its [build and installation instructions](https://github.com/kakao/khaiii/wiki/빌드-및-설치). 
+prepare according to its [build and installation instructions](https://github.com/kakao/khaiii/wiki/빌드-및-설치).  I 
+recommend doing a *full* resource-build when you get to that step.
 
 To install front-end and webpack dependencies, ``cd`` into the ``frontend`` subdirectory and run the following npm command:
 ``` bash
