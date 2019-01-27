@@ -150,7 +150,7 @@ conjugation shortenings as it does in the past-tense predicate of that sentence.
 
 #### Morpheme mapping and common pattern-detection
 
-The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morpheme tags and does not distinguish between
+The morhpeme analysis performed by the Khaiii neural net generates a set of common morpheme tags and does not distinguish between
 specific particles of the same part-of-speech or identify multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is 
 marked with the
 generic predicate-ending tag **"EP"**.  The mapper recognizes this specific morpheme-tag group as a past-tense suffix and replaces the **EP**
