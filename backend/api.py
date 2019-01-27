@@ -40,7 +40,7 @@ parserApp.config.update(
 def run_dev_server():
     "launch Flask dev server"
     parserApp.run(host = '0.0.0.0',
-               port = 9000, #80, # 9000,
+               port = 80, #80, # 9000,
                debug = True)
 
 logFile = None
@@ -120,10 +120,11 @@ def parseInput(input, parser="RD", showAllLevels=False):
     "parse input string into list of parsed contained sentence structures"
     # parser can be RD for recusrsive descent (currently the most-developed) or "NLTK" for the original NLTK chunking-grammar parser
 
-    # build a string for the KHaiii phoneme analyzer
+    # clean & build a string for the KHaiii phoneme analyzer
     input = input.strip()
     if input[-1] not in ['.', '?', '!']:
         input += '.'
+    input = re.sub(r'\s+([\.\?\;\,\:])', r'\1', input)  # elide spaces preceding clause endings, throws Khaiii off
     # input = input.replace(',', ' , ').replace(';', ' ; ').replace(':', ' : ') - adding a space before punctuation seems to mess tagging in Khaiii
     log("* parse {0}".format(input))
 
