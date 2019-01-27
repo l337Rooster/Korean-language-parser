@@ -41,7 +41,7 @@ class KoreanParser(Parser):
         # mainClause ::= [phrase]* predicate
         mc = sequence(optional(self.joiningAdverb),
                       zeroOrMore(self.phrase),
-                      optional(self.predicate()))   # NB making the predicate optional allows incomplete sentences to be parsed, not sure if that's good
+                      self.predicate())   # NB making the predicate optional allows incomplete sentences to be parsed, not sure if that's good
         return mc
 
     @grammarRule
@@ -196,12 +196,12 @@ class KoreanParser(Parser):
     def adverb(self):
         "parse an adverb"
         vp = anyOneOf(option(self.simpleAdverb),
-                      option(sequence(self.descriptiveVerb(), self.adverbFormingSuffix())))
+                      ) # option(sequence(self.descriptiveVerb(), self.adverbFormingSuffix())))
         return vp
 
     @grammarRule
     def simpleAdverb(self):
-        sa = self.lexer.next(r'.*:(MAG)')
+        sa = self.lexer.next(r'.*:(MAG.*)')
         return sa
 
     @grammarRule
@@ -264,7 +264,7 @@ class KoreanParser(Parser):
     @grammarRule
     def nominalizedVerb(self):
         "parse a nominalized verb"
-        nv = sequence(self.verb(),
+        nv = sequence(self.verbPhrase(),
                       optional(self.verbSuffix),
                       self.nominalizingSuffix())
         return nv

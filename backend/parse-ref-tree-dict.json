@@ -2,113 +2,112 @@
   "\uc800 \uc791\uc740 \uc18c\ub144 \ubc25\uc744 \uba39\ub2e4.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
-      "layer": 4,
+      "layer": 5,
       "parent": null,
       "children": [
         {
           "type": "tree",
-          "tag": "Noun Phrase",
+          "tag": "Object Phrase",
           "level": 1,
-          "layer": 3,
+          "layer": 4,
           "parent": 14,
           "children": [
             {
-              "type": "word",
-              "word": "\uc800",
-              "tag": "MM",
-              "tagLabel": [
-                "Determiner"
-              ],
-              "children": [],
-              "parent": 7,
-              "level": -1,
-              "layer": 0,
-              "id": 1
-            },
-            {
               "type": "tree",
-              "tag": "Adjectival Phrase",
+              "tag": "Simple Noun Phrase",
               "level": 2,
-              "layer": 2,
-              "parent": 7,
+              "layer": 3,
+              "parent": 10,
               "children": [
                 {
+                  "type": "word",
+                  "word": "\uc800",
+                  "tag": "MM",
+                  "tagLabel": [
+                    "Determiner"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
                   "type": "tree",
-                  "tag": "Adjective",
+                  "tag": "Adjectival Phrase",
                   "level": 3,
-                  "layer": 1,
-                  "parent": 6,
+                  "layer": 2,
+                  "parent": 8,
                   "children": [
                     {
-                      "type": "word",
-                      "word": "\uc791",
-                      "tag": "VA",
-                      "tagLabel": [
-                        "Descriptive",
-                        "Verb"
+                      "type": "tree",
+                      "tag": "Adjective",
+                      "level": 4,
+                      "layer": 1,
+                      "parent": 6,
+                      "children": [
+                        {
+                          "type": "word",
+                          "word": "\uc791",
+                          "tag": "VA",
+                          "tagLabel": [
+                            "Adjective"
+                          ],
+                          "children": [],
+                          "parent": 4,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 2
+                        },
+                        {
+                          "type": "word",
+                          "word": "\uc740",
+                          "tag": "ETM",
+                          "tagLabel": [
+                            "Adjectival",
+                            "Suffix"
+                          ],
+                          "children": [],
+                          "parent": 4,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 3
+                        }
                       ],
-                      "children": [],
-                      "parent": 4,
-                      "level": -1,
-                      "layer": 0,
-                      "id": 2
+                      "id": 4
                     },
                     {
                       "type": "word",
-                      "word": "\uc740",
-                      "tag": "ETM",
+                      "word": "\uc18c\ub144",
+                      "tag": "NNG",
                       "tagLabel": [
-                        "Adjectival",
-                        "Suffix"
+                        "Noun"
                       ],
                       "children": [],
-                      "parent": 4,
+                      "parent": 6,
                       "level": -1,
                       "layer": 0,
-                      "id": 3
+                      "id": 5
                     }
                   ],
-                  "id": 4
+                  "id": 6
                 },
                 {
                   "type": "word",
-                  "word": "\uc18c\ub144",
+                  "word": "\ubc25",
                   "tag": "NNG",
                   "tagLabel": [
                     "Noun"
                   ],
                   "children": [],
-                  "parent": 6,
+                  "parent": 8,
                   "level": -1,
                   "layer": 0,
-                  "id": 5
+                  "id": 7
                 }
               ],
-              "id": 6
-            }
-          ],
-          "id": 7
-        },
-        {
-          "type": "tree",
-          "tag": "Object Phrase",
-          "level": 1,
-          "layer": 1,
-          "parent": 14,
-          "children": [
-            {
-              "type": "word",
-              "word": "\ubc25",
-              "tag": "NNG",
-              "tagLabel": [
-                "Noun"
-              ],
-              "children": [],
-              "parent": 10,
-              "level": -1,
-              "layer": 0,
               "id": 8
             },
             {
@@ -174,21 +173,23 @@
         2,
         3,
         5,
-        8,
+        7,
         9,
         11,
         12
       ],
       [
         4,
-        10,
         13
       ],
       [
         6
       ],
       [
-        7
+        8
+      ],
+      [
+        10
       ],
       [
         14
@@ -198,7 +199,7 @@
   "\uc800 \uc791\uc740 \uc18c\ub144\uc758 \ub0a8\ub3d9\uc0dd\uc740 \ubc25\uc744 \uba39\ub2e4.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 5,
       "parent": null,
@@ -212,7 +213,7 @@
           "children": [
             {
               "type": "tree",
-              "tag": "Noun Phrase",
+              "tag": "Simple Noun Phrase",
               "level": 2,
               "layer": 3,
               "parent": 12,
@@ -249,8 +250,7 @@
                           "word": "\uc791",
                           "tag": "VA",
                           "tagLabel": [
-                            "Descriptive",
-                            "Verb"
+                            "Adjective"
                           ],
                           "children": [],
                           "parent": 4,
@@ -334,7 +334,7 @@
             {
               "type": "word",
               "word": "\uc740",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -462,9 +462,9 @@
   "\uc81c \uce5c\uad6c\ub294 \uc544\uc8fc \uc608\uc05c \ucc28\ub97c \uc0c0\uc5b4\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
-      "layer": 5,
+      "layer": 4,
       "parent": null,
       "children": [
         {
@@ -472,7 +472,7 @@
           "tag": "Topic Phrase",
           "level": 1,
           "layer": 3,
-          "parent": 22,
+          "parent": 21,
           "children": [
             {
               "type": "tree",
@@ -537,7 +537,7 @@
             {
               "type": "word",
               "word": "\ub294",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -555,59 +555,48 @@
           "type": "tree",
           "tag": "Object Phrase",
           "level": 1,
-          "layer": 4,
-          "parent": 22,
+          "layer": 3,
+          "parent": 21,
           "children": [
             {
               "type": "tree",
               "tag": "Adjectival Phrase",
               "level": 2,
-              "layer": 3,
-              "parent": 16,
+              "layer": 2,
+              "parent": 15,
               "children": [
+                {
+                  "type": "word",
+                  "word": "\uc544\uc8fc",
+                  "tag": "MAG",
+                  "tagLabel": [
+                    "Adverb"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 8
+                },
                 {
                   "type": "tree",
                   "tag": "Adjective",
                   "level": 3,
-                  "layer": 2,
-                  "parent": 14,
+                  "layer": 1,
+                  "parent": 13,
                   "children": [
                     {
-                      "type": "tree",
-                      "tag": "Verb Phrase",
-                      "level": 4,
-                      "layer": 1,
-                      "parent": 12,
-                      "children": [
-                        {
-                          "type": "word",
-                          "word": "\uc544\uc8fc",
-                          "tag": "MAG",
-                          "tagLabel": [
-                            "Adverb"
-                          ],
-                          "children": [],
-                          "parent": 10,
-                          "level": -1,
-                          "layer": 0,
-                          "id": 8
-                        },
-                        {
-                          "type": "word",
-                          "word": "\uc608\uc058",
-                          "tag": "VA",
-                          "tagLabel": [
-                            "Descriptive",
-                            "Verb"
-                          ],
-                          "children": [],
-                          "parent": 10,
-                          "level": -1,
-                          "layer": 0,
-                          "id": 9
-                        }
+                      "type": "word",
+                      "word": "\uc608\uc058",
+                      "tag": "VA",
+                      "tagLabel": [
+                        "Adjective"
                       ],
-                      "id": 10
+                      "children": [],
+                      "parent": 11,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 9
                     },
                     {
                       "type": "word",
@@ -618,13 +607,13 @@
                         "Suffix"
                       ],
                       "children": [],
-                      "parent": 12,
+                      "parent": 11,
                       "level": -1,
                       "layer": 0,
-                      "id": 11
+                      "id": 10
                     }
                   ],
-                  "id": 12
+                  "id": 11
                 },
                 {
                   "type": "word",
@@ -634,13 +623,13 @@
                     "Noun"
                   ],
                   "children": [],
-                  "parent": 14,
+                  "parent": 13,
                   "level": -1,
                   "layer": 0,
-                  "id": 13
+                  "id": 12
                 }
               ],
-              "id": 14
+              "id": 13
             },
             {
               "type": "word",
@@ -651,27 +640,27 @@
                 "Marker"
               ],
               "children": [],
-              "parent": 16,
+              "parent": 15,
               "level": -1,
               "layer": 0,
-              "id": 15
+              "id": 14
             }
           ],
-          "id": 16
+          "id": 15
         },
         {
           "type": "tree",
           "tag": "Predicate",
           "level": 1,
           "layer": 2,
-          "parent": 22,
+          "parent": 21,
           "children": [
             {
               "type": "tree",
               "tag": "Verb Phrase",
               "level": 2,
               "layer": 1,
-              "parent": 21,
+              "parent": 20,
               "children": [
                 {
                   "type": "word",
@@ -681,27 +670,27 @@
                     "Verb"
                   ],
                   "children": [],
-                  "parent": 19,
+                  "parent": 18,
                   "level": -1,
                   "layer": 0,
-                  "id": 17
+                  "id": 16
                 },
                 {
                   "type": "word",
                   "word": "\uc558",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
                   ],
                   "children": [],
-                  "parent": 19,
+                  "parent": 18,
                   "level": -1,
                   "layer": 0,
-                  "id": 18
+                  "id": 17
                 }
               ],
-              "id": 19
+              "id": 18
             },
             {
               "type": "word",
@@ -712,16 +701,16 @@
                 "Ending"
               ],
               "children": [],
-              "parent": 21,
+              "parent": 20,
               "level": -1,
               "layer": 0,
-              "id": 20
+              "id": 19
             }
           ],
-          "id": 21
+          "id": 20
         }
       ],
-      "id": 22
+      "id": 21
     },
     "layers": [
       [
@@ -731,41 +720,38 @@
         6,
         8,
         9,
-        11,
-        13,
-        15,
-        17,
-        18,
-        20
-      ],
-      [
-        3,
         10,
+        12,
+        14,
+        16,
+        17,
         19
       ],
       [
+        3,
+        11,
+        18
+      ],
+      [
         5,
-        12,
-        21
+        13,
+        20
       ],
       [
         7,
-        14
+        15
       ],
       [
-        16
-      ],
-      [
-        22
+        21
       ]
     ]
   },
   "\uc81c \uce5c\uad6c\ub294 \uc544\uc8fc \ube60\ub978 \ucc28\ub97c \uc0c0\uc5b4\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
-      "layer": 5,
+      "layer": 4,
       "parent": null,
       "children": [
         {
@@ -773,7 +759,7 @@
           "tag": "Topic Phrase",
           "level": 1,
           "layer": 3,
-          "parent": 22,
+          "parent": 21,
           "children": [
             {
               "type": "tree",
@@ -838,7 +824,7 @@
             {
               "type": "word",
               "word": "\ub294",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -856,59 +842,48 @@
           "type": "tree",
           "tag": "Object Phrase",
           "level": 1,
-          "layer": 4,
-          "parent": 22,
+          "layer": 3,
+          "parent": 21,
           "children": [
             {
               "type": "tree",
               "tag": "Adjectival Phrase",
               "level": 2,
-              "layer": 3,
-              "parent": 16,
+              "layer": 2,
+              "parent": 15,
               "children": [
+                {
+                  "type": "word",
+                  "word": "\uc544\uc8fc",
+                  "tag": "MAG",
+                  "tagLabel": [
+                    "Adverb"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 8
+                },
                 {
                   "type": "tree",
                   "tag": "Adjective",
                   "level": 3,
-                  "layer": 2,
-                  "parent": 14,
+                  "layer": 1,
+                  "parent": 13,
                   "children": [
                     {
-                      "type": "tree",
-                      "tag": "Verb Phrase",
-                      "level": 4,
-                      "layer": 1,
-                      "parent": 12,
-                      "children": [
-                        {
-                          "type": "word",
-                          "word": "\uc544\uc8fc",
-                          "tag": "MAG",
-                          "tagLabel": [
-                            "Adverb"
-                          ],
-                          "children": [],
-                          "parent": 10,
-                          "level": -1,
-                          "layer": 0,
-                          "id": 8
-                        },
-                        {
-                          "type": "word",
-                          "word": "\ube60\ub974",
-                          "tag": "VA",
-                          "tagLabel": [
-                            "Descriptive",
-                            "Verb"
-                          ],
-                          "children": [],
-                          "parent": 10,
-                          "level": -1,
-                          "layer": 0,
-                          "id": 9
-                        }
+                      "type": "word",
+                      "word": "\ube60\ub974",
+                      "tag": "VA",
+                      "tagLabel": [
+                        "Adjective"
                       ],
-                      "id": 10
+                      "children": [],
+                      "parent": 11,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 9
                     },
                     {
                       "type": "word",
@@ -919,13 +894,13 @@
                         "Suffix"
                       ],
                       "children": [],
-                      "parent": 12,
+                      "parent": 11,
                       "level": -1,
                       "layer": 0,
-                      "id": 11
+                      "id": 10
                     }
                   ],
-                  "id": 12
+                  "id": 11
                 },
                 {
                   "type": "word",
@@ -935,13 +910,13 @@
                     "Noun"
                   ],
                   "children": [],
-                  "parent": 14,
+                  "parent": 13,
                   "level": -1,
                   "layer": 0,
-                  "id": 13
+                  "id": 12
                 }
               ],
-              "id": 14
+              "id": 13
             },
             {
               "type": "word",
@@ -952,27 +927,27 @@
                 "Marker"
               ],
               "children": [],
-              "parent": 16,
+              "parent": 15,
               "level": -1,
               "layer": 0,
-              "id": 15
+              "id": 14
             }
           ],
-          "id": 16
+          "id": 15
         },
         {
           "type": "tree",
           "tag": "Predicate",
           "level": 1,
           "layer": 2,
-          "parent": 22,
+          "parent": 21,
           "children": [
             {
               "type": "tree",
               "tag": "Verb Phrase",
               "level": 2,
               "layer": 1,
-              "parent": 21,
+              "parent": 20,
               "children": [
                 {
                   "type": "word",
@@ -982,27 +957,27 @@
                     "Verb"
                   ],
                   "children": [],
-                  "parent": 19,
+                  "parent": 18,
                   "level": -1,
                   "layer": 0,
-                  "id": 17
+                  "id": 16
                 },
                 {
                   "type": "word",
                   "word": "\uc558",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
                   ],
                   "children": [],
-                  "parent": 19,
+                  "parent": 18,
                   "level": -1,
                   "layer": 0,
-                  "id": 18
+                  "id": 17
                 }
               ],
-              "id": 19
+              "id": 18
             },
             {
               "type": "word",
@@ -1013,16 +988,16 @@
                 "Ending"
               ],
               "children": [],
-              "parent": 21,
+              "parent": 20,
               "level": -1,
               "layer": 0,
-              "id": 20
+              "id": 19
             }
           ],
-          "id": 21
+          "id": 20
         }
       ],
-      "id": 22
+      "id": 21
     },
     "layers": [
       [
@@ -1032,39 +1007,36 @@
         6,
         8,
         9,
-        11,
-        13,
-        15,
-        17,
-        18,
-        20
-      ],
-      [
-        3,
         10,
+        12,
+        14,
+        16,
+        17,
         19
       ],
       [
+        3,
+        11,
+        18
+      ],
+      [
         5,
-        12,
-        21
+        13,
+        20
       ],
       [
         7,
-        14
+        15
       ],
       [
-        16
-      ],
-      [
-        22
+        21
       ]
     ]
   },
   "\uadf8\ubd84\uc740 \uc120\uc0dd\ub2d8\uc774 \uc544\ub2d9\ub2c8\ub2e4.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -1092,7 +1064,7 @@
             {
               "type": "word",
               "word": "\uc740",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -1115,7 +1087,7 @@
           "children": [
             {
               "type": "tree",
-              "tag": "Noun Phrase",
+              "tag": "Simple Noun Phrase",
               "level": 2,
               "layer": 1,
               "parent": 8,
@@ -1232,7 +1204,7 @@
   "\uc774\uac83\uc774 \uc81c \ucc45\uc774\uc608\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -1400,7 +1372,7 @@
   "\uc5ec\uae30\ub294 \uc11c\uc6b8\uc5ed\uc774\uc608\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 2,
       "parent": null,
@@ -1428,7 +1400,7 @@
             {
               "type": "word",
               "word": "\ub294",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -1515,7 +1487,7 @@
   "\ube75 \ud558\ub098\ub97c \uc8fc\uc138\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -1550,7 +1522,7 @@
                 {
                   "type": "word",
                   "word": "\ud558\ub098",
-                  "tag": "NUM_2",
+                  "tag": "NUM_3",
                   "tagLabel": [
                     "Number"
                   ],
@@ -1669,7 +1641,7 @@
   "\ube75 \ub124 \uac1c\ub97c \uc8fc\uc138\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -1837,7 +1809,7 @@
   "\ub9e5\uc8fc \ub2e4\uc12f \ubcd1\ub97c \uc8fc\uc138\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -1872,7 +1844,7 @@
                 {
                   "type": "word",
                   "word": "\ub2e4\uc12f",
-                  "tag": "NUM_2",
+                  "tag": "NUM_3",
                   "tagLabel": [
                     "Number"
                   ],
@@ -2005,7 +1977,7 @@
   "\uadf8 \ud070 \ube75 \ub124 \uac1c\ub97c \uc8fc\uc138\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 5,
       "parent": null,
@@ -2019,7 +1991,7 @@
           "children": [
             {
               "type": "tree",
-              "tag": "Noun Phrase",
+              "tag": "Simple Noun Phrase",
               "level": 2,
               "layer": 3,
               "parent": 12,
@@ -2056,8 +2028,7 @@
                           "word": "\ud06c",
                           "tag": "VA",
                           "tagLabel": [
-                            "Descriptive",
-                            "Verb"
+                            "Adjective"
                           ],
                           "children": [],
                           "parent": 4,
@@ -2254,7 +2225,7 @@
   "\ub9e5\uc8fc 5\ubcd1\uc774\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 2,
       "parent": null,
@@ -2368,7 +2339,7 @@
   "\ucc45 \ub450\uc138 \uad8c \uc788\uc5b4\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 2,
       "parent": null,
@@ -2482,7 +2453,7 @@
   "\uc5b4\uba38\ub2c8\uaed8\uc11c \uc544\uc774\uc5d0\uac8c \ubc25\uc744 \uba39\uc774\uc168\uc2b5\ub2c8\ub2e4.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -2547,7 +2518,7 @@
             {
               "type": "word",
               "word": "\uc5d0\uac8c",
-              "tag": "ADVEC_15",
+              "tag": "ADVEC_14",
               "tagLabel": [
                 "Particle"
               ],
@@ -2641,7 +2612,7 @@
                 {
                   "type": "word",
                   "word": "\uc5c8",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
@@ -2705,7 +2676,7 @@
   "\uc800\ub294 \ud559\uad50\uc5d0 \uc548 \uac14\uc5b4\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -2733,7 +2704,7 @@
             {
               "type": "word",
               "word": "\ub294",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -2770,7 +2741,7 @@
             {
               "type": "word",
               "word": "\uc5d0",
-              "tag": "ADVEC_14",
+              "tag": "ADVEC_13",
               "tagLabel": [
                 "Time/Place",
                 "Marker"
@@ -2827,7 +2798,7 @@
                 {
                   "type": "word",
                   "word": "\uc558",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
@@ -2942,8 +2913,7 @@
               "word": "\ucda5",
               "tag": "VA",
               "tagLabel": [
-                "Descriptive",
-                "Verb"
+                "Adjective"
               ],
               "children": [],
               "parent": 6,
@@ -2954,7 +2924,7 @@
             {
               "type": "word",
               "word": "\uc5b4\uc11c",
-              "tag": "ADVEC_16",
+              "tag": "ADVEC_15",
               "tagLabel": [
                 "Reason-giving",
                 "Suffix"
@@ -2998,7 +2968,7 @@
                 {
                   "type": "word",
                   "word": "\uc5d0",
-                  "tag": "ADVEC_14",
+                  "tag": "ADVEC_13",
                   "tagLabel": [
                     "Time/Place",
                     "Marker"
@@ -3161,7 +3131,7 @@
             {
               "type": "word",
               "word": "\uc5b4\uc11c",
-              "tag": "ADVEC_16",
+              "tag": "ADVEC_15",
               "tagLabel": [
                 "Reason-giving",
                 "Suffix"
@@ -3205,7 +3175,7 @@
                 {
                   "type": "word",
                   "word": "\ub294",
-                  "tag": "TOP_6",
+                  "tag": "TOP_5",
                   "tagLabel": [
                     "Topic",
                     "Marker"
@@ -3382,7 +3352,7 @@
             {
               "type": "word",
               "word": "\uc5b4\uc11c",
-              "tag": "ADVEC_16",
+              "tag": "ADVEC_15",
               "tagLabel": [
                 "Reason-giving",
                 "Suffix"
@@ -3435,8 +3405,7 @@
                       "word": "\ub9db\uc788",
                       "tag": "VA",
                       "tagLabel": [
-                        "Descriptive",
-                        "Verb"
+                        "Adjective"
                       ],
                       "children": [],
                       "parent": 12,
@@ -3486,7 +3455,7 @@
                 {
                   "type": "word",
                   "word": "\uc5c8",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
@@ -3555,7 +3524,7 @@
   "\ud0d0\uc740 \uacf5\ubd80\ud558\uae30\ub97c \uc2eb\uc5b4\ud55c\ub2e4.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -3583,7 +3552,7 @@
             {
               "type": "word",
               "word": "\uc740",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -3614,7 +3583,7 @@
                 {
                   "type": "word",
                   "word": "\uacf5\ubd80\ud558",
-                  "tag": "VND_0",
+                  "tag": "VND_1",
                   "tagLabel": [
                     "Verb"
                   ],
@@ -3627,10 +3596,10 @@
                 {
                   "type": "word",
                   "word": "\uae30",
-                  "tag": "NOM_10",
+                  "tag": "PNOM_9",
                   "tagLabel": [
-                    "Verb-modifying",
-                    "suffix"
+                    "Nominalizing",
+                    "Particle"
                   ],
                   "children": [],
                   "parent": 6,
@@ -3723,7 +3692,7 @@
   "\uae30\ucc28\uac00 \ub5a0\ub098\uac00 \ubc84\ub838\uc5b4\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 4,
       "parent": null,
@@ -3802,7 +3771,7 @@
                     {
                       "type": "word",
                       "word": "\uc544 \ubc84\ub9ac",
-                      "tag": "AUX_25",
+                      "tag": "AUX_28",
                       "tagLabel": [
                         "To Complete"
                       ],
@@ -3818,7 +3787,7 @@
                 {
                   "type": "word",
                   "word": "\uc5c8",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
@@ -3879,7 +3848,7 @@
   "\uc778\uc0bc\uc740 \ud55c\uad6d\uc5d0\uc11c\ub9cc \uc798 \uc790\ub78d\ub2c8\ub2e4.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -3907,7 +3876,7 @@
             {
               "type": "word",
               "word": "\uc740",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -3944,7 +3913,7 @@
             {
               "type": "word",
               "word": "\uc5d0\uc11c",
-              "tag": "ADVEC_14",
+              "tag": "ADVEC_13",
               "tagLabel": [
                 "Time/Place",
                 "Marker"
@@ -4060,7 +4029,7 @@
   "\ube44\uac00 \uc624\ub294 \uac83\uc744 \ubd24\uc5b4\uc694.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
       "layer": 3,
       "parent": null,
@@ -4132,7 +4101,7 @@
                 {
                   "type": "word",
                   "word": "\ub294 \uac83",
-                  "tag": "NOM_11",
+                  "tag": "PNOM_10",
                   "tagLabel": [
                     "Verb-modifying",
                     "suffix"
@@ -4193,7 +4162,7 @@
                 {
                   "type": "word",
                   "word": "\uc558",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
@@ -4475,9 +4444,9 @@
   "\ub098\ub294 \uc774\ubbf8 \uc5ec\uae30\uc11c \ub9ce\uc740 \uc2dc\uac04\uc744 \uae30\ub2e4\ub838\ub2e4.": {
     "tree": {
       "type": "tree",
-      "tag": "Main Clause",
+      "tag": "Sentence",
       "level": 0,
-      "layer": 4,
+      "layer": 6,
       "parent": null,
       "children": [
         {
@@ -4503,7 +4472,7 @@
             {
               "type": "word",
               "word": "\ub294",
-              "tag": "TOP_6",
+              "tag": "TOP_5",
               "tagLabel": [
                 "Topic",
                 "Marker"
@@ -4519,17 +4488,17 @@
         },
         {
           "type": "tree",
-          "tag": "Adverbial Phrase",
+          "tag": "Object Phrase",
           "level": 1,
-          "layer": 2,
+          "layer": 5,
           "parent": 21,
           "children": [
             {
               "type": "tree",
               "tag": "Adjectival Phrase",
               "level": 2,
-              "layer": 1,
-              "parent": 8,
+              "layer": 4,
+              "parent": 15,
               "children": [
                 {
                   "type": "word",
@@ -4539,77 +4508,76 @@
                     "Adverb"
                   ],
                   "children": [],
-                  "parent": 6,
+                  "parent": 13,
                   "level": -1,
                   "layer": 0,
                   "id": 4
                 },
                 {
-                  "type": "word",
-                  "word": "\uc5ec\uae30",
-                  "tag": "NP",
-                  "tagLabel": [
-                    "Pronoun"
-                  ],
-                  "children": [],
-                  "parent": 6,
-                  "level": -1,
-                  "layer": 0,
-                  "id": 5
-                }
-              ],
-              "id": 6
-            },
-            {
-              "type": "word",
-              "word": "\uc11c",
-              "tag": "ADVEC_14",
-              "tagLabel": [
-                "Time/Place",
-                "Marker"
-              ],
-              "children": [],
-              "parent": 8,
-              "level": -1,
-              "layer": 0,
-              "id": 7
-            }
-          ],
-          "id": 8
-        },
-        {
-          "type": "tree",
-          "tag": "Object Phrase",
-          "level": 1,
-          "layer": 3,
-          "parent": 21,
-          "children": [
-            {
-              "type": "tree",
-              "tag": "Adjectival Phrase",
-              "level": 2,
-              "layer": 2,
-              "parent": 15,
-              "children": [
-                {
                   "type": "tree",
                   "tag": "Adjective",
                   "level": 3,
-                  "layer": 1,
+                  "layer": 3,
                   "parent": 13,
                   "children": [
                     {
-                      "type": "word",
-                      "word": "\ub9ce",
-                      "tag": "VA",
-                      "tagLabel": [
-                        "Descriptive",
-                        "Verb"
-                      ],
-                      "children": [],
+                      "type": "tree",
+                      "tag": "Verb Phrase",
+                      "level": 4,
+                      "layer": 2,
                       "parent": 11,
-                      "level": -1,
-                      "layer": 0,
+                      "children": [
+                        {
+                          "type": "tree",
+                          "tag": "Adverbial Phrase",
+                          "level": 5,
+                          "layer": 1,
+                          "parent": 9,
+                          "children": [
+                            {
+                              "type": "word",
+                              "word": "\uc5ec\uae30",
+                              "tag": "NP",
+                              "tagLabel": [
+                                "Pronoun"
+                              ],
+                              "children": [],
+                              "parent": 7,
+                              "level": -1,
+                              "layer": 0,
+                              "id": 5
+                            },
+                            {
+                              "type": "word",
+                              "word": "\uc11c",
+                              "tag": "ADVEC_13",
+                              "tagLabel": [
+                                "Time/Place",
+                                "Marker"
+                              ],
+                              "children": [],
+                              "parent": 7,
+                              "level": -1,
+                              "layer": 0,
+                              "id": 6
+                            }
+                          ],
+                          "id": 7
+                        },
+                        {
+                          "type": "word",
+                          "word": "\ub9ce",
+                          "tag": "VA",
+                          "tagLabel": [
+                            "Adjective"
+                          ],
+                          "children": [],
+                          "parent": 9,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 8
+                        }
+                      ],
                       "id": 9
                     },
                     {
@@ -4692,7 +4660,7 @@
                 {
                   "type": "word",
                   "word": "\uc5c8",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
@@ -4732,8 +4700,8 @@
         2,
         4,
         5,
-        7,
-        9,
+        6,
+        8,
         10,
         12,
         14,
@@ -4743,14 +4711,18 @@
       ],
       [
         3,
-        6,
-        11,
+        7,
         18
       ],
       [
-        8,
-        13,
+        9,
         20
+      ],
+      [
+        11
+      ],
+      [
+        13
       ],
       [
         15
@@ -4835,7 +4807,7 @@
                 {
                   "type": "word",
                   "word": "\u3139 \uac83",
-                  "tag": "NOM_11",
+                  "tag": "PNOM_10",
                   "tagLabel": [
                     "Verb-modifying",
                     "suffix"
@@ -4866,7 +4838,7 @@
             {
               "type": "word",
               "word": "\ub77c\uace0",
-              "tag": "CEC_3",
+              "tag": "CEC_18",
               "tagLabel": [
                 "Clause",
                 "Connector"
@@ -4890,7 +4862,7 @@
             {
               "type": "word",
               "word": "\uac71\uc815\ub418",
-              "tag": "VND_0",
+              "tag": "VND_1",
               "tagLabel": [
                 "Verb"
               ],
@@ -5012,7 +4984,7 @@
             {
               "type": "word",
               "word": "\ub77c\uace0",
-              "tag": "CEC_3",
+              "tag": "CEC_18",
               "tagLabel": [
                 "Clause",
                 "Connector"
@@ -5042,7 +5014,7 @@
               "children": [
                 {
                   "type": "tree",
-                  "tag": "Noun Phrase",
+                  "tag": "Simple Noun Phrase",
                   "level": 3,
                   "layer": 1,
                   "parent": 11,
@@ -5103,7 +5075,7 @@
                 {
                   "type": "word",
                   "word": "\ud574\uba85\ud558",
-                  "tag": "VND_0",
+                  "tag": "VND_1",
                   "tagLabel": [
                     "Verb"
                   ],
@@ -5132,7 +5104,7 @@
             {
               "type": "word",
               "word": "\uc9c0\ub9cc",
-              "tag": "CEC_4",
+              "tag": "CEC_19",
               "tagLabel": [
                 "Clause",
                 "Connector"
@@ -5190,7 +5162,7 @@
                         {
                           "type": "word",
                           "word": "\uc9c0",
-                          "tag": "NEC_5",
+                          "tag": "NEC_4",
                           "tagLabel": [
                             "Negation",
                             "Connector"
@@ -5223,7 +5195,7 @@
                 {
                   "type": "word",
                   "word": "\uc558",
-                  "tag": "PSX_29",
+                  "tag": "PSX_32",
                   "tagLabel": [
                     "Past tense",
                     "Marker"
@@ -5295,6 +5267,4232 @@
       ],
       [
         26
+      ]
+    ]
+  },
+  "\ub098\ub294 \ube44\uac00 \uc628 \uac83\uc744 \ubcf4\uc558\ub2e4.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Topic Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 17,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ub098",
+              "tag": "NP",
+              "tagLabel": [
+                "Pronoun"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 1
+            },
+            {
+              "type": "word",
+              "word": "\ub294",
+              "tag": "TOP_5",
+              "tagLabel": [
+                "Topic",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 2
+            }
+          ],
+          "id": 3
+        },
+        {
+          "type": "tree",
+          "tag": "Subject Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 17,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ube44",
+              "tag": "NNG",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 6,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            },
+            {
+              "type": "word",
+              "word": "\uac00",
+              "tag": "JKS",
+              "tagLabel": [
+                "Subject",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 6,
+              "level": -1,
+              "layer": 0,
+              "id": 5
+            }
+          ],
+          "id": 6
+        },
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 17,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Nominalized Verb",
+              "level": 2,
+              "layer": 1,
+              "parent": 11,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc624",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 9,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                },
+                {
+                  "type": "word",
+                  "word": "\u3134 \uac83",
+                  "tag": "PNOM_10",
+                  "tagLabel": [
+                    "Verb-modifying",
+                    "suffix"
+                  ],
+                  "children": [],
+                  "parent": 9,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 8
+                }
+              ],
+              "id": 9
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 11,
+              "level": -1,
+              "layer": 0,
+              "id": 10
+            }
+          ],
+          "id": 11
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 17,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 16,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ubcf4",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 14,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 12
+                },
+                {
+                  "type": "word",
+                  "word": "\uc558",
+                  "tag": "PSX_32",
+                  "tagLabel": [
+                    "Past tense",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 14,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 13
+                }
+              ],
+              "id": 14
+            },
+            {
+              "type": "word",
+              "word": "\ub2e4",
+              "tag": "EF",
+              "tagLabel": [
+                "Plain-form",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 16,
+              "level": -1,
+              "layer": 0,
+              "id": 15
+            }
+          ],
+          "id": 16
+        }
+      ],
+      "id": 17
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        10,
+        12,
+        13,
+        15
+      ],
+      [
+        3,
+        6,
+        9,
+        14
+      ],
+      [
+        11,
+        16
+      ],
+      [
+        17
+      ]
+    ]
+  },
+  "\ud55c\uad6d\uc5b4\ub97c \ubc30\uc6b0\uace0 \uc2f6\uc9c0 \uc54a\uc544\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 4,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 12,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ud55c\uad6d\uc5b4",
+              "tag": "NNP",
+              "tagLabel": [
+                "Proper Noun"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 1
+            },
+            {
+              "type": "word",
+              "word": "\ub97c",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 2
+            }
+          ],
+          "id": 3
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 3,
+          "parent": 12,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb And Auxiliary",
+              "level": 2,
+              "layer": 2,
+              "parent": 11,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ubc30\uc6b0",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 9,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 4
+                },
+                {
+                  "type": "word",
+                  "word": "\uace0 \uc2f6",
+                  "tag": "AUX_29",
+                  "tagLabel": [
+                    "Want to"
+                  ],
+                  "children": [],
+                  "parent": 9,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 5
+                },
+                {
+                  "type": "tree",
+                  "tag": "Auxiliary Verb",
+                  "level": 3,
+                  "layer": 1,
+                  "parent": 9,
+                  "children": [
+                    {
+                      "type": "word",
+                      "word": "\uc9c0",
+                      "tag": "NEC_4",
+                      "tagLabel": [
+                        "Negation",
+                        "Connector"
+                      ],
+                      "children": [],
+                      "parent": 8,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 6
+                    },
+                    {
+                      "type": "word",
+                      "word": "\uc54a",
+                      "tag": "VX",
+                      "tagLabel": [
+                        "Verb"
+                      ],
+                      "children": [],
+                      "parent": 8,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 7
+                    }
+                  ],
+                  "id": 8
+                }
+              ],
+              "id": 9
+            },
+            {
+              "type": "word",
+              "word": "\uc544\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 11,
+              "level": -1,
+              "layer": 0,
+              "id": 10
+            }
+          ],
+          "id": 11
+        }
+      ],
+      "id": 12
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        10
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        9
+      ],
+      [
+        11
+      ],
+      [
+        12
+      ]
+    ]
+  },
+  "\uc800\ub294 \uc219\uc81c\ub97c \ub05d\ub0b4\uace0 \ub098\uc11c \uc9d1\uc73c\ub85c \uac08 \uac70\uc608\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 4,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Subordinate Clause",
+          "level": 1,
+          "layer": 3,
+          "parent": 23,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Topic Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 13,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc800",
+                  "tag": "NP",
+                  "tagLabel": [
+                    "Pronoun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\ub294",
+                  "tag": "TOP_5",
+                  "tagLabel": [
+                    "Topic",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "tree",
+              "tag": "Object Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 13,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc219\uc81c",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 6,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 4
+                },
+                {
+                  "type": "word",
+                  "word": "\ub97c",
+                  "tag": "JKO",
+                  "tagLabel": [
+                    "Object",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 6,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 5
+                }
+              ],
+              "id": 6
+            },
+            {
+              "type": "tree",
+              "tag": "Verb And Auxiliary",
+              "level": 2,
+              "layer": 2,
+              "parent": 13,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ub05d\ub0b4",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 11,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                },
+                {
+                  "type": "tree",
+                  "tag": "Auxiliary Verb",
+                  "level": 3,
+                  "layer": 1,
+                  "parent": 11,
+                  "children": [
+                    {
+                      "type": "word",
+                      "word": "\uace0",
+                      "tag": "EC",
+                      "tagLabel": [
+                        "Suffix"
+                      ],
+                      "children": [],
+                      "parent": 10,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 8
+                    },
+                    {
+                      "type": "word",
+                      "word": "\ub098",
+                      "tag": "VX",
+                      "tagLabel": [
+                        "Verb"
+                      ],
+                      "children": [],
+                      "parent": 10,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 9
+                    }
+                  ],
+                  "id": 10
+                }
+              ],
+              "id": 11
+            },
+            {
+              "type": "word",
+              "word": "\uc544\uc11c",
+              "tag": "EC",
+              "tagLabel": [
+                "Suffix"
+              ],
+              "children": [],
+              "parent": 13,
+              "level": -1,
+              "layer": 0,
+              "id": 12
+            }
+          ],
+          "id": 13
+        },
+        {
+          "type": "tree",
+          "tag": "Main Clause",
+          "level": 1,
+          "layer": 3,
+          "parent": 23,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 22,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc9d1",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 16,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 14
+                },
+                {
+                  "type": "word",
+                  "word": "\uc73c\ub85c",
+                  "tag": "JKB",
+                  "tagLabel": [
+                    "To/At/For",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 16,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 15
+                }
+              ],
+              "id": 16
+            },
+            {
+              "type": "tree",
+              "tag": "Predicate",
+              "level": 2,
+              "layer": 2,
+              "parent": 22,
+              "children": [
+                {
+                  "type": "tree",
+                  "tag": "Verb Phrase",
+                  "level": 3,
+                  "layer": 1,
+                  "parent": 21,
+                  "children": [
+                    {
+                      "type": "word",
+                      "word": "\uac00",
+                      "tag": "VV",
+                      "tagLabel": [
+                        "Verb"
+                      ],
+                      "children": [],
+                      "parent": 19,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 17
+                    },
+                    {
+                      "type": "word",
+                      "word": "\u3139 \uac70 \uc774",
+                      "tag": "PSX_33",
+                      "tagLabel": [
+                        "Future tense",
+                        "Auxiliary"
+                      ],
+                      "children": [],
+                      "parent": 19,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 18
+                    }
+                  ],
+                  "id": 19
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5d0\uc694",
+                  "tag": "EF",
+                  "tagLabel": [
+                    "Polite",
+                    "Ending"
+                  ],
+                  "children": [],
+                  "parent": 21,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 20
+                }
+              ],
+              "id": 21
+            }
+          ],
+          "id": 22
+        }
+      ],
+      "id": 23
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        9,
+        12,
+        14,
+        15,
+        17,
+        18,
+        20
+      ],
+      [
+        3,
+        6,
+        10,
+        16,
+        19
+      ],
+      [
+        11,
+        21
+      ],
+      [
+        13,
+        22
+      ],
+      [
+        23
+      ]
+    ]
+  },
+  "\ub098\ub294 \uc800\ub141\uc73c\ub85c \ube75\uacfc \ubb3c\uacfc \ubc25\uc744 \uba39\uc5c8\uc5b4\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Topic Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 21,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ub098",
+              "tag": "NP",
+              "tagLabel": [
+                "Pronoun"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 1
+            },
+            {
+              "type": "word",
+              "word": "\ub294",
+              "tag": "TOP_5",
+              "tagLabel": [
+                "Topic",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 2
+            }
+          ],
+          "id": 3
+        },
+        {
+          "type": "tree",
+          "tag": "Simple Noun Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 21,
+          "children": [
+            {
+              "type": "word",
+              "word": "\uc800\ub141",
+              "tag": "NNG",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 6,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            },
+            {
+              "type": "word",
+              "word": "\uc73c\ub85c",
+              "tag": "JKB",
+              "tagLabel": [
+                "To/At/For",
+                "Particle"
+              ],
+              "children": [],
+              "parent": 6,
+              "level": -1,
+              "layer": 0,
+              "id": 5
+            }
+          ],
+          "id": 6
+        },
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Conjunction",
+              "level": 2,
+              "layer": 1,
+              "parent": 15,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ube75",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 9,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                },
+                {
+                  "type": "word",
+                  "word": "\uacfc",
+                  "tag": "JC",
+                  "tagLabel": [
+                    "And/With",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 9,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 8
+                }
+              ],
+              "id": 9
+            },
+            {
+              "type": "tree",
+              "tag": "Conjunction",
+              "level": 2,
+              "layer": 1,
+              "parent": 15,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ubb3c",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 12,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 10
+                },
+                {
+                  "type": "word",
+                  "word": "\uacfc",
+                  "tag": "JC",
+                  "tagLabel": [
+                    "And/With",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 12,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 11
+                }
+              ],
+              "id": 12
+            },
+            {
+              "type": "word",
+              "word": "\ubc25",
+              "tag": "NNG",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 15,
+              "level": -1,
+              "layer": 0,
+              "id": 13
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 15,
+              "level": -1,
+              "layer": 0,
+              "id": 14
+            }
+          ],
+          "id": 15
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 20,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uba39",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 16
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5c8",
+                  "tag": "PSX_32",
+                  "tagLabel": [
+                    "Past tense",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 17
+                }
+              ],
+              "id": 18
+            },
+            {
+              "type": "word",
+              "word": "\uc5b4\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 20,
+              "level": -1,
+              "layer": 0,
+              "id": 19
+            }
+          ],
+          "id": 20
+        }
+      ],
+      "id": 21
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        13,
+        14,
+        16,
+        17,
+        19
+      ],
+      [
+        3,
+        6,
+        9,
+        12,
+        18
+      ],
+      [
+        15,
+        20
+      ],
+      [
+        21
+      ]
+    ]
+  },
+  "\ub098\ub294 \uc800\ub141\uc73c\ub85c \ub9e4\uc6b4 \uae40\uce58\uc640 \uad6d\uacfc \ubc25\uc744 \uba39\uace0 \uc2f6\uc5b4\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 5,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Topic Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 25,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ub098",
+              "tag": "NP",
+              "tagLabel": [
+                "Pronoun"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 1
+            },
+            {
+              "type": "word",
+              "word": "\ub294",
+              "tag": "TOP_5",
+              "tagLabel": [
+                "Topic",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 2
+            }
+          ],
+          "id": 3
+        },
+        {
+          "type": "tree",
+          "tag": "Simple Noun Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 25,
+          "children": [
+            {
+              "type": "word",
+              "word": "\uc800\ub141",
+              "tag": "NNG",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 6,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            },
+            {
+              "type": "word",
+              "word": "\uc73c\ub85c",
+              "tag": "JKB",
+              "tagLabel": [
+                "To/At/For",
+                "Particle"
+              ],
+              "children": [],
+              "parent": 6,
+              "level": -1,
+              "layer": 0,
+              "id": 5
+            }
+          ],
+          "id": 6
+        },
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 4,
+          "parent": 25,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Conjunction",
+              "level": 2,
+              "layer": 3,
+              "parent": 19,
+              "children": [
+                {
+                  "type": "tree",
+                  "tag": "Adjectival Phrase",
+                  "level": 3,
+                  "layer": 2,
+                  "parent": 13,
+                  "children": [
+                    {
+                      "type": "tree",
+                      "tag": "Adjective",
+                      "level": 4,
+                      "layer": 1,
+                      "parent": 11,
+                      "children": [
+                        {
+                          "type": "word",
+                          "word": "\ub9f5",
+                          "tag": "VA",
+                          "tagLabel": [
+                            "Adjective"
+                          ],
+                          "children": [],
+                          "parent": 9,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 7
+                        },
+                        {
+                          "type": "word",
+                          "word": "\u3134",
+                          "tag": "ETM",
+                          "tagLabel": [
+                            "Adjectival",
+                            "Suffix"
+                          ],
+                          "children": [],
+                          "parent": 9,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 8
+                        }
+                      ],
+                      "id": 9
+                    },
+                    {
+                      "type": "word",
+                      "word": "\uae40\uce58",
+                      "tag": "NNG",
+                      "tagLabel": [
+                        "Noun"
+                      ],
+                      "children": [],
+                      "parent": 11,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 10
+                    }
+                  ],
+                  "id": 11
+                },
+                {
+                  "type": "word",
+                  "word": "\uc640",
+                  "tag": "JC",
+                  "tagLabel": [
+                    "And/With",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 12
+                }
+              ],
+              "id": 13
+            },
+            {
+              "type": "tree",
+              "tag": "Conjunction",
+              "level": 2,
+              "layer": 1,
+              "parent": 19,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uad6d",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 16,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 14
+                },
+                {
+                  "type": "word",
+                  "word": "\uacfc",
+                  "tag": "JC",
+                  "tagLabel": [
+                    "And/With",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 16,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 15
+                }
+              ],
+              "id": 16
+            },
+            {
+              "type": "word",
+              "word": "\ubc25",
+              "tag": "NNG",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 19,
+              "level": -1,
+              "layer": 0,
+              "id": 17
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 19,
+              "level": -1,
+              "layer": 0,
+              "id": 18
+            }
+          ],
+          "id": 19
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 25,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb And Auxiliary",
+              "level": 2,
+              "layer": 1,
+              "parent": 24,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uba39",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 22,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 20
+                },
+                {
+                  "type": "word",
+                  "word": "\uace0 \uc2f6",
+                  "tag": "AUX_29",
+                  "tagLabel": [
+                    "Want to"
+                  ],
+                  "children": [],
+                  "parent": 22,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 21
+                }
+              ],
+              "id": 22
+            },
+            {
+              "type": "word",
+              "word": "\uc5b4\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 24,
+              "level": -1,
+              "layer": 0,
+              "id": 23
+            }
+          ],
+          "id": 24
+        }
+      ],
+      "id": 25
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        17,
+        18,
+        20,
+        21,
+        23
+      ],
+      [
+        3,
+        6,
+        9,
+        16,
+        22
+      ],
+      [
+        11,
+        24
+      ],
+      [
+        13
+      ],
+      [
+        19
+      ],
+      [
+        25
+      ]
+    ]
+  },
+  "khaiii\uc758 \ube4c\ub4dc \ubc0f \uc124\uce58\uc5d0 \uad00\ud574\uc11c\ub294 \ube4c\ub4dc \ubc0f \uc124\uce58 \ubb38\uc11c\ub97c \ucc38\uace0\ud558\uc2dc\uae30 \ubc14\ub78d\ub2c8\ub2e4.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 5,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Topic Phrase",
+          "level": 1,
+          "layer": 4,
+          "parent": 29,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Conjunction",
+              "level": 2,
+              "layer": 3,
+              "parent": 12,
+              "children": [
+                {
+                  "type": "tree",
+                  "tag": "Adjectival Phrase",
+                  "level": 3,
+                  "layer": 2,
+                  "parent": 7,
+                  "children": [
+                    {
+                      "type": "tree",
+                      "tag": "Possessive",
+                      "level": 4,
+                      "layer": 1,
+                      "parent": 5,
+                      "children": [
+                        {
+                          "type": "word",
+                          "word": "khaiii",
+                          "tag": "SL",
+                          "tagLabel": [
+                            "Foreign"
+                          ],
+                          "children": [],
+                          "parent": 3,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 1
+                        },
+                        {
+                          "type": "word",
+                          "word": "\uc758",
+                          "tag": "JKG",
+                          "tagLabel": [
+                            "Possessive",
+                            "Particle"
+                          ],
+                          "children": [],
+                          "parent": 3,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 2
+                        }
+                      ],
+                      "id": 3
+                    },
+                    {
+                      "type": "word",
+                      "word": "\ube4c\ub4dc",
+                      "tag": "NNG",
+                      "tagLabel": [
+                        "Noun"
+                      ],
+                      "children": [],
+                      "parent": 5,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 4
+                    }
+                  ],
+                  "id": 5
+                },
+                {
+                  "type": "word",
+                  "word": "\ubc0f",
+                  "tag": "CON_11",
+                  "tagLabel": [
+                    "Adverb"
+                  ],
+                  "children": [],
+                  "parent": 7,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 6
+                }
+              ],
+              "id": 7
+            },
+            {
+              "type": "tree",
+              "tag": "About",
+              "level": 2,
+              "layer": 1,
+              "parent": 12,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc124\uce58",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 10,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 8
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5d0 \uad00\ud558\uc5ec\uc11c",
+                  "tag": "PRP_24",
+                  "tagLabel": [
+                    "Suffix"
+                  ],
+                  "children": [],
+                  "parent": 10,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 9
+                }
+              ],
+              "id": 10
+            },
+            {
+              "type": "word",
+              "word": "\ub294",
+              "tag": "TOP_5",
+              "tagLabel": [
+                "Topic",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 12,
+              "level": -1,
+              "layer": 0,
+              "id": 11
+            }
+          ],
+          "id": 12
+        },
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 29,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Conjunction",
+              "level": 2,
+              "layer": 1,
+              "parent": 20,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ube4c\ub4dc",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 15,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 13
+                },
+                {
+                  "type": "word",
+                  "word": "\ubc0f",
+                  "tag": "CON_11",
+                  "tagLabel": [
+                    "Adverb"
+                  ],
+                  "children": [],
+                  "parent": 15,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 14
+                }
+              ],
+              "id": 15
+            },
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 20,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc124\uce58",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 16
+                },
+                {
+                  "type": "word",
+                  "word": "\ubb38\uc11c",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 17
+                }
+              ],
+              "id": 18
+            },
+            {
+              "type": "word",
+              "word": "\ub97c",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 20,
+              "level": -1,
+              "layer": 0,
+              "id": 19
+            }
+          ],
+          "id": 20
+        },
+        {
+          "type": "tree",
+          "tag": "Nominalized Verb",
+          "level": 1,
+          "layer": 2,
+          "parent": 29,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 25,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ucc38\uace0\ud558",
+                  "tag": "VND_1",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 23,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 21
+                },
+                {
+                  "type": "word",
+                  "word": "\uc2dc",
+                  "tag": "EP",
+                  "tagLabel": [
+                    "Honorific",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 23,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 22
+                }
+              ],
+              "id": 23
+            },
+            {
+              "type": "word",
+              "word": "\uae30",
+              "tag": "PNOM_9",
+              "tagLabel": [
+                "Nominalizing",
+                "Particle"
+              ],
+              "children": [],
+              "parent": 25,
+              "level": -1,
+              "layer": 0,
+              "id": 24
+            }
+          ],
+          "id": 25
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 1,
+          "parent": 29,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ubc14\ub77c",
+              "tag": "VV",
+              "tagLabel": [
+                "Verb"
+              ],
+              "children": [],
+              "parent": 28,
+              "level": -1,
+              "layer": 0,
+              "id": 26
+            },
+            {
+              "type": "word",
+              "word": "\u3142\ub2c8\ub2e4",
+              "tag": "EF",
+              "tagLabel": [
+                "Suffix"
+              ],
+              "children": [],
+              "parent": 28,
+              "level": -1,
+              "layer": 0,
+              "id": 27
+            }
+          ],
+          "id": 28
+        }
+      ],
+      "id": 29
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11,
+        13,
+        14,
+        16,
+        17,
+        19,
+        21,
+        22,
+        24,
+        26,
+        27
+      ],
+      [
+        3,
+        10,
+        15,
+        18,
+        23,
+        28
+      ],
+      [
+        5,
+        20,
+        25
+      ],
+      [
+        7
+      ],
+      [
+        12
+      ],
+      [
+        29
+      ]
+    ]
+  },
+  "\ub0b4\uc77c \uc77c\uc694\uc77c\uc778\ub370, \ubb50 \ud560 \uac70\uc608\uc694?": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 4,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Subordinate Clause",
+          "level": 1,
+          "layer": 2,
+          "parent": 15,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 7,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ub0b4\uc77c",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\uc77c\uc694\uc77c",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\uc774",
+              "tag": "VCP",
+              "tagLabel": [
+                "Copula",
+                "To be"
+              ],
+              "children": [],
+              "parent": 7,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            },
+            {
+              "type": "word",
+              "word": "\u3134\ub370",
+              "tag": "CEC_20",
+              "tagLabel": [
+                "Clause",
+                "Connector"
+              ],
+              "children": [],
+              "parent": 7,
+              "level": -1,
+              "layer": 0,
+              "id": 5
+            },
+            {
+              "type": "word",
+              "word": ",",
+              "tag": "SP",
+              "tagLabel": [
+                "Punctuation"
+              ],
+              "children": [],
+              "parent": 7,
+              "level": -1,
+              "layer": 0,
+              "id": 6
+            }
+          ],
+          "id": 7
+        },
+        {
+          "type": "tree",
+          "tag": "Main Clause",
+          "level": 1,
+          "layer": 3,
+          "parent": 15,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ubb50",
+              "tag": "NP",
+              "tagLabel": [
+                "Pronoun"
+              ],
+              "children": [],
+              "parent": 14,
+              "level": -1,
+              "layer": 0,
+              "id": 8
+            },
+            {
+              "type": "tree",
+              "tag": "Predicate",
+              "level": 2,
+              "layer": 2,
+              "parent": 14,
+              "children": [
+                {
+                  "type": "tree",
+                  "tag": "Verb Phrase",
+                  "level": 3,
+                  "layer": 1,
+                  "parent": 13,
+                  "children": [
+                    {
+                      "type": "word",
+                      "word": "\ud558",
+                      "tag": "VV",
+                      "tagLabel": [
+                        "Verb"
+                      ],
+                      "children": [],
+                      "parent": 11,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 9
+                    },
+                    {
+                      "type": "word",
+                      "word": "\u3139 \uac70 \uc774",
+                      "tag": "PSX_33",
+                      "tagLabel": [
+                        "Future tense",
+                        "Auxiliary"
+                      ],
+                      "children": [],
+                      "parent": 11,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 10
+                    }
+                  ],
+                  "id": 11
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5d0\uc694",
+                  "tag": "EF",
+                  "tagLabel": [
+                    "Polite",
+                    "Ending"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 12
+                }
+              ],
+              "id": 13
+            }
+          ],
+          "id": 14
+        }
+      ],
+      "id": 15
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        12
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        7,
+        13
+      ],
+      [
+        14
+      ],
+      [
+        15
+      ]
+    ]
+  },
+  "\ucc3d\ubb38 \uc5f4\uc5b4\ub3c4 \ub3fc\uc694?": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 4,
+      "parent": null,
+      "children": [
+        {
+          "type": "word",
+          "word": "\ucc3d\ubb38",
+          "tag": "NNG",
+          "tagLabel": [
+            "Noun"
+          ],
+          "children": [],
+          "parent": 9,
+          "level": -1,
+          "layer": 0,
+          "id": 1
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 3,
+          "parent": 9,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb And Auxiliary",
+              "level": 2,
+              "layer": 2,
+              "parent": 8,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc5f4",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 6,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                },
+                {
+                  "type": "tree",
+                  "tag": "Auxiliary Verb",
+                  "level": 3,
+                  "layer": 1,
+                  "parent": 6,
+                  "children": [
+                    {
+                      "type": "word",
+                      "word": "\uc5b4\ub3c4",
+                      "tag": "EC",
+                      "tagLabel": [
+                        "Suffix"
+                      ],
+                      "children": [],
+                      "parent": 5,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 3
+                    },
+                    {
+                      "type": "word",
+                      "word": "\ub418",
+                      "tag": "VV",
+                      "tagLabel": [
+                        "Verb"
+                      ],
+                      "children": [],
+                      "parent": 5,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 4
+                    }
+                  ],
+                  "id": 5
+                }
+              ],
+              "id": 6
+            },
+            {
+              "type": "word",
+              "word": "\uc5b4\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 8,
+              "level": -1,
+              "layer": 0,
+              "id": 7
+            }
+          ],
+          "id": 8
+        }
+      ],
+      "id": 9
+    },
+    "layers": [
+      [
+        1,
+        2,
+        3,
+        4,
+        7
+      ],
+      [
+        5
+      ],
+      [
+        6
+      ],
+      [
+        8
+      ],
+      [
+        9
+      ]
+    ]
+  },
+  "\uc911\uad6d\uc74c\uc2dd\uc744 \uba39\uc5c8\ub2e4. ": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 11,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 5,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 5,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            }
+          ],
+          "id": 5
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 11,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 10,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uba39",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 6
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5c8",
+                  "tag": "PSX_32",
+                  "tagLabel": [
+                    "Past tense",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                }
+              ],
+              "id": 8
+            },
+            {
+              "type": "word",
+              "word": "\ub2e4",
+              "tag": "EF",
+              "tagLabel": [
+                "Plain-form",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 10,
+              "level": -1,
+              "layer": 0,
+              "id": 9
+            }
+          ],
+          "id": 10
+        }
+      ],
+      "id": 11
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        11
+      ]
+    ]
+  },
+  "\uc911\uad6d\uc74c\uc2dd\uc744 \uc88b\uc544\ud558\uae30 \ub54c\ubb38\uc774\uc5d0\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 14,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 5,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 5,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            }
+          ],
+          "id": 5
+        },
+        {
+          "type": "tree",
+          "tag": "Simple Noun Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 14,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Nominalized Verb",
+              "level": 2,
+              "layer": 1,
+              "parent": 10,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc88b\uc544\ud558",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 6
+                },
+                {
+                  "type": "word",
+                  "word": "\uae30",
+                  "tag": "PNOM_9",
+                  "tagLabel": [
+                    "Nominalizing",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                }
+              ],
+              "id": 8
+            },
+            {
+              "type": "word",
+              "word": "\ub54c\ubb38",
+              "tag": "NNB",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 10,
+              "level": -1,
+              "layer": 0,
+              "id": 9
+            }
+          ],
+          "id": 10
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 1,
+          "parent": 14,
+          "children": [
+            {
+              "type": "word",
+              "word": "\uc774",
+              "tag": "VCP",
+              "tagLabel": [
+                "Copula",
+                "To be"
+              ],
+              "children": [],
+              "parent": 13,
+              "level": -1,
+              "layer": 0,
+              "id": 11
+            },
+            {
+              "type": "word",
+              "word": "\uc5d0\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 13,
+              "level": -1,
+              "layer": 0,
+              "id": 12
+            }
+          ],
+          "id": 13
+        }
+      ],
+      "id": 14
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11,
+        12
+      ],
+      [
+        3,
+        8,
+        13
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        14
+      ]
+    ]
+  },
+  "\uc911\uad6d\uc74c\uc2dd\uc744 \uba39\uc5c8\ub2e4.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 11,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 5,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 5,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            }
+          ],
+          "id": 5
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 11,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 10,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uba39",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 6
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5c8",
+                  "tag": "PSX_32",
+                  "tagLabel": [
+                    "Past tense",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                }
+              ],
+              "id": 8
+            },
+            {
+              "type": "word",
+              "word": "\ub2e4",
+              "tag": "EF",
+              "tagLabel": [
+                "Plain-form",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 10,
+              "level": -1,
+              "layer": 0,
+              "id": 9
+            }
+          ],
+          "id": 10
+        }
+      ],
+      "id": 11
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        11
+      ]
+    ]
+  },
+  "\uc65c\ub0d0\ud558\uba74 \uc911\uad6d\uc74c\uc2dd\uc744 \uc88b\uc544\ud558\uae30 \ub54c\ubb38\uc774\uc5d0\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 4,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 3,
+          "parent": 16,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 2,
+              "parent": 7,
+              "children": [
+                {
+                  "type": "tree",
+                  "tag": "Adjectival Phrase",
+                  "level": 3,
+                  "layer": 1,
+                  "parent": 5,
+                  "children": [
+                    {
+                      "type": "word",
+                      "word": "\uc65c\ub0d0\ud558\uba74",
+                      "tag": "MAG",
+                      "tagLabel": [
+                        "Adverb"
+                      ],
+                      "children": [],
+                      "parent": 3,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 1
+                    },
+                    {
+                      "type": "word",
+                      "word": "\uc911\uad6d",
+                      "tag": "NNP",
+                      "tagLabel": [
+                        "Proper Noun"
+                      ],
+                      "children": [],
+                      "parent": 3,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 2
+                    }
+                  ],
+                  "id": 3
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 5,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 4
+                }
+              ],
+              "id": 5
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 7,
+              "level": -1,
+              "layer": 0,
+              "id": 6
+            }
+          ],
+          "id": 7
+        },
+        {
+          "type": "tree",
+          "tag": "Simple Noun Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 16,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Nominalized Verb",
+              "level": 2,
+              "layer": 1,
+              "parent": 12,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc88b\uc544\ud558",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 10,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 8
+                },
+                {
+                  "type": "word",
+                  "word": "\uae30",
+                  "tag": "PNOM_9",
+                  "tagLabel": [
+                    "Nominalizing",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 10,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 9
+                }
+              ],
+              "id": 10
+            },
+            {
+              "type": "word",
+              "word": "\ub54c\ubb38",
+              "tag": "NNB",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 12,
+              "level": -1,
+              "layer": 0,
+              "id": 11
+            }
+          ],
+          "id": 12
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 1,
+          "parent": 16,
+          "children": [
+            {
+              "type": "word",
+              "word": "\uc774",
+              "tag": "VCP",
+              "tagLabel": [
+                "Copula",
+                "To be"
+              ],
+              "children": [],
+              "parent": 15,
+              "level": -1,
+              "layer": 0,
+              "id": 13
+            },
+            {
+              "type": "word",
+              "word": "\uc5d0\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 15,
+              "level": -1,
+              "layer": 0,
+              "id": 14
+            }
+          ],
+          "id": 15
+        }
+      ],
+      "id": 16
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        11,
+        13,
+        14
+      ],
+      [
+        3,
+        10,
+        15
+      ],
+      [
+        5,
+        12
+      ],
+      [
+        7
+      ],
+      [
+        16
+      ]
+    ]
+  },
+  "\uc911\uad6d \uc74c\uc2dd\uc744 \uc88b\uc544\ud558\uae30 \ub54c\ubb38\uc5d0 \uc911\uad6d \uc74c\uc2dd\uc744 \uba39\uc5c8\uc5b4\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 5,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 5,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            }
+          ],
+          "id": 5
+        },
+        {
+          "type": "tree",
+          "tag": "Because",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Nominalized Verb",
+              "level": 2,
+              "layer": 1,
+              "parent": 10,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc88b\uc544\ud558",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 6
+                },
+                {
+                  "type": "word",
+                  "word": "\uae30",
+                  "tag": "PNOM_9",
+                  "tagLabel": [
+                    "Nominalizing",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                }
+              ],
+              "id": 8
+            },
+            {
+              "type": "word",
+              "word": "\ub54c\ubb38\uc5d0",
+              "tag": "PRP_23",
+              "tagLabel": [
+                "Adverb"
+              ],
+              "children": [],
+              "parent": 10,
+              "level": -1,
+              "layer": 0,
+              "id": 9
+            }
+          ],
+          "id": 10
+        },
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 15,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 11
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 12
+                }
+              ],
+              "id": 13
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 15,
+              "level": -1,
+              "layer": 0,
+              "id": 14
+            }
+          ],
+          "id": 15
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 20,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uba39",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 16
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5c8",
+                  "tag": "PSX_32",
+                  "tagLabel": [
+                    "Past tense",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 17
+                }
+              ],
+              "id": 18
+            },
+            {
+              "type": "word",
+              "word": "\uc5b4\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 20,
+              "level": -1,
+              "layer": 0,
+              "id": 19
+            }
+          ],
+          "id": 20
+        }
+      ],
+      "id": 21
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11,
+        12,
+        14,
+        16,
+        17,
+        19
+      ],
+      [
+        3,
+        8,
+        13,
+        18
+      ],
+      [
+        5,
+        10,
+        15,
+        20
+      ],
+      [
+        21
+      ]
+    ]
+  },
+  "\uc911\uad6d \uc74c\uc2dd\uc744 \uc88b\uc544\ud558\uae30 \ub54c\ubb38\uc5d0 \uc911\uad6d \uc74c\uc2dd\uc744 \ub9ce\uc774 \uba39\uc744 \uac70\uc608\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 22,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 5,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 5,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            }
+          ],
+          "id": 5
+        },
+        {
+          "type": "tree",
+          "tag": "Because",
+          "level": 1,
+          "layer": 2,
+          "parent": 22,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Nominalized Verb",
+              "level": 2,
+              "layer": 1,
+              "parent": 10,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc88b\uc544\ud558",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 6
+                },
+                {
+                  "type": "word",
+                  "word": "\uae30",
+                  "tag": "PNOM_9",
+                  "tagLabel": [
+                    "Nominalizing",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                }
+              ],
+              "id": 8
+            },
+            {
+              "type": "word",
+              "word": "\ub54c\ubb38\uc5d0",
+              "tag": "PRP_23",
+              "tagLabel": [
+                "Adverb"
+              ],
+              "children": [],
+              "parent": 10,
+              "level": -1,
+              "layer": 0,
+              "id": 9
+            }
+          ],
+          "id": 10
+        },
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 22,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 15,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 11
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 12
+                }
+              ],
+              "id": 13
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 15,
+              "level": -1,
+              "layer": 0,
+              "id": 14
+            }
+          ],
+          "id": 15
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 22,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 21,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\ub9ce\uc774",
+                  "tag": "MAG",
+                  "tagLabel": [
+                    "Adverb"
+                  ],
+                  "children": [],
+                  "parent": 19,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 16
+                },
+                {
+                  "type": "word",
+                  "word": "\uba39",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 19,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 17
+                },
+                {
+                  "type": "word",
+                  "word": "\uc744 \uac70 \uc774",
+                  "tag": "PSX_33",
+                  "tagLabel": [
+                    "Future tense",
+                    "Auxiliary"
+                  ],
+                  "children": [],
+                  "parent": 19,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 18
+                }
+              ],
+              "id": 19
+            },
+            {
+              "type": "word",
+              "word": "\uc5d0\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 21,
+              "level": -1,
+              "layer": 0,
+              "id": 20
+            }
+          ],
+          "id": 21
+        }
+      ],
+      "id": 22
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11,
+        12,
+        14,
+        16,
+        17,
+        18,
+        20
+      ],
+      [
+        3,
+        8,
+        13,
+        19
+      ],
+      [
+        5,
+        10,
+        15,
+        21
+      ],
+      [
+        22
+      ]
+    ]
+  },
+  "\uc911\uad6d \uc74c\uc2dd\uc740 \uc88b\uc544\ud558\uae30 \ub54c\ubb38\uc5d0 \uc911\uad6d \uc74c\uc2dd\uc744 \uba39\uc5c8\uc5b4\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Topic Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 5,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\uc740",
+              "tag": "TOP_5",
+              "tagLabel": [
+                "Topic",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 5,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            }
+          ],
+          "id": 5
+        },
+        {
+          "type": "tree",
+          "tag": "Because",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Nominalized Verb",
+              "level": 2,
+              "layer": 1,
+              "parent": 10,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc88b\uc544\ud558",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 6
+                },
+                {
+                  "type": "word",
+                  "word": "\uae30",
+                  "tag": "PNOM_9",
+                  "tagLabel": [
+                    "Nominalizing",
+                    "Particle"
+                  ],
+                  "children": [],
+                  "parent": 8,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 7
+                }
+              ],
+              "id": 8
+            },
+            {
+              "type": "word",
+              "word": "\ub54c\ubb38\uc5d0",
+              "tag": "PRP_23",
+              "tagLabel": [
+                "Adverb"
+              ],
+              "children": [],
+              "parent": 10,
+              "level": -1,
+              "layer": 0,
+              "id": 9
+            }
+          ],
+          "id": 10
+        },
+        {
+          "type": "tree",
+          "tag": "Object Phrase",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Simple Noun Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 15,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc911\uad6d",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 11
+                },
+                {
+                  "type": "word",
+                  "word": "\uc74c\uc2dd",
+                  "tag": "NNG",
+                  "tagLabel": [
+                    "Noun"
+                  ],
+                  "children": [],
+                  "parent": 13,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 12
+                }
+              ],
+              "id": 13
+            },
+            {
+              "type": "word",
+              "word": "\uc744",
+              "tag": "JKO",
+              "tagLabel": [
+                "Object",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 15,
+              "level": -1,
+              "layer": 0,
+              "id": 14
+            }
+          ],
+          "id": 15
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 2,
+          "parent": 21,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 20,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uba39",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 16
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5c8",
+                  "tag": "PSX_32",
+                  "tagLabel": [
+                    "Past tense",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 18,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 17
+                }
+              ],
+              "id": 18
+            },
+            {
+              "type": "word",
+              "word": "\uc5b4\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 20,
+              "level": -1,
+              "layer": 0,
+              "id": 19
+            }
+          ],
+          "id": 20
+        }
+      ],
+      "id": 21
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11,
+        12,
+        14,
+        16,
+        17,
+        19
+      ],
+      [
+        3,
+        8,
+        13,
+        18
+      ],
+      [
+        5,
+        10,
+        15,
+        20
+      ],
+      [
+        21
+      ]
+    ]
+  },
+  "\uc800\ub294 \ud638\uc8fc\uc778\uc785\ub2c8\ub2e4. \ud558\uc9c0\ub9cc \uce98\ub9ac\ud3ec\ub2c8\uc544\uc5d0 \uc0b4\uc544\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 2,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Topic Phrase",
+          "level": 1,
+          "layer": 1,
+          "parent": 8,
+          "children": [
+            {
+              "type": "word",
+              "word": "\uc800",
+              "tag": "NP",
+              "tagLabel": [
+                "Pronoun"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 1
+            },
+            {
+              "type": "word",
+              "word": "\ub294",
+              "tag": "TOP_5",
+              "tagLabel": [
+                "Topic",
+                "Marker"
+              ],
+              "children": [],
+              "parent": 3,
+              "level": -1,
+              "layer": 0,
+              "id": 2
+            }
+          ],
+          "id": 3
+        },
+        {
+          "type": "word",
+          "word": "\ud638\uc8fc\uc778",
+          "tag": "NNG",
+          "tagLabel": [
+            "Noun"
+          ],
+          "children": [],
+          "parent": 8,
+          "level": -1,
+          "layer": 0,
+          "id": 4
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 1,
+          "parent": 8,
+          "children": [
+            {
+              "type": "word",
+              "word": "\uc774",
+              "tag": "VCP",
+              "tagLabel": [
+                "Copula",
+                "To be"
+              ],
+              "children": [],
+              "parent": 7,
+              "level": -1,
+              "layer": 0,
+              "id": 5
+            },
+            {
+              "type": "word",
+              "word": "\u3142\ub2c8\ub2e4",
+              "tag": "EF",
+              "tagLabel": [
+                "Suffix"
+              ],
+              "children": [],
+              "parent": 7,
+              "level": -1,
+              "layer": 0,
+              "id": 6
+            }
+          ],
+          "id": 7
+        }
+      ],
+      "id": 8
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        8
+      ]
+    ]
+  },
+  "\uc800\ub294 \ud638\uc8fc\uc778\uc785\ub2c8\ub2e4, \ud558\uc9c0\ub9cc \uce98\ub9ac\ud3ec\ub2c8\uc544\uc5d0 \uc0b4\uc544\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 3,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Subordinate Clause",
+          "level": 1,
+          "layer": 2,
+          "parent": 17,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Topic Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 8,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc800",
+                  "tag": "NP",
+                  "tagLabel": [
+                    "Pronoun"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\ub294",
+                  "tag": "TOP_5",
+                  "tagLabel": [
+                    "Topic",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\ud638\uc8fc\uc778",
+              "tag": "NNG",
+              "tagLabel": [
+                "Noun"
+              ],
+              "children": [],
+              "parent": 8,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            },
+            {
+              "type": "word",
+              "word": "\uc774",
+              "tag": "VCP",
+              "tagLabel": [
+                "Copula",
+                "To be"
+              ],
+              "children": [],
+              "parent": 8,
+              "level": -1,
+              "layer": 0,
+              "id": 5
+            },
+            {
+              "type": "word",
+              "word": "\u3142\ub2c8\ub2e4",
+              "tag": "EC",
+              "tagLabel": [
+                "Suffix"
+              ],
+              "children": [],
+              "parent": 8,
+              "level": -1,
+              "layer": 0,
+              "id": 6
+            },
+            {
+              "type": "word",
+              "word": ",",
+              "tag": "SP",
+              "tagLabel": [
+                "Punctuation"
+              ],
+              "children": [],
+              "parent": 8,
+              "level": -1,
+              "layer": 0,
+              "id": 7
+            }
+          ],
+          "id": 8
+        },
+        {
+          "type": "tree",
+          "tag": "Main Clause",
+          "level": 1,
+          "layer": 2,
+          "parent": 17,
+          "children": [
+            {
+              "type": "word",
+              "word": "\ud558\uc9c0\ub9cc",
+              "tag": "MAJ",
+              "tagLabel": [
+                "Adverb"
+              ],
+              "children": [],
+              "parent": 16,
+              "level": -1,
+              "layer": 0,
+              "id": 9
+            },
+            {
+              "type": "tree",
+              "tag": "Adverbial Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 16,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uce98\ub9ac\ud3ec\ub2c8\uc544",
+                  "tag": "NNP",
+                  "tagLabel": [
+                    "Proper Noun"
+                  ],
+                  "children": [],
+                  "parent": 12,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 10
+                },
+                {
+                  "type": "word",
+                  "word": "\uc5d0",
+                  "tag": "ADVEC_13",
+                  "tagLabel": [
+                    "Time/Place",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 12,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 11
+                }
+              ],
+              "id": 12
+            },
+            {
+              "type": "tree",
+              "tag": "Predicate",
+              "level": 2,
+              "layer": 1,
+              "parent": 16,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc0b4",
+                  "tag": "VV",
+                  "tagLabel": [
+                    "Verb"
+                  ],
+                  "children": [],
+                  "parent": 15,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 13
+                },
+                {
+                  "type": "word",
+                  "word": "\uc544\uc694",
+                  "tag": "EF",
+                  "tagLabel": [
+                    "Polite",
+                    "Ending"
+                  ],
+                  "children": [],
+                  "parent": 15,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 14
+                }
+              ],
+              "id": 15
+            }
+          ],
+          "id": 16
+        }
+      ],
+      "id": 17
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10,
+        11,
+        13,
+        14
+      ],
+      [
+        3,
+        12,
+        15
+      ],
+      [
+        8,
+        16
+      ],
+      [
+        17
+      ]
+    ]
+  },
+  "\uc81c\uc77c \ub9db\uc788\ub294 \uac83 \ucd94\ucc9c\ud574 \uc8fc\uc138\uc694.": {
+    "tree": {
+      "type": "tree",
+      "tag": "Sentence",
+      "level": 0,
+      "layer": 5,
+      "parent": null,
+      "children": [
+        {
+          "type": "tree",
+          "tag": "Nominalized Verb",
+          "level": 1,
+          "layer": 2,
+          "parent": 15,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 1,
+              "parent": 5,
+              "children": [
+                {
+                  "type": "word",
+                  "word": "\uc81c\uc77c",
+                  "tag": "MAG_0",
+                  "tagLabel": [
+                    "Adverb"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 1
+                },
+                {
+                  "type": "word",
+                  "word": "\ub9db\uc788",
+                  "tag": "VA",
+                  "tagLabel": [
+                    "Adjective"
+                  ],
+                  "children": [],
+                  "parent": 3,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 2
+                }
+              ],
+              "id": 3
+            },
+            {
+              "type": "word",
+              "word": "\ub294 \uac83",
+              "tag": "PNOM_10",
+              "tagLabel": [
+                "Verb-modifying",
+                "suffix"
+              ],
+              "children": [],
+              "parent": 5,
+              "level": -1,
+              "layer": 0,
+              "id": 4
+            }
+          ],
+          "id": 5
+        },
+        {
+          "type": "tree",
+          "tag": "Predicate",
+          "level": 1,
+          "layer": 4,
+          "parent": 15,
+          "children": [
+            {
+              "type": "tree",
+              "tag": "Verb Phrase",
+              "level": 2,
+              "layer": 3,
+              "parent": 14,
+              "children": [
+                {
+                  "type": "tree",
+                  "tag": "Verb And Auxiliary",
+                  "level": 3,
+                  "layer": 2,
+                  "parent": 12,
+                  "children": [
+                    {
+                      "type": "word",
+                      "word": "\ucd94\ucc9c\ud558",
+                      "tag": "VND_1",
+                      "tagLabel": [
+                        "Verb"
+                      ],
+                      "children": [],
+                      "parent": 10,
+                      "level": -1,
+                      "layer": 0,
+                      "id": 6
+                    },
+                    {
+                      "type": "tree",
+                      "tag": "Auxiliary Verb",
+                      "level": 4,
+                      "layer": 1,
+                      "parent": 10,
+                      "children": [
+                        {
+                          "type": "word",
+                          "word": "\uc5ec",
+                          "tag": "EC",
+                          "tagLabel": [
+                            "Suffix"
+                          ],
+                          "children": [],
+                          "parent": 9,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 7
+                        },
+                        {
+                          "type": "word",
+                          "word": "\uc8fc",
+                          "tag": "VX",
+                          "tagLabel": [
+                            "Verb"
+                          ],
+                          "children": [],
+                          "parent": 9,
+                          "level": -1,
+                          "layer": 0,
+                          "id": 8
+                        }
+                      ],
+                      "id": 9
+                    }
+                  ],
+                  "id": 10
+                },
+                {
+                  "type": "word",
+                  "word": "\uc2dc",
+                  "tag": "EP",
+                  "tagLabel": [
+                    "Honorific",
+                    "Marker"
+                  ],
+                  "children": [],
+                  "parent": 12,
+                  "level": -1,
+                  "layer": 0,
+                  "id": 11
+                }
+              ],
+              "id": 12
+            },
+            {
+              "type": "word",
+              "word": "\uc5b4\uc694",
+              "tag": "EF",
+              "tagLabel": [
+                "Polite",
+                "Ending"
+              ],
+              "children": [],
+              "parent": 14,
+              "level": -1,
+              "layer": 0,
+              "id": 13
+            }
+          ],
+          "id": 14
+        }
+      ],
+      "id": 15
+    },
+    "layers": [
+      [
+        1,
+        2,
+        4,
+        6,
+        7,
+        8,
+        11,
+        13
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        12
+      ],
+      [
+        14
+      ],
+      [
+        15
       ]
     ]
   }

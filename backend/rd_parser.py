@@ -280,7 +280,7 @@ class ParseTree(object):
                 tm = TagMap.POS_labels.get(word + ":" + tag)
                 tagLabel = (tm.posLabel if tm else TagMap.partsOfSpeech.get(tag)[0]).split('\n')
                 # add word definition for nouns & verbs if available
-                if tag[0] in ('V', 'N') and word in wordDefs:
+                if tag[0] in ('V', 'N', 'M') and word in wordDefs:
                     tagLabel.append(wordDefs[word])
                 node = dict(type='word', word=word, tag=tag, tagLabel=tagLabel, children=[], parent=parent, level=-1, layer=0)
                 nodeID = nodeIDs.get(id(node))
@@ -335,7 +335,7 @@ def grammarRule(rule):
             self.lexer.backTrackTo(endMark)
             return parsing
         #
-        if self.verbose > 2:
+        if self.verbose > 1:
             print(indent, '--- at ', self.lexer.posList[self.lexer.cursor], 'looking for ', rule.__name__)
         # recursion into the same rule at the same token implies match failure (for now).  Recursive rules should generally be right-recursive.
         if (rule, startMark) in self.recursionState:
@@ -356,7 +356,7 @@ def grammarRule(rule):
             if not node:
                 self.fails[startMark].add(rule) # note we failed this production at this point to break later recursive attempts at same thing
                 self.lexer.backTrackTo(startMark)
-                if self.verbose > 1:
+                if self.verbose > 2:
                     print(indent, '    nope, backtracking to ', self.lexer.posList[self.lexer.cursor])
                 parsing = []
             else:

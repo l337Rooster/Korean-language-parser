@@ -315,6 +315,12 @@ tm(tagPat="부터:JX",          posLabel="Since\nParticle", )
 # new tags in the chunking grammar MUST be included with a trailing ".*" in the chunking grammar so that it
 #  matches all generated integer-suffixed variations of the base synthetic tag
 
+# ----------------- Khaii errors  ---------------
+
+tm(  # 제일 wrongly analyzed as 제:XPN;일:NR, make it 제일:MAG
+    tagPat=r'제:XPN;일:NR', repl=r'제일:MAG', basePOS="MAG",
+)
+
 # ------------ tag-sequence foldings & renamings ---------------
 
 tm(  # noun-derived verbs, N하다, N되다, N당하다, N시키다, etc. - combine XR|NN & VND suffix into a single NDV (noun-derived verb) verb
