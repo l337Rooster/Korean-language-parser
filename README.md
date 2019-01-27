@@ -109,7 +109,7 @@ the front-end's AJAX ``/parse/`` REST API call, also in the ``backend.api`` modu
 The parsing process has 4 stages, explained in further detail below:
 1. Pass the input string throught the Khaiii morhpeme analyzer to get a list of the individual parts-of-speech it contains
 2. Apply a series of mappings to that morpheme list that distinguish and provide more detail about specific morphemes and morhpeme patterns
-3. Pass the mapped morhpeme list through one of two available phrase parsers to get a nested parse-tree of phrase structures in the input
+3. Pass the mapped morpheme list through one of two available phrase parsers to get a nested parse-tree of phrase structures in the input
 4. Apply an annotation pass to the parse-tree, adding descriptive detail, definitions, references, re-labelings, and so on for a more
 useful display
 
@@ -150,8 +150,8 @@ conjugation shortenings as it does in the past-tense predicate of that sentence.
 
 #### Morpheme mapping and common pattern-detection
 
-The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morpheme tags and often does not distinguish between
-particular particles or identify multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is 
+The morhpeme analysis performed by the Khaiii neural net generates a set of fairly generic morpheme tags and does not distinguish between
+specific particles of the same part-of-speech or identify multi-phoneme Korean grammar patterns.  For example, the **"었"** past-tense predicate suffix in the example is 
 marked with the
 generic predicate-ending tag **"EP"**.  The mapper recognizes this specific morpheme-tag group as a past-tense suffix and replaces the **EP**
 tag with a specific custom tag that allows it to be labeled as a past-tense suffix in the parse-tree.
