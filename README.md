@@ -1,5 +1,5 @@
 # Korean Sentence Parser
-Copyright © John Wainwright 2019.
+Copyright © John Wainwright, 2019.
 
 The parser implemented in this repo is meant to be
 a learning tool for students of 
