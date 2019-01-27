@@ -442,4 +442,15 @@ multiple-clause examples (아/어서, ~면, ...)
 성함이 어떻게 되세요? - the 게 되 are label together as an aixialiay verb
 병아리나 물고기도 키워 본 적 없어요?  - gets 키워 본 intermixed wrongly
 
+Fails:
+저는 호주인입니다. 하지만 캘리포니아에 살이에요.
+       저는 호주인입니다, 하지만 캘리포니아에 살이에요
+제일 맛있는 것 추천해 주세요.
+나는 일하러 달려갈 것이다. 그렇지 않으면 나는 거기에 차를 몰고 갈 것이다.   - the "그렇지 않으면" is just "Or,"
+추우면 못 뛰니까 안 뛰겠다.  - two conditionals in one sentene
+제일 맛있는 것 추천해 주세요
+스티브는 "안녕하세요"라고 했어요.  - quoting, but need examples with embedded phrases, and in <>, 
+  교수님은 나에게 “무엇을 일하든지 열심히 일하는 것은 제일 중요하잖아”라고 가르쳐 주셨어요.
+  
+
 """

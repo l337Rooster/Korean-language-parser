@@ -28,7 +28,8 @@ class KoreanParser(Parser):
     def subordinateClause(self):
         "subordinate clause"
         # subordinateClause ::= [phrase]* verbPhrase CONNECTING_SUFFIX
-        sc = sequence(zeroOrMore(self.phrase),
+        sc = sequence(optional(self.joiningAdverb),
+                      zeroOrMore(self.phrase),
                       self.verbPhrase(),
                       self.connectingSuffix(),
                       optional(self.punctuation))
@@ -38,7 +39,9 @@ class KoreanParser(Parser):
     def mainClause(self):
         "main clause"
         # mainClause ::= [phrase]* predicate
-        mc = sequence(zeroOrMore(self.phrase), self.predicate())
+        mc = sequence(optional(self.joiningAdverb),
+                      zeroOrMore(self.phrase),
+                      optional(self.predicate()))   # NB making the predicate optional allows incomplete sentences to be parsed, not sure if that's good
         return mc
 
     @grammarRule
@@ -47,6 +50,10 @@ class KoreanParser(Parser):
         # predicate ::= verbPhrase ENDING_SUFFIX
         p = sequence(self.verbPhrase(), self.endingSuffix())
         return p
+
+    @grammarRule
+    def joiningAdverb(self):
+        return self.lexer.next(r'.*:(MAJ)')
 
     @grammarRule
     def connectingSuffix(self):
